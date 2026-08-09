@@ -14,6 +14,9 @@
 
 ### Fixed
 
+- Seller Goal получил отдельный пункт навигации для роли Seller и перенесён в `features/seller-goals`.
+- FX form больше не просит вводить непривычный обратный курс: Owner вводит `1 EUR = X currency`, видит preview, а database `eur_rate` вычисляется автоматически.
+- Mixed-currency Activity Feed показывает original totals и отмечает EUR total как конвертированное значение вместо неясной единственной суммы.
 - Исправлен FX lookup при приёмке после полуночи: новая staging migration использует business date `Europe/Istanbul`, а не UTC-date timestamp.
 - Receive Flow больше не показывает ошибку про обменный курс для любой неудачной приёмки; сообщения различают курс, доступ и некорректные данные.
 - Клиент больше не отправляет UTC timestamp как источник business date при сохранении приёмки.

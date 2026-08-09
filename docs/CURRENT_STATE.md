@@ -36,7 +36,7 @@
 
 Demo-режим остаётся локальным и сбрасывается после перезагрузки. Live-режим читает каталог, остатки, продажи, продавцов и activity из Supabase и не подставляет mock-значения, но пока не считается production-ready.
 
-Пока отсутствуют: реальные Owner invite/management, exchange/cancellation UI, полностью подключённые mixed payments, автоматические тесты, CI, production SMTP/backup/monitoring и связь с Telegram-ботом или VPS.
+Пока отсутствуют: реальные Owner invite/management, exchange/cancellation UI, полностью подключённые mixed payments, автоматические тесты, CI, production SMTP/backup/monitoring и связь с Telegram-ботом или VPS. Ошибочную историческую sale с неверным FX snapshot пока нельзя исправить из UI: после появления cancellation flow её нужно отменить и создать заново.
 
 ## 3. Что было сделано последним
 
@@ -61,6 +61,9 @@ Demo-режим остаётся локальным и сбрасывается 
 - Исправлено отображение supplier в live catalog/Product Card: Supabase relation поддерживает оба корректных формата (object/array), поэтому имя поставщика больше не теряется в UI.
 - Staging sales foundation подключён к live New Sale: `confirm_sale` проверяет active store access и остаток, фиксирует Seller, цену, cost snapshot, daily FX и движение `sale` в одной транзакции; после успеха Inventory перезагружается из Supabase. Ручной integration test остаётся обязательным.
 - Добавлены `features/workspace` и `features/catalog`: `NEXT_PUBLIC_APP_MODE` явно разделяет demo/live, а live workspace загружает каталог, продажи, продавцов и activity только из Supabase. При ошибке mock fallback запрещён и показывается retry-state.
+- Seller Goal перенесён в `features/seller-goals` и получил отдельный navigation target для роли Seller; на mobile карточка остаётся под sales chart, но теперь доступна напрямую из меню.
+- Owner FX UI перенесён в `features/exchange-rates` и использует понятную котировку `1 EUR = X currency`, сохраняя в базе обратный `eur_rate`. Каждое поле показывает preview `100 currency = EUR`, чтобы исключить ошибочный обратный курс.
+- Mixed-currency Activity Feed показывает original currency breakdown и помечает итог в EUR как приблизительную конверсию. Исторические `unit_price_eur` snapshots не пересчитываются.
 - Проведён source scan на кириллицу в production UI/data: русских строк не осталось; mock catalog, sellers, categories и timestamps приведены к English domain values.
 
 ## 4. Как проверено
@@ -74,18 +77,19 @@ Demo-режим остаётся локальным и сбрасывается 
 ## 5. Следующий рекомендуемый шаг
 
 1. Продолжить модульное разделение: вынести sale query/mutation/error mapping из `app/page.tsx` в `features/sales`, не меняя UI.
-2. Провести smoke-test обоих режимов: `NEXT_PUBLIC_APP_MODE=demo` без Auth и `NEXT_PUBLIC_APP_MODE=live` с реальным membership; проверить, что live никогда не показывает mock revenue/sellers.
-3. Провести review Product Card, нового Receive Flow, Seller goals, обеих тем и low-stock carousel на mobile и desktop.
-4. Добавить staging URL и publishable key только в локальный `.env.local`, затем перезапустить `npm run dev`.
-5. Повторно назначить Owner через idempotent bootstrap SQL, затем обновить приложение и проверить Magic Link Owner: homepage доступна, role switcher отсутствует, logout работает.
-6. Реализовать реальные Owner invite/phone flow и audit log.
-7. Применить staging migration `20260809010000_receipt_business_date.sql`.
-8. Проверить Owner FX settings и первую реальную staging-приёмку в UI: EUR и одну non-EUR currency, особенно после полуночи Istanbul.
-9. Подтвердить, что таблица и поиск показывают реальные variants и остатки после приёмки.
-10. Применить `20260809013000_product_images.sql` и проверить: открыть live product card → Add photos → выбрать JPEG/PNG/WebP → убедиться в carousel после reload.
-11. Проверить live Sale Flow на одном товаре: успешная sale уменьшает остаток, повторная продажа не допускает отрицательный остаток, non-EUR требует дневной FX rate.
-12. Добавить single/mixed payment selection и запись `sale_payments`.
-13. Завершить локализацию Sale Flow, Receive Flow, Product Card, login и всех пустых/error states на Turkish.
+2. Провести smoke-test Seller account: пункт `My goal`, сохранение цели и прогресс после live sale; проверить новый FX quote/preview и mixed-currency Activity breakdown.
+3. Провести smoke-test обоих режимов: `NEXT_PUBLIC_APP_MODE=demo` без Auth и `NEXT_PUBLIC_APP_MODE=live` с реальным membership; проверить, что live никогда не показывает mock revenue/sellers.
+4. Провести review Product Card, нового Receive Flow, Seller goals, обеих тем и low-stock carousel на mobile и desktop.
+5. Добавить staging URL и publishable key только в локальный `.env.local`, затем перезапустить `npm run dev`.
+6. Повторно назначить Owner через idempotent bootstrap SQL, затем обновить приложение и проверить Magic Link Owner: homepage доступна, role switcher отсутствует, logout работает.
+7. Реализовать реальные Owner invite/phone flow и audit log.
+8. Применить staging migration `20260809010000_receipt_business_date.sql`.
+9. Проверить Owner FX settings и первую реальную staging-приёмку в UI: EUR и одну non-EUR currency, особенно после полуночи Istanbul.
+10. Подтвердить, что таблица и поиск показывают реальные variants и остатки после приёмки.
+11. Применить `20260809013000_product_images.sql` и проверить: открыть live product card → Add photos → выбрать JPEG/PNG/WebP → убедиться в carousel после reload.
+12. Проверить live Sale Flow на одном товаре: успешная sale уменьшает остаток, повторная продажа не допускает отрицательный остаток, non-EUR требует дневной FX rate.
+13. Добавить single/mixed payment selection и запись `sale_payments`.
+14. Завершить локализацию Sale Flow, Receive Flow, Product Card, login и всех пустых/error states на Turkish.
 
 Не подключать production Supabase до завершения visual review и frontend foundation. Database schema проектировать из утверждённых `MVP_SCOPE.md` и `DATA_MODEL.md`.
 
@@ -130,6 +134,8 @@ Demo-режим остаётся локальным и сбрасывается 
 - `app/page.tsx` — текущая композиция dashboard; бизнес-операции постепенно выносятся из файла.
 - `features/workspace/` — граница demo/live и загрузка единого workspace snapshot.
 - `features/catalog/` — live data access каталога.
+- `features/exchange-rates/` — направление FX quote, conversion helpers и Owner FX UI.
+- `features/seller-goals/` — Seller personal goal UI.
 - `app/globals.css` — визуальные токены и тема.
 - `lib/mock-data.ts` — демонстрационные данные.
 - `lib/types.ts` — текущие клиентские типы.

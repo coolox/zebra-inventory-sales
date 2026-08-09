@@ -11,7 +11,9 @@ Next.js dashboard composition (`app/page.tsx`)
   │     ├── demo source — только `lib/mock-data.ts`
   │     └── live source — только Supabase с RLS
   ├── `features/catalog` — live catalog query
-  ├── components — Sale/Receive/Product/FX UI flows
+  ├── `features/exchange-rates` — FX conversion model и Owner rate UI
+  ├── `features/seller-goals` — personal Seller goal
+  ├── components — Sale/Receive/Product UI flows
   └── Supabase RPC — атомарные receipt/sale/FX mutations
 ```
 

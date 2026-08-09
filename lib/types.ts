@@ -56,4 +56,5 @@ export type Activity = {
   meta: string;
   amount?: number;
   currency?: Product["currency"];
+  converted?: boolean;
 };

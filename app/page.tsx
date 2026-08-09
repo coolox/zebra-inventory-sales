@@ -24,6 +24,7 @@ import {
   Shirt,
   Store,
   Sun,
+  Target,
   Trash2,
   TrendingUp,
   UserPlus,
@@ -35,8 +36,8 @@ import { LowStockCarousel } from "@/components/low-stock-carousel";
 import { ProductCard } from "@/components/product-card";
 import { ReceiveFlow, type ReceiptDraft } from "@/components/receive-flow";
 import { SaleFlow, type PaymentMethod, type SaleDraftLine } from "@/components/sale-flow";
-import { SellerGoalCard } from "@/components/seller-goal-card";
-import { FxRateManager } from "@/components/fx-rate-manager";
+import { SellerGoalCard } from "@/features/seller-goals/ui/seller-goal-card";
+import { FxRateManager } from "@/features/exchange-rates/ui/fx-rate-manager";
 import { isLiveMode } from "@/features/workspace/model/app-mode";
 import { createInitialWorkspaceData } from "@/features/workspace/model/workspace-data";
 import { loadLiveWorkspace } from "@/features/workspace/data/load-live-workspace";
@@ -473,7 +474,7 @@ export default function Home() {
     { id: "overview", label: text.overview, Icon: LayoutDashboard },
     { id: "inventory", label: text.inventory, Icon: Boxes },
     { id: "sales", label: text.sales, Icon: CircleDollarSign },
-    ...(role === "owner" ? [{ id: "team", label: text.team, Icon: Users }] : []),
+    ...(role === "owner" ? [{ id: "team", label: text.team, Icon: Users }] : [{ id: "goal", label: text.myGoal, Icon: Target }]),
   ];
 
   const displayName = isLiveMode ? authenticatedName || "Zebra team member" : role === "owner" ? "Arslan Zengin" : currentSeller.name;
@@ -681,7 +682,7 @@ export default function Home() {
                     <div key={item.id} className="relative flex gap-3 pb-5 last:pb-0">
                       {index < activities.slice(0, 5).length - 1 && <span className="absolute left-[15px] top-8 h-[calc(100%-28px)] w-px bg-zinc-800" />}
                       <span className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${item.type === "sale" ? "border-violet-500/20 bg-violet-500/10 text-violet-400" : "border-zinc-800 bg-zinc-900 text-zinc-500"}`}><Icon size={14} /></span>
-                      <div className="min-w-0 flex-1 pt-0.5"><div className="flex justify-between gap-3"><p className="truncate text-[11px] font-medium text-zinc-300">{item.title}</p>{item.amount && <span className="shrink-0 text-[11px] font-semibold text-zinc-200">+{money(item.amount, item.currency)}</span>}</div><p className="mt-1 truncate text-[10px] text-zinc-600">{item.meta}</p></div>
+                      <div className="min-w-0 flex-1 pt-0.5"><div className="flex justify-between gap-3"><p className="truncate text-[11px] font-medium text-zinc-300">{item.title}</p>{item.amount !== undefined && <span className="shrink-0 text-[11px] font-semibold text-zinc-200">+{item.converted ? "≈" : ""}{money(item.amount, item.currency)}</span>}</div><p className="mt-1 truncate text-[10px] text-zinc-600">{item.meta}</p></div>
                     </div>
                   );
                 })}
@@ -719,7 +720,7 @@ export default function Home() {
 
       {modal === "activity" && (
         <Modal title="All activity" eyebrow="Store history" onClose={() => setModal(null)}>
-          <div className="divide-y divide-zinc-800/70 p-5 sm:p-7">{activities.length ? activities.map((item) => { const Icon = item.type === "sale" ? CircleDollarSign : item.type === "receipt" ? PackagePlus : Boxes; return <div key={item.id} className="flex gap-3 py-4 first:pt-0"><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${item.type === "sale" ? "border-violet-500/20 bg-violet-500/10 text-violet-400" : "border-zinc-800 bg-zinc-900 text-zinc-500"}`}><Icon size={15} /></span><div className="min-w-0 flex-1"><div className="flex justify-between gap-3"><p className="truncate text-xs font-medium text-zinc-200">{item.title}</p>{item.amount !== undefined && <span className="shrink-0 text-xs font-semibold text-zinc-100">+{money(item.amount, item.currency)}</span>}</div><p className="mt-1 text-[11px] text-zinc-600">{item.meta}</p></div></div>; }) : <p className="py-10 text-center text-xs text-zinc-600">No operations yet.</p>}</div>
+          <div className="divide-y divide-zinc-800/70 p-5 sm:p-7">{activities.length ? activities.map((item) => { const Icon = item.type === "sale" ? CircleDollarSign : item.type === "receipt" ? PackagePlus : Boxes; return <div key={item.id} className="flex gap-3 py-4 first:pt-0"><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${item.type === "sale" ? "border-violet-500/20 bg-violet-500/10 text-violet-400" : "border-zinc-800 bg-zinc-900 text-zinc-500"}`}><Icon size={15} /></span><div className="min-w-0 flex-1"><div className="flex justify-between gap-3"><p className="truncate text-xs font-medium text-zinc-200">{item.title}</p>{item.amount !== undefined && <span className="shrink-0 text-xs font-semibold text-zinc-100">+{item.converted ? "≈" : ""}{money(item.amount, item.currency)}</span>}</div><p className="mt-1 text-[11px] text-zinc-600">{item.meta}</p></div></div>; }) : <p className="py-10 text-center text-xs text-zinc-600">No operations yet.</p>}</div>
         </Modal>
       )}
 

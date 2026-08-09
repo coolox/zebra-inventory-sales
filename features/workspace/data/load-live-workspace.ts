@@ -7,6 +7,7 @@ type SaleLineRow = {
   id: string;
   variant_id: string;
   quantity: number;
+  unit_price: number;
   unit_price_eur: number;
   unit_cost_eur: number;
   currency: Product["currency"];
@@ -38,7 +39,7 @@ async function loadLiveSales(storeId: string): Promise<{ sales: Sale[]; activiti
   const client = createClient();
   const { data, error } = await client
     .from("sales")
-    .select("id, seller_id, sold_at, sale_lines(id, variant_id, quantity, unit_price_eur, unit_cost_eur, currency)")
+    .select("id, seller_id, sold_at, sale_lines(id, variant_id, quantity, unit_price, unit_price_eur, unit_cost_eur, currency)")
     .eq("store_id", storeId)
     .eq("status", "confirmed")
     .order("sold_at", { ascending: false });
@@ -98,14 +99,19 @@ async function loadLiveSales(storeId: string): Promise<{ sales: Sale[]; activiti
     const lines = sale.sale_lines ?? [];
     const units = lines.reduce((sum, line) => sum + line.quantity, 0);
     const amount = lines.reduce((sum, line) => sum + Number(line.unit_price_eur) * line.quantity, 0);
+    const originalAmounts = new Map<Product["currency"], number>();
+    lines.forEach((line) => originalAmounts.set(line.currency, (originalAmounts.get(line.currency) ?? 0) + Number(line.unit_price) * line.quantity));
+    const originalTotal = [...originalAmounts.entries()].map(([currency, value]) => new Intl.NumberFormat("en", { style: "currency", currency, maximumFractionDigits: 2 }).format(value)).join(" + ");
+    const converted = [...originalAmounts.keys()].some((currency) => currency !== "EUR");
     const seller = profilesById.get(sale.seller_id)?.full_name || "Zebra team member";
     return {
       id: sale.id,
       type: "sale",
       title: `Sale · ${units} ${units === 1 ? "item" : "items"}`,
-      meta: `${seller} · ${new Date(sale.sold_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Istanbul" })}`,
+      meta: `${seller} · ${originalTotal} · ${new Date(sale.sold_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Istanbul" })}`,
       amount,
       currency: "EUR",
+      converted,
     };
   });
 
