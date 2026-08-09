@@ -87,12 +87,12 @@ export async function loadLiveCatalog(storeId: string): Promise<Product[]> {
     });
   }
 
-  return variants.flatMap((variant, index) => {
+  return variants.flatMap((variant) => {
     const model = modelsById.get(variant.product_model_id);
     if (!model) return [];
     const latestCost = latestCostByVariant.get(variant.id);
     return [{
-      id: index + 1,
+      id: variant.id,
       modelId: model.id,
       variantId: variant.id,
       code: model.model_code,

@@ -1,6 +1,6 @@
 # Roadmap Zebra Retail
 
-Обновлено: 2026-08-08  
+Обновлено: 2026-08-09
 Текущий этап: Этап 2  
 Правило: следующий этап начинается только после выполнения exit criteria текущего
 
@@ -42,7 +42,7 @@ Exit criteria: нет открытых вопросов, блокирующих 
 
 Статус: в работе
 
-- [ ] Разделить `app/page.tsx` на feature-модули и переиспользуемые компоненты. Начато: вынесены Sale Flow, Receive Flow и low-stock carousel.
+- [ ] Разделить `app/page.tsx` на feature-модули и переиспользуемые компоненты. Начато: вынесены UI flows; добавлены `features/workspace` и `features/catalog`, demo/live data sources больше не смешиваются. Следующий slice — `features/sales`.
 - [ ] Зафиксировать design tokens, состояния компонентов и адаптивные правила. Начато: добавлены Light/Dark theme tokens и responsive Product/Receive flows.
 - [ ] Реализовать i18n для English и Turkish. Начато: добавлены en/tr dictionary, persistent language switcher и локализация основных dashboard/nav/stock labels; modal flows/login ещё требуют полного покрытия.
 - [ ] Ввести routing будущих разделов без потери цельности продукта.

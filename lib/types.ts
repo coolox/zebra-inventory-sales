@@ -1,9 +1,10 @@
 export type StoreId = "clothing" | "shoes" | "bags";
 export type Role = "owner" | "seller";
 export type Period = "day" | "week" | "month" | "year";
+export type EntityId = number | string;
 
 export type Product = {
-  id: number;
+  id: EntityId;
   modelId?: string;
   variantId?: string;
   code: string;
@@ -23,9 +24,9 @@ export type Product = {
 };
 
 export type Sale = {
-  id: number;
-  productId: number;
-  sellerId: number;
+  id: EntityId;
+  productId: EntityId;
+  sellerId: EntityId;
   seller: string;
   store: StoreId;
   product: string;
@@ -39,7 +40,7 @@ export type Sale = {
 };
 
 export type Seller = {
-  id: number;
+  id: EntityId;
   name: string;
   initials: string;
   store: StoreId;

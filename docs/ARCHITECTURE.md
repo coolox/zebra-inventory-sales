@@ -1,19 +1,21 @@
 # Архитектура Zebra Retail
 
-Обновлено: 2026-08-08  
-Статус: Supabase/Postgres/Auth/Storage выбран; первая migration и SSR client boundary подготовлены локально
+Обновлено: 2026-08-09
+Статус: начат постепенный переход к feature-модулям; demo/live data boundary реализована
 
-## 1. Текущая архитектура demo
+## 1. Текущая frontend-архитектура
 
 ```text
-Next.js client page
-  ├── React state
-  ├── mock-data.ts
-  ├── текстовый детерминированный mock parser
-  └── Tailwind/CSS UI
+Next.js dashboard composition (`app/page.tsx`)
+  ├── `features/workspace` — app mode и единый workspace snapshot
+  │     ├── demo source — только `lib/mock-data.ts`
+  │     └── live source — только Supabase с RLS
+  ├── `features/catalog` — live catalog query
+  ├── components — Sale/Receive/Product/FX UI flows
+  └── Supabase RPC — атомарные receipt/sale/FX mutations
 ```
 
-Все операции существуют только внутри вкладки браузера. Это презентационная архитектура, а не основа реального учёта.
+`NEXT_PUBLIC_APP_MODE=demo|live` задаёт явную границу окружения. При отсутствии переменной сохраняется обратная совместимость: наличие Supabase URL/key включает live. В live-режиме ошибка загрузки не заменяется mock-данными.
 
 ## 2. Предлагаемая логическая архитектура
 

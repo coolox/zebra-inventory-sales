@@ -21,7 +21,7 @@ export async function GET() {
   }
 
   return NextResponse.json({
-    user: { email: user.email ?? "", fullName: profile?.full_name || user.email || "Zebra team member" },
+    user: { id: user.id, email: user.email ?? "", fullName: profile?.full_name || user.email || "Zebra team member" },
     profile: { locale: profile?.locale || "en", theme: profile?.theme || "dark" },
     memberships,
   });

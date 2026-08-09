@@ -37,11 +37,13 @@ import { ReceiveFlow, type ReceiptDraft } from "@/components/receive-flow";
 import { SaleFlow, type PaymentMethod, type SaleDraftLine } from "@/components/sale-flow";
 import { SellerGoalCard } from "@/components/seller-goal-card";
 import { FxRateManager } from "@/components/fx-rate-manager";
+import { isLiveMode } from "@/features/workspace/model/app-mode";
+import { createInitialWorkspaceData } from "@/features/workspace/model/workspace-data";
+import { loadLiveWorkspace } from "@/features/workspace/data/load-live-workspace";
 import { createClient as createSupabaseClient } from "@/lib/supabase/client";
-import { loadLiveCatalog } from "@/lib/live-catalog";
 import { uploadProductImages } from "@/lib/product-images";
 import { copy, type Locale } from "@/lib/i18n";
-import { initialActivity, initialProducts, initialSales, initialSellers, stores } from "@/lib/mock-data";
+import { stores } from "@/lib/mock-data";
 import type { Activity as ActivityType, Period, Product, Role, Sale, Seller, StoreId } from "@/lib/types";
 
 type StoreFilter = "all" | StoreId;
@@ -61,7 +63,7 @@ const fxToEur: Record<SaleDraftLine["currency"], number> = {
   GBP: 1.17,
 };
 
-const liveAuthEnabled = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY);
+const initialWorkspaceData = createInitialWorkspaceData();
 
 const money = (value: number, currency = "EUR") =>
   new Intl.NumberFormat("en-IE", { style: "currency", currency, maximumFractionDigits: 0 }).format(value);
@@ -133,10 +135,10 @@ export default function Home() {
   const [role, setRole] = useState<Role>("owner");
   const [selectedStore, setSelectedStore] = useState<StoreFilter>("clothing");
   const [period, setPeriod] = useState<Period>("day");
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [sales, setSales] = useState<Sale[]>(initialSales);
-  const [sellers, setSellers] = useState<Seller[]>(initialSellers);
-  const [activities, setActivities] = useState<ActivityType[]>(initialActivity);
+  const [products, setProducts] = useState<Product[]>(initialWorkspaceData.products);
+  const [sales, setSales] = useState<Sale[]>(initialWorkspaceData.sales);
+  const [sellers, setSellers] = useState<Seller[]>(initialWorkspaceData.sellers);
+  const [activities, setActivities] = useState<ActivityType[]>(initialWorkspaceData.activities);
   const [search, setSearch] = useState("");
   const [inventoryPage, setInventoryPage] = useState(1);
   const [modal, setModal] = useState<ModalName>(null);
@@ -146,8 +148,10 @@ export default function Home() {
   const [selectedProductCode, setSelectedProductCode] = useState<string | null>(null);
   const [saleCodePrefill, setSaleCodePrefill] = useState("");
   const [newSeller, setNewSeller] = useState({ name: "", email: "", phone: "" });
-  const [accessLoading, setAccessLoading] = useState(liveAuthEnabled);
+  const [accessLoading, setAccessLoading] = useState(isLiveMode);
+  const [workspaceStatus, setWorkspaceStatus] = useState<"idle" | "loading" | "ready" | "error">(isLiveMode ? "idle" : "ready");
   const [authenticatedName, setAuthenticatedName] = useState("");
+  const [authenticatedUserId, setAuthenticatedUserId] = useState<string | null>(null);
   const [locale, setLocale] = useState<Locale>("en");
   const [activeStoreId, setActiveStoreId] = useState<string | null>(null);
 
@@ -162,34 +166,42 @@ export default function Home() {
     document.documentElement.lang = nextLocale;
   }, []);
 
-  const refreshLiveCatalog = async () => {
-    if (!liveAuthEnabled || !activeStoreId) return;
-    const catalog = await loadLiveCatalog(activeStoreId);
-    setProducts(catalog);
+  const applyWorkspaceData = (data: Awaited<ReturnType<typeof loadLiveWorkspace>>) => {
+    setProducts(data.products);
+    setSales(data.sales);
+    setSellers(data.sellers);
+    setActivities(data.activities);
+  };
+
+  const refreshLiveWorkspace = async () => {
+    if (!isLiveMode || !activeStoreId) return;
+    const data = await loadLiveWorkspace(activeStoreId);
+    applyWorkspaceData(data);
+    setWorkspaceStatus("ready");
   };
 
   useEffect(() => {
-    if (!liveAuthEnabled || !activeStoreId) return;
+    if (!isLiveMode || !activeStoreId) return;
+    let active = true;
+    setWorkspaceStatus("loading");
     setProducts([]);
-    void refreshLiveCatalog().catch(() => setProducts([]));
+    setSales([]);
+    setSellers([]);
+    setActivities([]);
+    void loadLiveWorkspace(activeStoreId)
+      .then((data) => {
+        if (!active) return;
+        applyWorkspaceData(data);
+        setWorkspaceStatus("ready");
+      })
+      .catch(() => {
+        if (active) setWorkspaceStatus("error");
+      });
+    return () => { active = false; };
   }, [activeStoreId]);
 
   useEffect(() => {
-    if (!liveAuthEnabled || !activeStoreId) return;
-    void createSupabaseClient().from("sales").select("id, sold_at, seller_id, sale_lines(quantity, unit_price, unit_price_eur, currency)").eq("store_id", activeStoreId).eq("status", "confirmed").order("sold_at", { ascending: false }).limit(8).then(({ data }) => {
-      if (!data) return;
-      setActivities(data.map((sale) => {
-        const lines = (sale.sale_lines ?? []) as { quantity: number; unit_price: number; unit_price_eur: number; currency: Product["currency"] }[];
-        const units = lines.reduce((sum, line) => sum + line.quantity, 0);
-        const currencies = [...new Set(lines.map((line) => line.currency))];
-        const amount = lines.reduce((sum, line) => sum + line.quantity * Number(line.unit_price_eur), 0);
-        return { id: sale.id, type: "sale" as const, title: `Sale · ${units} items`, meta: `Sale in ${currencies.join(" + ")} · ${new Date(sale.sold_at).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}`, amount, currency: "EUR" };
-      }));
-    });
-  }, [activeStoreId]);
-
-  useEffect(() => {
-    if (!liveAuthEnabled) return;
+    if (!isLiveMode) return;
 
     fetch("/api/session", { cache: "no-store" })
       .then(async (response) => ({ response, body: await response.json() }))
@@ -201,6 +213,7 @@ export default function Home() {
         const membership = body.memberships[0];
         setRole(membership.role === "owner" ? "owner" : "seller");
         setActiveStoreId(membership.store_id);
+        setAuthenticatedUserId(body.user?.id || null);
         setAuthenticatedName(body.user?.fullName || "Zebra team member");
         const profileLocale: Locale = body.profile?.locale === "tr" ? "tr" : "en";
         setLocale(profileLocale);
@@ -211,7 +224,15 @@ export default function Home() {
       .catch(() => window.location.assign("/access-denied"));
   }, []);
 
-  const currentSeller = sellers[0];
+  const currentSeller = sellers.find((seller) => seller.id === authenticatedUserId) ?? sellers[0] ?? {
+    id: authenticatedUserId ?? "current-user",
+    name: authenticatedName || "Zebra team member",
+    initials: "ZR",
+    store: "clothing" as const,
+    status: "offline" as const,
+    email: "—",
+    phone: "—",
+  };
   const roleStore: StoreId = "clothing";
   const maxDays = { day: 0, week: 6, month: 30, year: 365 }[period];
 
@@ -282,7 +303,7 @@ export default function Home() {
   };
 
   const switchRole = (next: Role) => {
-    if (liveAuthEnabled) return;
+    if (isLiveMode) return;
     setRole(next);
     setSelectedStore("clothing");
   };
@@ -291,11 +312,11 @@ export default function Home() {
     setLocale(next);
     window.localStorage.setItem("zebra-locale", next);
     document.documentElement.lang = next;
-    if (liveAuthEnabled) await createSupabaseClient().rpc("update_my_preferences", { preferred_theme: theme, preferred_locale: next });
+    if (isLiveMode) await createSupabaseClient().rpc("update_my_preferences", { preferred_theme: theme, preferred_locale: next });
   };
 
   const signOut = async () => {
-    if (!liveAuthEnabled) return;
+    if (!isLiveMode) return;
     await createSupabaseClient().auth.signOut();
     window.location.assign("/login");
   };
@@ -309,7 +330,7 @@ export default function Home() {
 
   const completeSale = async (lines: SaleDraftLine[], paymentMethod: PaymentMethod = "cash") => {
     if (!lines.length) return;
-    if (liveAuthEnabled) {
+    if (isLiveMode) {
       if (!activeStoreId) throw new Error("Missing store membership.");
       const saleLines = lines.map((line) => {
         const product = products.find((item) => item.id === line.productId);
@@ -327,16 +348,13 @@ export default function Home() {
         if (/exchange rate/i.test(error.message)) throw new Error("Today’s exchange rate for this sale currency is missing. Ask the Owner to save it first.");
         throw new Error("Sale could not be saved. Please try again.");
       }
-      await refreshLiveCatalog();
-      const saleCurrencies = [...new Set(saleLines.map((line) => line.currency))];
-      const isMixedCurrencySale = saleCurrencies.length > 1;
-      setActivities((current) => [{ id: crypto.randomUUID(), type: "sale", title: `Sale · ${lines.reduce((sum, line) => sum + line.quantity, 0)} items`, meta: `Sale in ${saleCurrencies.join(" + ")} · just now`, amount: isMixedCurrencySale ? undefined : saleLines.reduce((sum, line) => sum + line.quantity * line.unit_price * fxToEur[line.currency], 0), currency: "EUR" }, ...current]);
+      await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
       setModal(null);
       notify(locale === "tr" ? "Satış kaydedildi" : "Sale saved to the staging database");
       return;
     }
     const stamp = Date.now();
-    const seller = role === "seller" ? currentSeller : sellers[0];
+    const seller = role === "seller" ? currentSeller : sellers[0] ?? currentSeller;
     const time = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
     const created = lines.flatMap((line, index) => {
       const product = products.find((item) => item.id === line.productId);
@@ -376,7 +394,7 @@ export default function Home() {
 
   const saveReceipt = async (lines: ReceiptDraft[]) => {
     if (!lines.length) return;
-    if (liveAuthEnabled) {
+    if (isLiveMode) {
       if (!activeStoreId) throw new Error("Missing store membership");
       const first = lines[0];
       const gender = first.gender;
@@ -396,7 +414,7 @@ export default function Home() {
       if (error) {
         throw new Error(error.message || "Receipt could not be saved.");
       }
-      await refreshLiveCatalog();
+      await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
       setModal(null);
       notify(locale === "tr" ? "Kabul staging veritabanına kaydedildi" : "Receipt saved to the staging database");
       return;
@@ -421,11 +439,11 @@ export default function Home() {
 
   const addProductPhotos = async (files: File[]) => {
     const modelId = selectedProductVariants[0]?.modelId;
-    if (!liveAuthEnabled || !activeStoreId || !modelId) {
+    if (!isLiveMode || !activeStoreId || !modelId) {
       throw new Error("Photo upload is available for saved products in the live catalog.");
     }
     await uploadProductImages({ storeId: activeStoreId, modelId, files });
-    await refreshLiveCatalog();
+    await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
     notify(locale === "tr" ? "Fotoğraflar eklendi" : "Photos added to the product card");
   };
 
@@ -458,7 +476,7 @@ export default function Home() {
     ...(role === "owner" ? [{ id: "team", label: text.team, Icon: Users }] : []),
   ];
 
-  const displayName = liveAuthEnabled ? authenticatedName || "Zebra team member" : role === "owner" ? "Arslan Zengin" : currentSeller.name;
+  const displayName = isLiveMode ? authenticatedName || "Zebra team member" : role === "owner" ? "Arslan Zengin" : currentSeller.name;
   const displayInitials = displayName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "ZB";
 
   const nav = (
@@ -491,7 +509,7 @@ export default function Home() {
 
         <div className="mt-auto rounded-xl border border-zinc-800 bg-zinc-900/50 p-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-300">{liveAuthEnabled ? displayInitials : role === "owner" ? "AZ" : currentSeller.initials}</div>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-300">{isLiveMode ? displayInitials : role === "owner" ? "AZ" : currentSeller.initials}</div>
             <div className="min-w-0">
               <p className="truncate text-xs font-medium text-zinc-200">{displayName}</p>
               <p className="text-[10px] text-zinc-600">{role === "owner" ? text.networkOwner : text.sellerClothing}</p>
@@ -502,7 +520,7 @@ export default function Home() {
     </>
   );
 
-  if (liveAuthEnabled && accessLoading) {
+  if (isLiveMode && accessLoading) {
     return <main className="flex min-h-screen items-center justify-center bg-[#09090b] text-sm text-zinc-500">Checking secure workspace access…</main>;
   }
 
@@ -517,7 +535,7 @@ export default function Home() {
           {role === "owner" && <div className="flex h-9 items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 text-xs font-medium text-zinc-200"><Store size={14} className="text-zinc-500" /> Zebra Boutique</div>}
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
-            {!liveAuthEnabled && <div className="hidden rounded-lg border border-zinc-800 bg-zinc-900 p-0.5 sm:flex">
+            {!isLiveMode && <div className="hidden rounded-lg border border-zinc-800 bg-zinc-900 p-0.5 sm:flex">
               <button type="button" onClick={() => switchRole("owner")} className={`rounded-md px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition ${role === "owner" ? "bg-violet-600 text-white" : "text-zinc-600 hover:text-zinc-300"}`}>{text.owner}</button>
               <button type="button" onClick={() => switchRole("seller")} className={`rounded-md px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition ${role === "seller" ? "bg-violet-600 text-white" : "text-zinc-600 hover:text-zinc-300"}`}>{text.seller}</button>
             </div>}
@@ -531,11 +549,13 @@ export default function Home() {
               <Bell size={17} />
               <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-violet-400" />
             </button>
-            {liveAuthEnabled ? <button type="button" onClick={signOut} className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 transition hover:text-zinc-200" aria-label="Sign out"><LogOut size={16} /></button> : <button type="button" onClick={() => switchRole(role === "owner" ? "seller" : "owner")} className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-200 sm:hidden">{role === "owner" ? "AZ" : "ED"}</button>}
+            {isLiveMode ? <button type="button" onClick={signOut} className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 transition hover:text-zinc-200" aria-label="Sign out"><LogOut size={16} /></button> : <button type="button" onClick={() => switchRole(role === "owner" ? "seller" : "owner")} className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-200 sm:hidden">{role === "owner" ? "AZ" : "ED"}</button>}
           </div>
         </header>
 
         <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:py-8 xl:px-8">
+          {isLiveMode && workspaceStatus === "loading" && <div className="mb-4 rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-4 py-3 text-xs text-violet-200">{text.loadingData}</div>}
+          {isLiveMode && workspaceStatus === "error" && <div className="mb-4 flex flex-col gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-200 sm:flex-row sm:items-center sm:justify-between"><span>{text.dataError}</span><button type="button" onClick={() => { setWorkspaceStatus("loading"); void refreshLiveWorkspace().catch(() => setWorkspaceStatus("error")); }} className="rounded-lg border border-red-400/25 px-3 py-2 font-semibold text-red-100">{text.retry}</button></div>}
           <section id="overview" className="scroll-mt-24">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
               <div>
@@ -564,8 +584,8 @@ export default function Home() {
             </div>
 
             <div className={`mt-4 grid gap-3 ${role === "owner" ? "grid-cols-2 xl:grid-cols-4" : "grid-cols-1 sm:grid-cols-3"}`}>
-              <MetricCard label={text.revenue} value={money(metrics.revenue)} delta={period === "day" ? text.todayDelta : text.periodDelta} icon={WalletCards} accent />
-              <MetricCard label={text.salesMetric} value={`${integer(metrics.count)} ${text.unitsShort}`} delta={text.itemsDelta} icon={ReceiptText} />
+              <MetricCard label={text.revenue} value={money(metrics.revenue)} delta={isLiveMode ? text.liveData : period === "day" ? text.todayDelta : text.periodDelta} icon={WalletCards} accent />
+              <MetricCard label={text.salesMetric} value={`${integer(metrics.count)} ${text.unitsShort}`} delta={isLiveMode ? text.liveData : text.itemsDelta} icon={ReceiptText} />
               <MetricCard label={role === "owner" ? text.grossMargin : text.myResult} value={money(metrics.margin)} delta={`${metrics.revenue ? Math.round((metrics.margin / metrics.revenue) * 100) : 0}% ${text.ofRevenue}`} icon={TrendingUp} />
               {role === "owner" && <LowStockCarousel products={visibleProducts} />}
             </div>
@@ -594,7 +614,7 @@ export default function Home() {
             </article>
 
             {role === "owner" ? <article id="team" className="panel scroll-mt-24 rounded-2xl p-5 sm:p-6">
-              <div className="flex items-start justify-between"><div><p className="text-sm font-semibold">{text.sellerResults}</p><p className="mt-1 text-xs text-zinc-600">{periodLabels[period].toLowerCase()} · {text.revenueRanking}</p></div><button type="button" onClick={() => setModal("sellers")} className="text-[11px] font-medium text-violet-400 transition hover:text-violet-300">{text.manage}</button></div>
+              <div className="flex items-start justify-between"><div><p className="text-sm font-semibold">{text.sellerResults}</p><p className="mt-1 text-xs text-zinc-600">{periodLabels[period].toLowerCase()} · {text.revenueRanking}</p></div>{!isLiveMode && <button type="button" onClick={() => setModal("sellers")} className="text-[11px] font-medium text-violet-400 transition hover:text-violet-300">{text.manage}</button>}</div>
               <div className="mt-5 space-y-4">{rankedSellers.slice(0, 4).map((seller, index) => <div key={seller.id} className="flex items-center gap-3"><span className="w-3 text-[10px] text-zinc-700">{String(index + 1).padStart(2, "0")}</span><span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-300">{seller.initials}<span className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#111114] ${seller.status === "online" ? "bg-emerald-400" : "bg-zinc-600"}`} /></span><div className="min-w-0 flex-1"><div className="flex items-baseline justify-between gap-2"><p className="truncate text-xs font-medium text-zinc-300">{seller.name}</p><p className="text-xs font-semibold text-zinc-100">{money(seller.revenue)}</p></div><div className="mt-1.5 h-1 overflow-hidden rounded-full bg-zinc-800"><div className="h-full rounded-full bg-violet-500" style={{ width: `${Math.max(8, (seller.revenue / Math.max(rankedSellers[0]?.revenue || 1, 1)) * 100)}%` }} /></div></div><span className="w-8 text-right text-[10px] text-zinc-600">{seller.count} pcs</span></div>)}</div>
             </article> : <SellerGoalCard actual={metrics.revenue} period={period} />}
           </section>
@@ -671,8 +691,8 @@ export default function Home() {
           </section>
 
           <footer className="mt-8 flex flex-col gap-2 border-t border-zinc-900 py-5 text-[10px] text-zinc-700 sm:flex-row sm:items-center sm:justify-between">
-            <p>{text.localDemo}</p>
-            <p>{text.mockNotice}</p>
+            <p>{isLiveMode ? text.liveWorkspace : text.localDemo}</p>
+            <p>{isLiveMode ? text.liveNotice : text.mockNotice}</p>
           </footer>
         </main>
       </div>
@@ -681,13 +701,13 @@ export default function Home() {
 
       {modal === "sale" && (
         <Modal title="New sale" eyebrow="Cash operation" onClose={() => setModal(null)} wide>
-          <SaleFlow key={`sale-${saleCodePrefill}`} initialCode={saleCodePrefill} products={products} sellerName={role === "seller" ? currentSeller.name : sellers[0].name} onCancel={() => setModal(null)} onComplete={completeSale} />
+          <SaleFlow key={`sale-${saleCodePrefill}`} initialCode={saleCodePrefill} products={products} sellerName={isLiveMode ? displayName : role === "seller" ? currentSeller.name : sellers[0]?.name ?? displayName} onCancel={() => setModal(null)} onComplete={completeSale} />
         </Modal>
       )}
 
       {modal === "receive" && (
         <Modal title="Receive products" eyebrow="Manual receipt" onClose={() => setModal(null)} wide>
-          <ReceiveFlow locale={locale} products={liveAuthEnabled ? [] : products} onCancel={() => setModal(null)} onSave={saveReceipt} />
+          <ReceiveFlow locale={locale} products={isLiveMode ? [] : products} onCancel={() => setModal(null)} onSave={saveReceipt} />
         </Modal>
       )}
 
@@ -705,11 +725,11 @@ export default function Home() {
 
       {selectedProductVariants.length > 0 && (
         <Modal title={selectedProductVariants[0].name} eyebrow="Product details" onClose={() => setSelectedProductCode(null)} wide>
-        <ProductCard variants={selectedProductVariants} onUploadPhotos={liveAuthEnabled ? addProductPhotos : undefined} onSell={sellProductFromCard} />
+        <ProductCard variants={selectedProductVariants} onUploadPhotos={isLiveMode ? addProductPhotos : undefined} onSell={sellProductFromCard} />
         </Modal>
       )}
 
-      {modal === "sellers" && role === "owner" && (
+      {modal === "sellers" && role === "owner" && !isLiveMode && (
         <Modal title="Seller team" eyebrow="Access and stores" onClose={() => setModal(null)} wide>
           <div className="grid gap-7 p-5 sm:p-7 md:grid-cols-[1.1fr_.9fr]">
             <div><p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Active sellers</p><div className="mt-3 divide-y divide-zinc-800/70 rounded-xl border border-zinc-800">{sellers.map((seller) => <div key={seller.id} className="flex items-center gap-3 p-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-300">{seller.initials}</span><div className="min-w-0 flex-1"><p className="truncate text-xs font-medium text-zinc-200">{seller.name}</p><p className="mt-1 truncate text-[10px] text-zinc-600">{seller.email} · {seller.phone}</p></div><button type="button" onClick={() => { setSellers((current) => current.filter((item) => item.id !== seller.id)); notify("Seller removed from demo"); }} className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-700 transition hover:bg-red-500/10 hover:text-red-400" aria-label={`Remove ${seller.name}`}><Trash2 size={15} /></button></div>)}</div></div>

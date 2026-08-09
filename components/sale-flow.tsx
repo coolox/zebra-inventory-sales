@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import type { Product } from "@/lib/types";
 
 export type SaleDraftLine = {
-  productId: number;
+  productId: Product["id"];
   quantity: number;
   price: number;
   currency: "EUR" | "USD" | "TRY" | "RUB" | "GBP";

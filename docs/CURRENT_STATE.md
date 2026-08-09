@@ -1,8 +1,8 @@
 # Текущее состояние проекта
 
 Обновлено: 2026-08-09  
-Текущий этап: `Этап 3 — Backend и безопасность`  
-Общий статус: чистый staging Supabase project и migrations применены. Magic Link подтверждён; первичное Owner membership требует повторного bootstrap, так как middleware корректно обнаружил отсутствие active assignment.
+Текущий этап: `Этап 2 — Frontend foundation`; backend foundation этапа 3 развивается параллельно
+Общий статус: начато постепенное разделение frontend на feature-модули. Demo и live workspace теперь имеют явную границу данных; staging-интеграции требуют повторной ручной проверки.
 
 ## 1. Что работает сейчас
 
@@ -34,9 +34,9 @@
 
 ## 2. Важное ограничение
 
-Каталог, приёмка и продажи пока остаются mock-сценариями и сбрасываются после перезагрузки. Их нельзя использовать для реального учёта.
+Demo-режим остаётся локальным и сбрасывается после перезагрузки. Live-режим читает каталог, остатки, продажи, продавцов и activity из Supabase и не подставляет mock-значения, но пока не считается production-ready.
 
-Пока отсутствуют: реальная загрузка каталога/остатков из Supabase, server-side RBAC по membership/role, защищённые write RPC, audit log, тесты и связь с Telegram-ботом или VPS.
+Пока отсутствуют: реальные Owner invite/management, exchange/cancellation UI, полностью подключённые mixed payments, автоматические тесты, CI, production SMTP/backup/monitoring и связь с Telegram-ботом или VPS.
 
 ## 3. Что было сделано последним
 
@@ -60,28 +60,32 @@
 - Верхняя price card в Product Card показывает предложенный `Sell price` как 3× последней закупочной цены в исходной валюте; фактическая цена продажи по-прежнему вводится Seller при оформлении sale.
 - Исправлено отображение supplier в live catalog/Product Card: Supabase relation поддерживает оба корректных формата (object/array), поэтому имя поставщика больше не теряется в UI.
 - Staging sales foundation подключён к live New Sale: `confirm_sale` проверяет active store access и остаток, фиксирует Seller, цену, cost snapshot, daily FX и движение `sale` в одной транзакции; после успеха Inventory перезагружается из Supabase. Ручной integration test остаётся обязательным.
+- Добавлены `features/workspace` и `features/catalog`: `NEXT_PUBLIC_APP_MODE` явно разделяет demo/live, а live workspace загружает каталог, продажи, продавцов и activity только из Supabase. При ошибке mock fallback запрещён и показывается retry-state.
 - Проведён source scan на кириллицу в production UI/data: русских строк не осталось; mock catalog, sellers, categories и timestamps приведены к English domain values.
 
 ## 4. Как проверено
 
 - `npm run build` — успешно.
+- `npx tsc --noEmit` — успешно.
 - Локальный Next.js server возвращает HTTP 200.
 - Локальный production server возвращает HTTP 200.
 - Встроенный browser во время проверки был недоступен, поэтому визуальная regression-проверка и реальные клики на iPhone/Android ещё не зафиксированы.
 
 ## 5. Следующий рекомендуемый шаг
 
-1. Провести review Product Card, нового Receive Flow, Seller goals, обеих тем и low-stock carousel на mobile и desktop.
-2. Добавить staging URL и publishable key только в локальный `.env.local`, затем перезапустить `npm run dev`.
-3. Повторно назначить Owner через idempotent bootstrap SQL, затем обновить приложение и проверить Magic Link Owner: homepage доступна, role switcher отсутствует, logout работает.
-4. Реализовать реальные Owner invite/phone flow и audit log.
-5. Применить staging migration `20260809010000_receipt_business_date.sql`.
-6. Проверить Owner FX settings и первую реальную staging-приёмку в UI: EUR и одну non-EUR currency, особенно после полуночи Istanbul.
-8. Подтвердить, что таблица и поиск показывают реальные variants и остатки после приёмки.
-9. Применить `20260809013000_product_images.sql` и проверить: открыть live product card → Add photos → выбрать JPEG/PNG/WebP → убедиться в carousel после reload.
-10. Проверить live Sale Flow на одном товаре: успешная sale уменьшает остаток, повторная продажа не допускает отрицательный остаток, non-EUR требует дневной FX rate.
-11. Добавить single/mixed payment selection и запись `sale_payments`.
-12. Завершить локализацию Sale Flow, Receive Flow, Product Card, login и всех пустых/error states на Turkish.
+1. Продолжить модульное разделение: вынести sale query/mutation/error mapping из `app/page.tsx` в `features/sales`, не меняя UI.
+2. Провести smoke-test обоих режимов: `NEXT_PUBLIC_APP_MODE=demo` без Auth и `NEXT_PUBLIC_APP_MODE=live` с реальным membership; проверить, что live никогда не показывает mock revenue/sellers.
+3. Провести review Product Card, нового Receive Flow, Seller goals, обеих тем и low-stock carousel на mobile и desktop.
+4. Добавить staging URL и publishable key только в локальный `.env.local`, затем перезапустить `npm run dev`.
+5. Повторно назначить Owner через idempotent bootstrap SQL, затем обновить приложение и проверить Magic Link Owner: homepage доступна, role switcher отсутствует, logout работает.
+6. Реализовать реальные Owner invite/phone flow и audit log.
+7. Применить staging migration `20260809010000_receipt_business_date.sql`.
+8. Проверить Owner FX settings и первую реальную staging-приёмку в UI: EUR и одну non-EUR currency, особенно после полуночи Istanbul.
+9. Подтвердить, что таблица и поиск показывают реальные variants и остатки после приёмки.
+10. Применить `20260809013000_product_images.sql` и проверить: открыть live product card → Add photos → выбрать JPEG/PNG/WebP → убедиться в carousel после reload.
+11. Проверить live Sale Flow на одном товаре: успешная sale уменьшает остаток, повторная продажа не допускает отрицательный остаток, non-EUR требует дневной FX rate.
+12. Добавить single/mixed payment selection и запись `sale_payments`.
+13. Завершить локализацию Sale Flow, Receive Flow, Product Card, login и всех пустых/error states на Turkish.
 
 Не подключать production Supabase до завершения visual review и frontend foundation. Database schema проектировать из утверждённых `MVP_SCOPE.md` и `DATA_MODEL.md`.
 
@@ -123,7 +127,9 @@
 
 ## 8. Файлы, которые чаще всего понадобятся
 
-- `app/page.tsx` — текущее demo и все интерактивные сценарии.
+- `app/page.tsx` — текущая композиция dashboard; бизнес-операции постепенно выносятся из файла.
+- `features/workspace/` — граница demo/live и загрузка единого workspace snapshot.
+- `features/catalog/` — live data access каталога.
 - `app/globals.css` — визуальные токены и тема.
 - `lib/mock-data.ts` — демонстрационные данные.
 - `lib/types.ts` — текущие клиентские типы.

@@ -4,6 +4,14 @@
 
 ## 2026-08-09
 
+### Architecture
+
+- Начато постепенное разделение frontend на feature-модули: добавлены `features/workspace` и `features/catalog`.
+- Введён `NEXT_PUBLIC_APP_MODE=demo|live`; middleware, Auth и workspace data используют одну границу режима.
+- Live workspace загружает catalog, sales, sellers и activity из Supabase, а mock-данные доступны только demo source.
+- При ошибке live-загрузки показывается retry-state без подстановки вымышленной выручки, продавцов или операций.
+- Стабильный UUID варианта теперь используется как client product id в live-каталоге.
+
 ### Fixed
 
 - Исправлен FX lookup при приёмке после полуночи: новая staging migration использует business date `Europe/Istanbul`, а не UTC-date timestamp.
