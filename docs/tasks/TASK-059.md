@@ -1,6 +1,6 @@
 # TASK-059 — Сделать приложение installable PWA
 
-Статус: pending
+Статус: completed
 
 ## Цель
 
@@ -29,3 +29,9 @@ TASK-052.
 - Lighthouse PWA manifest checks.
 - Install smoke on mobile emulator/device.
 
+## Результат
+
+- Добавлен manifest с Zebra Retail branding, standalone display, `/` start URL и dark theme/background.
+- Добавлены any и maskable SVG icons, а также Apple web-app metadata.
+- Service worker/offline caching намеренно не добавлены: приложение не заявляет offline availability до появления безопасной offline data strategy.
+- Проверены TypeScript и production build с route manifest.

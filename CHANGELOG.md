@@ -239,3 +239,4 @@
 - Added catalog, receipt and inventory contracts with explicit receipt idempotency mapping.
 - Added sales and payment contracts for repeated priced variants and native-currency payments.
 - Localized dashboard low-stock states and made KPI formatting locale-aware.
+- Added install-safe Zebra Retail PWA manifest, standalone metadata and maskable icons.
