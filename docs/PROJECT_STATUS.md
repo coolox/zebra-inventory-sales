@@ -34,7 +34,7 @@
 
 ## Следующая задача
 
-- TASK-134 — развернуть изолированный demo HTTPS preview для PWA. Затем TASK-135—TASK-136: owner mobile install test и закрытие PWA gate. TASK-133—TASK-131 завершены.
+- TASK-135 — провести Owner physical-device install test на изолированном demo HTTPS preview. Затем TASK-136: исправить findings и закрыть PWA gate. TASK-134—TASK-131 завершены.
 - До завершения TASK-136 не начинать TASK-060 или другие задачи основной разработки.
 - После закрытия PWA gate следующая задача: TASK-060 — провести accessibility pass.
 - TASK-040 — завершить staging Magic Link configuration.
@@ -150,6 +150,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-131](tasks/TASK-131.md) — добавлены explicit Android/iOS PNG install assets, manifest/metadata checks и reproducible icon generator.
 - [TASK-132](tasks/TASK-132.md) — восстановлена visual parity Overview после i18n refactor с сохранением locale-aware formatting.
 - [TASK-133](tasks/TASK-133.md) — локализованы preview-critical Audit Log, Seller Goal, modal/access states и navigation labels; добавлены Turkish component/browser smoke checks.
+- [TASK-134](tasks/TASK-134.md) — создан изолированный Vercel demo HTTPS preview, без Supabase/VPS/production, с remote manifest и desktop/mobile smoke checks.
 
 ## Список оставшихся задач
 
