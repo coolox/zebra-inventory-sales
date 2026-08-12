@@ -39,3 +39,11 @@ test("theme control applies the light token set", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await expect(page.getByRole("button", { name: "Switch to dark theme" })).toBeVisible();
 });
+
+test("inventory deep link keeps the dashboard workspace available", async ({ page }) => {
+  await page.goto("/inventory");
+
+  await expect(page).toHaveTitle(/Zebra — Inventory & Sales/);
+  await expect(page.locator("main").getByText("Inventory", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "New sale" })).toBeVisible();
+});

@@ -133,6 +133,8 @@ function MetricCard({
   );
 }
 
+const dashboardPaths: Record<string, string> = { overview: "/", inventory: "/inventory", sales: "/sales", team: "/team", goal: "/team", settings: "/settings" };
+
 export default function Home() {
   // Runtime environment values can differ between the Next server and the
   // browser during local debugging. Start in a deterministic demo shell, then
@@ -166,6 +168,13 @@ export default function Home() {
 
   useEffect(() => {
     setIsLiveMode(configuredLiveMode);
+  }, []);
+
+  useEffect(() => {
+    const section = Object.entries(dashboardPaths).find(([, path]) => path === window.location.pathname)?.[0] ?? "overview";
+    if (section === "overview") return;
+    const timer = window.setTimeout(() => document.getElementById(section)?.scrollIntoView({ block: "start" }), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   useEffect(() => {
@@ -467,6 +476,7 @@ export default function Home() {
   };
 
   const jumpTo = (id: string) => {
+    window.history.pushState({}, "", dashboardPaths[id] ?? "/");
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
     setMobileNav(false);
   };
