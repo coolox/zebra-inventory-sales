@@ -34,7 +34,8 @@
 
 ## Следующая задача
 
-- TASK-060 — провести accessibility pass; TASK-059—TASK-052 завершены.
+- Пауза на проверку TASK-059 на телефоне владельцем: установить Zebra Retail из браузера и проверить standalone launch, icon и basic dashboard navigation. До явного подтверждения не начинать TASK-060 или другие непохожие на PWA задачи.
+- После подтверждения следующая задача: TASK-060 — провести accessibility pass.
 - TASK-040 — завершить staging Magic Link configuration.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
