@@ -34,7 +34,7 @@
 
 ## Следующая задача
 
-- TASK-050 — вынести Activity Feed feature; затем TASK-051—TASK-052 dashboard decomposition/routing.
+- TASK-052 — добавить routing разделов dashboard; TASK-051 уже завершена, затем TASK-053—TASK-054 persistence integration.
 - TASK-040 — завершить staging Magic Link configuration.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
@@ -137,6 +137,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-047](tasks/TASK-047.md) — navigation, header и workspace shell вынесены в layout components с явными props/callbacks.
 - [TASK-048](tasks/TASK-048.md) — KPI, chart, Seller ranking и goal composition вынесены в read-only Overview feature.
 - [TASK-049](tasks/TASK-049.md) — search, pagination и selection inventory вынесены в InventoryList.
+- [TASK-050](tasks/TASK-050.md) — compact/full Activity Feed и currency formatting вынесены в feature.
 
 ## Список оставшихся задач
 
@@ -146,7 +147,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-041](tasks/TASK-041.md) — Добавить store-scoped audit log query
 - [TASK-042](tasks/TASK-042.md) — Добавить Owner Audit Log UI
 - [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
-- [TASK-050](tasks/TASK-050.md) — Вынести Activity Feed feature
 - [TASK-052](tasks/TASK-052.md) — Добавить routing разделов dashboard
 - [TASK-054](tasks/TASK-054.md) — Подключить demo workspace к persistence adapter
 - [TASK-055](tasks/TASK-055.md) — Описать auth/workspace API contracts

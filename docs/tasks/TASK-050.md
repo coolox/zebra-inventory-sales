@@ -1,6 +1,6 @@
 # TASK-050 — Вынести Activity Feed feature
 
-Статус: pending
+Статус: COMPLETED
 
 ## Цель
 
@@ -28,3 +28,7 @@ TASK-008, TASK-047.
 - Component compact/full/empty tests.
 - Build.
 
+## Результат
+
+- Compact dashboard and full modal history reuse `ActivityFeed`; original currency and EUR conversion marker stay in one formatter.
+- English/Turkish empty states and compact/full behavior are covered by component tests.

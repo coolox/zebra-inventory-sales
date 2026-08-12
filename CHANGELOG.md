@@ -232,3 +232,4 @@
 - Extracted dashboard navigation, header and shell composition into reusable layout components.
 - Extracted KPI, chart, Seller ranking and goal composition into the read-only Overview feature.
 - Extracted inventory search, pagination and Product Card selection into InventoryList.
+- Extracted compact/full Activity Feed with unified original-currency formatting.

@@ -71,6 +71,7 @@ import type { SellerMembershipStatus } from "@/features/sellers/model/types";
 import { selectChartData, selectMetrics, selectSellerRanking } from "@/features/overview/model/metrics";
 import { filterInventoryProducts, paginateInventoryProducts } from "@/features/inventory/model/filter-products";
 import { InventoryList } from "@/features/inventory/ui/inventory-list";
+import { ActivityFeed } from "@/features/activity/ui/activity-feed";
 import { isLiveMode as configuredLiveMode } from "@/features/workspace/model/app-mode";
 import { createInitialWorkspaceData } from "@/features/workspace/model/workspace-data";
 import { loadLiveWorkspace } from "@/features/workspace/data/load-live-workspace";
@@ -598,25 +599,7 @@ export default function Home() {
               {visibleProducts.length > inventoryPageSize && <div className="flex items-center justify-between border-t border-zinc-800/80 px-5 py-3 sm:px-6"><p className="text-[10px] text-zinc-600">{(safeInventoryPage - 1) * inventoryPageSize + 1}–{Math.min(safeInventoryPage * inventoryPageSize, visibleProducts.length)} of {visibleProducts.length} SKU</p><div className="flex items-center gap-2"><button type="button" onClick={() => setInventoryPage((page) => Math.max(1, page - 1))} disabled={safeInventoryPage === 1} className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 disabled:opacity-35"><ChevronLeft size={15} /></button><span className="min-w-12 text-center text-[10px] font-semibold text-zinc-400">{safeInventoryPage} / {inventoryPageCount}</span><button type="button" onClick={() => setInventoryPage((page) => Math.min(inventoryPageCount, page + 1))} disabled={safeInventoryPage === inventoryPageCount} className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 disabled:opacity-35"><ChevronRight size={15} /></button></div></div>}
             </article>}
 
-            <article className="panel rounded-2xl p-5 sm:p-6">
-              <div className="flex items-start justify-between">
-                <div><p className="text-sm font-semibold">{text.activity}</p><p className="mt-1 text-xs text-zinc-600">{text.recentOperations}</p></div>
-                <Activity size={17} className="text-zinc-700" />
-              </div>
-              <div className="mt-5 space-y-1">
-                {activities.slice(0, 5).map((item, index) => {
-                  const Icon = item.type === "sale" ? CircleDollarSign : item.type === "receipt" ? PackagePlus : Boxes;
-                  return (
-                    <div key={item.id} className="relative flex gap-3 pb-5 last:pb-0">
-                      {index < activities.slice(0, 5).length - 1 && <span className="absolute left-[15px] top-8 h-[calc(100%-28px)] w-px bg-zinc-800" />}
-                      <span className={`relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${item.type === "sale" ? "border-violet-500/20 bg-violet-500/10 text-violet-400" : "border-zinc-800 bg-zinc-900 text-zinc-500"}`}><Icon size={14} /></span>
-                      <div className="min-w-0 flex-1 pt-0.5"><div className="flex justify-between gap-3"><p className="truncate text-[11px] font-medium text-zinc-300">{item.title}</p>{item.amount !== undefined && <span className="shrink-0 text-[11px] font-semibold text-zinc-200">+{item.converted ? "≈" : ""}{money(item.amount, item.currency)}</span>}</div><p className="mt-1 truncate text-[10px] text-zinc-600">{item.meta}</p></div>
-                    </div>
-                  );
-                })}
-              </div>
-              <button type="button" onClick={() => setModal("activity")} className="mt-5 w-full rounded-lg border border-zinc-800 py-2.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500 transition hover:border-zinc-700 hover:text-zinc-300">{text.allActivity}</button>
-            </article>
+            <ActivityFeed items={activities} locale={locale} compact onViewAll={() => setModal("activity")} formatMoney={money} />
           </section>
 
           <footer className="mt-8 flex flex-col gap-2 border-t border-zinc-900 py-5 text-[10px] text-zinc-700 sm:flex-row sm:items-center sm:justify-between">
@@ -650,7 +633,7 @@ export default function Home() {
       )}
       {modal === "activity" && (!isLiveMode || role !== "owner") && (
         <Modal title="All activity" eyebrow="Store history" onClose={() => setModal(null)}>
-          <div className="divide-y divide-zinc-800/70 p-5 sm:p-7">{activities.length ? activities.map((item) => { const Icon = item.type === "sale" ? CircleDollarSign : item.type === "receipt" ? PackagePlus : Boxes; return <div key={item.id} className="flex gap-3 py-4 first:pt-0"><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${item.type === "sale" ? "border-violet-500/20 bg-violet-500/10 text-violet-400" : "border-zinc-800 bg-zinc-900 text-zinc-500"}`}><Icon size={15} /></span><div className="min-w-0 flex-1"><div className="flex justify-between gap-3"><p className="truncate text-xs font-medium text-zinc-200">{item.title}</p>{item.amount !== undefined && <span className="shrink-0 text-xs font-semibold text-zinc-100">+{item.converted ? "≈" : ""}{money(item.amount, item.currency)}</span>}</div><p className="mt-1 text-[11px] text-zinc-600">{item.meta}</p></div></div>; }) : <p className="py-10 text-center text-xs text-zinc-600">No operations yet.</p>}</div>
+          <ActivityFeed items={activities} locale={locale} formatMoney={money} />
         </Modal>
       )}
 
