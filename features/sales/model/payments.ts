@@ -1,4 +1,5 @@
 import type { SaleDraftLine, SaleCurrency, SalePaymentDraft } from "./types";
+export { paymentToleranceEur } from "@/lib/contracts/sales";
 
 export type PaymentRateMap = Record<SaleCurrency, number | null>;
 export type PaymentValidationIssue = "empty" | "amount" | "rate" | "total";
@@ -11,7 +12,7 @@ export const demoPaymentRates: PaymentRateMap = {
   GBP: 1.17,
 };
 
-export const paymentToleranceEur = 0.01;
+import { paymentToleranceEur } from "@/lib/contracts/sales";
 
 export type PaymentSummary = {
   totalEur: number | null;

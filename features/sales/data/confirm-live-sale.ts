@@ -3,6 +3,7 @@ import type { Locale } from "@/lib/i18n";
 import type { Product } from "@/lib/types";
 import { saleClientError, saleErrorMessage } from "../model/sale-errors";
 import type { SaleDraftLine, SalePaymentDraft, SalePricingMode } from "../model/types";
+import { toConfirmSaleCommand } from "@/lib/contracts/sales";
 
 type ConfirmLiveSaleInput = {
   storeId: string;
@@ -17,26 +18,16 @@ export async function confirmLiveSale({ storeId, lines, payments, products, loca
   if (!storeId) throw new Error(saleClientError("membership", locale));
   if (!lines.length) return;
 
-  const saleLines = lines.map((line) => {
-    const product = products.find((item) => item.id === line.productId);
-    if (!product?.variantId) throw new Error(saleClientError("unavailable", locale));
-    return pricingMode === "sale_total" ? {
-      variant_id: product.variantId,
-      quantity: line.quantity,
-    } : {
-      variant_id: product.variantId,
-      quantity: line.quantity,
-      unit_price: line.price,
-      currency: line.currency,
-    };
-  });
+  let command;
+  try { command = toConfirmSaleCommand({ storeId, lines, payments, products, pricingMode, idempotencyKey: crypto.randomUUID() }); }
+  catch { throw new Error(saleClientError("unavailable", locale)); }
 
   const { error } = await createClient().rpc("confirm_sale_with_payments", {
-    p_store_id: storeId,
-    p_lines: saleLines,
-    p_payments: payments.map(({ method, amount, currency }) => ({ method, amount, currency })),
-    p_idempotency_key: crypto.randomUUID(),
-    p_pricing_mode: pricingMode,
+    p_store_id: command.storeId,
+    p_lines: command.lines.map((line) => line.unitPrice === undefined ? { variant_id: line.variantId, quantity: line.quantity } : { variant_id: line.variantId, quantity: line.quantity, unit_price: line.unitPrice, currency: line.currency }),
+    p_payments: command.payments,
+    p_idempotency_key: command.idempotencyKey,
+    p_pricing_mode: command.pricingMode,
   });
 
   if (!error) return;

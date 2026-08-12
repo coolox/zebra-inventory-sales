@@ -1,6 +1,6 @@
 # TASK-057 — Описать sales/payments API contracts
 
-Статус: pending
+Статус: completed
 
 ## Цель
 
@@ -27,3 +27,9 @@ TASK-005, TASK-006.
 - Mapper unit tests.
 - Typecheck.
 
+## Результат
+
+- Sale contract поддерживает repeated variant lines с разными price/currency, native payment lines и явный idempotency key.
+- Зафиксированы decimal major money units и EUR reconciliation tolerance €0.01.
+- Добавлен совместимый lifecycle DTO для будущих cancellation/exchange без изменения sale read model.
+- Проверены TypeScript и valid/invalid mapper fixtures.

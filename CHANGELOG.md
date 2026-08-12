@@ -237,3 +237,4 @@
 - Persisted demo workspace mutations across reloads and added a reset-to-baseline control.
 - Added transport-independent session and workspace contracts at the API boundary.
 - Added catalog, receipt and inventory contracts with explicit receipt idempotency mapping.
+- Added sales and payment contracts for repeated priced variants and native-currency payments.
