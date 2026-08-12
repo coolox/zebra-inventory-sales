@@ -231,3 +231,4 @@
 - Consolidated dashboard design tokens and responsive rules; Playwright now validates production-like desktop, tablet, mobile and light-theme smoke flows.
 - Extracted dashboard navigation, header and shell composition into reusable layout components.
 - Extracted KPI, chart, Seller ranking and goal composition into the read-only Overview feature.
+- Extracted inventory search, pagination and Product Card selection into InventoryList.

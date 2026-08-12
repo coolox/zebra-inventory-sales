@@ -1,0 +1,15 @@
+"use client";
+
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import type { Product, StoreId } from "@/lib/types";
+import { filterInventoryProducts, paginateInventoryProducts } from "../model/filter-products";
+
+type Props = { products: Product[]; store: StoreId; onSelect: (code: string) => void; labels: { title: string; search: string; empty: string; units: string }; pageSize?: number };
+export function InventoryList({ products, store, onSelect, labels, pageSize = 10 }: Props) {
+  const [search, setSearch] = useState(""); const [requestedPage, setRequestedPage] = useState(1);
+  const filtered = useMemo(() => filterInventoryProducts(products, store, search), [products, store, search]);
+  const { items, page, pageCount } = paginateInventoryProducts(filtered, requestedPage, pageSize);
+  useEffect(() => setRequestedPage(1), [search, store]);
+  return <article id="inventory" className="panel min-w-0 scroll-mt-24 overflow-hidden rounded-2xl"><div className="flex flex-col gap-4 border-b border-zinc-800/80 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6"><div><p className="text-sm font-semibold">{labels.title}</p><p className="mt-1 text-xs text-zinc-600">{filtered.reduce((sum, product) => sum + product.stock, 0)} {labels.units} · {filtered.length} SKU</p></div><div className="relative w-full sm:w-72"><Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={labels.search} className="h-9 w-full rounded-lg border border-zinc-800 bg-zinc-900 pl-9 pr-3 text-xs text-zinc-200 outline-none" /></div></div><div className="divide-y divide-zinc-800/70">{items.map((product) => <button key={product.id} type="button" onClick={() => onSelect(product.code)} className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left hover:bg-zinc-900/55 sm:px-6"><span className="min-w-0"><span className="block truncate text-xs font-medium text-zinc-200">{product.name}</span><span className="mt-1 block text-[10px] text-zinc-600">{product.brand} · {product.code} · {product.size} / {product.color}</span></span><span className="shrink-0 rounded-md border border-zinc-800 px-2 py-1 text-[10px] text-zinc-300">{product.stock} pcs</span></button>)}{!items.length && <p className="px-6 py-14 text-center text-xs text-zinc-600">{labels.empty}</p>}</div>{filtered.length > pageSize && <div className="flex items-center justify-between border-t border-zinc-800/80 px-5 py-3"><span className="text-[10px] text-zinc-600">{page} / {pageCount}</span><div className="flex gap-2"><button type="button" disabled={page === 1} onClick={() => setRequestedPage(page - 1)}><ChevronLeft size={15} /></button><button type="button" disabled={page === pageCount} onClick={() => setRequestedPage(page + 1)}><ChevronRight size={15} /></button></div></div>}</article>;
+}

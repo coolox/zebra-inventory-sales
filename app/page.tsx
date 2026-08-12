@@ -70,6 +70,7 @@ import { loadAuditLog } from "@/features/audit/data/load-audit-log";
 import type { SellerMembershipStatus } from "@/features/sellers/model/types";
 import { selectChartData, selectMetrics, selectSellerRanking } from "@/features/overview/model/metrics";
 import { filterInventoryProducts, paginateInventoryProducts } from "@/features/inventory/model/filter-products";
+import { InventoryList } from "@/features/inventory/ui/inventory-list";
 import { isLiveMode as configuredLiveMode } from "@/features/workspace/model/app-mode";
 import { createInitialWorkspaceData } from "@/features/workspace/model/workspace-data";
 import { loadLiveWorkspace } from "@/features/workspace/data/load-live-workspace";
@@ -547,7 +548,8 @@ export default function Home() {
           </section>
 
           <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,.75fr)]">
-            <article id="inventory" className="panel min-w-0 scroll-mt-24 overflow-hidden rounded-2xl">
+            <InventoryList products={products} store={roleStore} onSelect={setSelectedProductCode} labels={{ title: text.stock, search: text.search, empty: text.noResults, units: text.units }} />
+            {false && <article id="inventory" className="panel min-w-0 scroll-mt-24 overflow-hidden rounded-2xl">
               <div className="flex flex-col gap-4 border-b border-zinc-800/80 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
                 <div>
                   <p className="text-sm font-semibold">{text.stock}</p>
@@ -594,7 +596,7 @@ export default function Home() {
                 {!visibleProducts.length && <div className="px-6 py-14 text-center text-xs text-zinc-600">{text.noResults}</div>}
               </div>
               {visibleProducts.length > inventoryPageSize && <div className="flex items-center justify-between border-t border-zinc-800/80 px-5 py-3 sm:px-6"><p className="text-[10px] text-zinc-600">{(safeInventoryPage - 1) * inventoryPageSize + 1}–{Math.min(safeInventoryPage * inventoryPageSize, visibleProducts.length)} of {visibleProducts.length} SKU</p><div className="flex items-center gap-2"><button type="button" onClick={() => setInventoryPage((page) => Math.max(1, page - 1))} disabled={safeInventoryPage === 1} className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 disabled:opacity-35"><ChevronLeft size={15} /></button><span className="min-w-12 text-center text-[10px] font-semibold text-zinc-400">{safeInventoryPage} / {inventoryPageCount}</span><button type="button" onClick={() => setInventoryPage((page) => Math.min(inventoryPageCount, page + 1))} disabled={safeInventoryPage === inventoryPageCount} className="flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 disabled:opacity-35"><ChevronRight size={15} /></button></div></div>}
-            </article>
+            </article>}
 
             <article className="panel rounded-2xl p-5 sm:p-6">
               <div className="flex items-start justify-between">

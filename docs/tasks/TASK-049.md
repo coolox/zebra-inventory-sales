@@ -1,6 +1,6 @@
 # TASK-049 — Вынести Inventory list feature
 
-Статус: pending
+Статус: COMPLETED
 
 ## Цель
 
@@ -28,3 +28,7 @@ TASK-023, TASK-047.
 - Component empty/search/page tests.
 - Responsive smoke-test.
 
+## Результат
+
+- `InventoryList` owns search/page reset and uses one normalized `Product` contract for responsive list rendering.
+- Product selection reaches Product Card through explicit callback; filter/pagination and component interaction are covered.
