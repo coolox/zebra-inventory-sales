@@ -74,6 +74,7 @@ import { InventoryList } from "@/features/inventory/ui/inventory-list";
 import { ActivityFeed } from "@/features/activity/ui/activity-feed";
 import { isLiveMode as configuredLiveMode } from "@/features/workspace/model/app-mode";
 import { createInitialWorkspaceData } from "@/features/workspace/model/workspace-data";
+import { readDemoWorkspace, resetDemoWorkspace, writeDemoWorkspace } from "@/features/workspace/data/demo-persistence";
 import { loadLiveWorkspace } from "@/features/workspace/data/load-live-workspace";
 import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 import { uploadProductImages } from "@/lib/product-images";
@@ -140,6 +141,7 @@ export default function Home() {
   // browser during local debugging. Start in a deterministic demo shell, then
   // enable live mode after hydration so React never compares different trees.
   const [isLiveMode, setIsLiveMode] = useState(false);
+  const [workspaceHydrated, setWorkspaceHydrated] = useState(false);
   const [role, setRole] = useState<Role>("owner");
   const [selectedStore, setSelectedStore] = useState<StoreFilter>("clothing");
   const [period, setPeriod] = useState<Period>("day");
@@ -168,7 +170,20 @@ export default function Home() {
 
   useEffect(() => {
     setIsLiveMode(configuredLiveMode);
+    if (!configuredLiveMode) {
+      const workspace = readDemoWorkspace();
+      setProducts(workspace.products);
+      setSales(workspace.sales);
+      setSellers(workspace.sellers);
+      setActivities(workspace.activities);
+    }
+    setWorkspaceHydrated(true);
   }, []);
+
+  useEffect(() => {
+    if (!workspaceHydrated || isLiveMode) return;
+    writeDemoWorkspace({ products, sales, sellers, activities });
+  }, [activities, isLiveMode, products, sales, sellers, workspaceHydrated]);
 
   useEffect(() => {
     const section = Object.entries(dashboardPaths).find(([, path]) => path === window.location.pathname)?.[0] ?? "overview";
@@ -464,6 +479,16 @@ export default function Home() {
     notify(locale === "tr" ? "Düşük stok eşiği kaydedildi" : "Low-stock threshold saved");
   };
 
+  const resetDemoData = () => {
+    const workspace = resetDemoWorkspace();
+    setProducts(workspace.products);
+    setSales(workspace.sales);
+    setSellers(workspace.sellers);
+    setActivities(workspace.activities);
+    setModal(null);
+    notify(locale === "tr" ? "Demo verileri sıfırlandı" : "Demo data reset");
+  };
+
   const openSale = async (code = "") => {
     setSaleCodePrefill(code);
     await refreshPaymentRates();
@@ -501,7 +526,7 @@ export default function Home() {
             </div>
           </div>} />;
 
-  if (isLiveMode && accessLoading) {
+  if (!workspaceHydrated || (isLiveMode && accessLoading)) {
     return <main className="flex min-h-screen items-center justify-center bg-[#09090b] text-sm text-zinc-500">Checking secure workspace access…</main>;
   }
 
@@ -614,7 +639,7 @@ export default function Home() {
 
           <footer className="mt-8 flex flex-col gap-2 border-t border-zinc-900 py-5 text-[10px] text-zinc-700 sm:flex-row sm:items-center sm:justify-between">
             <p>{isLiveMode ? text.liveWorkspace : text.localDemo}</p>
-            <p>{isLiveMode ? text.liveNotice : text.mockNotice}</p>
+            <div className="flex items-center gap-3"><p>{isLiveMode ? text.liveNotice : text.mockNotice}</p>{!isLiveMode && <button type="button" onClick={resetDemoData} className="font-semibold text-zinc-500 underline-offset-2 transition hover:text-violet-300 hover:underline">{locale === "tr" ? "Demo verisini sıfırla" : "Reset demo data"}</button>}</div>
           </footer>
         </main>
 

@@ -1,6 +1,6 @@
 # TASK-054 — Подключить demo workspace к persistence adapter
 
-Статус: pending
+Статус: completed
 
 ## Цель
 
@@ -27,3 +27,9 @@ TASK-016, TASK-051, TASK-053.
 - Playwright create/reload/reset scenario.
 - Build.
 
+## Результат
+
+- После hydration demo workspace читает versioned localStorage snapshot и сохраняет products, sales, sellers и activity после каждой demo mutation.
+- Live mode не читает и не записывает demo storage.
+- Добавлена явная кнопка Reset demo data, возвращающая workspace к mock baseline.
+- Проверены persistence unit tests, production build и Playwright reload/reset smoke на desktop, tablet и mobile.

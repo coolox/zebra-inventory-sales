@@ -47,3 +47,19 @@ test("inventory deep link keeps the dashboard workspace available", async ({ pag
   await expect(page.locator("main").getByText("Inventory", { exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "New sale" })).toBeVisible();
 });
+
+test("demo workspace restores saved inventory and resets to its baseline", async ({ page }) => {
+  await page.goto("/");
+  await page.evaluate(() => {
+    const stored = window.localStorage.getItem("zebra-demo-workspace");
+    if (!stored) throw new Error("Demo workspace was not persisted");
+    const workspace = JSON.parse(stored) as { data: { products: { stock: number }[] } };
+    workspace.data.products[0].stock = 37;
+    window.localStorage.setItem("zebra-demo-workspace", JSON.stringify(workspace));
+  });
+
+  await page.reload();
+  await expect(page.getByText("37 pcs", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Reset demo data" }).click();
+  await expect(page.getByText("37 pcs", { exact: true })).not.toBeVisible();
+});

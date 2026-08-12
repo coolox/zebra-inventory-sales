@@ -9,9 +9,11 @@ function storage(): Storage {
 
 describe("demo persistence", () => {
   it("round-trips a versioned workspace and resets it", () => {
-    const target = storage(); const data = createInitialWorkspaceData(); data.products[0].stock = 99;
+    const target = storage(); const data = createInitialWorkspaceData(); data.products[0].stock = 99; data.sellers[0].name = "Persisted seller"; data.activities[0].message = "Persisted receipt";
     writeDemoWorkspace(data, target);
     expect(readDemoWorkspace(target).products[0].stock).toBe(99);
+    expect(readDemoWorkspace(target).sellers[0].name).toBe("Persisted seller");
+    expect(readDemoWorkspace(target).activities[0].message).toBe("Persisted receipt");
     expect(resetDemoWorkspace(target).products[0].stock).not.toBe(99);
     expect(target.getItem(demoWorkspaceStorageKey)).toBeNull();
   });
