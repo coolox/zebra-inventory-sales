@@ -34,7 +34,7 @@
 
 ## Следующая задача
 
-- TASK-132 — восстановить visual parity Overview. Затем последовательно TASK-133—TASK-136: Turkish gaps, demo HTTPS preview, owner mobile install test и закрытие PWA gate. TASK-131 завершена.
+- TASK-133 — закрыть оставшиеся Turkish UI gaps. Затем последовательно TASK-134—TASK-136: demo HTTPS preview, owner mobile install test и закрытие PWA gate. TASK-132 и TASK-131 завершены.
 - До завершения TASK-136 не начинать TASK-060 или другие задачи основной разработки.
 - После закрытия PWA gate следующая задача: TASK-060 — провести accessibility pass.
 - TASK-040 — завершить staging Magic Link configuration.
@@ -148,6 +148,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-058](tasks/TASK-058.md) — завершён Turkish pass для overview/low-stock states и locale-aware KPI formatting.
 - [TASK-059](tasks/TASK-059.md) — добавлены standalone manifest, maskable branding icons и install-safe metadata без offline promise.
 - [TASK-131](tasks/TASK-131.md) — добавлены explicit Android/iOS PNG install assets, manifest/metadata checks и reproducible icon generator.
+- [TASK-132](tasks/TASK-132.md) — восстановлена visual parity Overview после i18n refactor с сохранением locale-aware formatting.
 
 ## Список оставшихся задач
 
@@ -157,7 +158,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-041](tasks/TASK-041.md) — Добавить store-scoped audit log query
 - [TASK-042](tasks/TASK-042.md) — Добавить Owner Audit Log UI
 - [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
-- [TASK-132](tasks/TASK-132.md) — Восстановить visual parity Overview
 - [TASK-133](tasks/TASK-133.md) — Закрыть оставшиеся Turkish UI gaps
 - [TASK-134](tasks/TASK-134.md) — Развернуть demo HTTPS preview для PWA
 - [TASK-135](tasks/TASK-135.md) — Проверить установку PWA на телефоне

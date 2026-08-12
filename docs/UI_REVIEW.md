@@ -276,3 +276,11 @@ P0 — блокирует понятность или работу; P1 — ва�
 - Причина: payment rates загружались только при входе в workspace и не обновлялись перед следующим открытием New Sale.
 - Ожидаемый результат: сохранённые на текущую business date Istanbul курсы доступны сразу в новой форме продажи без перезагрузки страницы.
 - Статус: исправлено в TASK-116; ожидает повторной проверки владельцем.
+
+### F-020 — Visual parity Overview после locale refactor
+
+- Область: Overview KPI, revenue chart и Seller ranking.
+- Причина: i18n refactor упростил часть presentation markup, хотя форматирование Turkish currency/number было добавлено корректно.
+- Исправление: восстановлены icon containers, responsive KPI typography, chart grid/tooltip/gradient bars и ranking с position/avatar/count; locale-aware formatting сохранён.
+- Проверка: source comparison с версией до `946e73b`, component regression checks и production build.
+- Статус: исправлено в TASK-132; ожидает внешнего desktop/mobile preview в TASK-134—TASK-135.

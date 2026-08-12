@@ -1,6 +1,6 @@
 # TASK-132 — Восстановить visual parity Overview
 
-Статус: pending
+Статус: completed
 
 ## Цель
 
@@ -29,3 +29,9 @@ TASK-058.
 - Desktop/mobile visual comparison с состоянием до `946e73b`.
 - Production build.
 
+## Результат
+
+- Восстановлены KPI icon containers, spacing, responsive typography и accent treatment.
+- Восстановлены chart grid, tooltip, gradient bars, empty-value opacity и Seller ranking с position/avatar/count.
+- English/Turkish number and EUR currency formatting сохранено и покрыто component regression test.
+- Source comparison с состоянием до `946e73b`, targeted component suite и production build пройдены; внешний visual smoke остаётся частью TASK-134—TASK-135.
