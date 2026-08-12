@@ -1,6 +1,6 @@
 # TASK-135 — Проверить установку PWA на телефоне
 
-Статус: pending
+Статус: completed
 
 ## Цель
 
@@ -30,3 +30,7 @@ TASK-134.
 - iOS Safari Add to Home Screen или Android Chrome Install App.
 - Standalone relaunch and persistence smoke.
 
+## Результат
+
+- Владелец проверил Android Chrome и iPhone Safari: installation и standalone launch проходят, адресная строка отсутствует, блокирующих функциональных ошибок не найдено.
+- Единственный finding — визуально неподходящие platform icons; он исправляется в TASK-136. Детали зафиксированы в `docs/PWA_MOBILE_CHECKLIST.md`.

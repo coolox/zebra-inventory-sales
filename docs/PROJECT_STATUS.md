@@ -34,7 +34,7 @@
 
 ## Следующая задача
 
-- TASK-135 — провести Owner physical-device install test на изолированном demo HTTPS preview. Затем TASK-136: исправить findings и закрыть PWA gate. TASK-134—TASK-131 завершены.
+- TASK-136 — чёрно-белые zebra PWA icons готовы локально; после Vercel update нужен repeat Owner physical-device smoke. Только после него снять PWA pause и перейти к TASK-060. TASK-135—TASK-131 завершены.
 - До завершения TASK-136 не начинать TASK-060 или другие задачи основной разработки.
 - После закрытия PWA gate следующая задача: TASK-060 — провести accessibility pass.
 - TASK-040 — завершить staging Magic Link configuration.
@@ -151,6 +151,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-132](tasks/TASK-132.md) — восстановлена visual parity Overview после i18n refactor с сохранением locale-aware formatting.
 - [TASK-133](tasks/TASK-133.md) — локализованы preview-critical Audit Log, Seller Goal, modal/access states и navigation labels; добавлены Turkish component/browser smoke checks.
 - [TASK-134](tasks/TASK-134.md) — создан изолированный Vercel demo HTTPS preview, без Supabase/VPS/production, с remote manifest и desktop/mobile smoke checks.
+- [TASK-135](tasks/TASK-135.md) — Owner подтвердил Android/iOS installation и standalone launch; единственный finding — замена визуальных PWA icons в TASK-136.
 
 ## Список оставшихся задач
 
@@ -161,7 +162,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-042](tasks/TASK-042.md) — Добавить Owner Audit Log UI
 - [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
 - [TASK-134](tasks/TASK-134.md) — Развернуть demo HTTPS preview для PWA
-- [TASK-135](tasks/TASK-135.md) — Проверить установку PWA на телефоне
 - [TASK-136](tasks/TASK-136.md) — Исправить PWA preview findings и закрыть gate
 - [TASK-060](tasks/TASK-060.md) — Провести accessibility pass
 - [TASK-061](tasks/TASK-061.md) — Провести desktop/tablet/mobile browser QA
@@ -228,6 +228,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - SSR/первый client render `Home` теперь используют детерминированный demo shell, а live mode включается после hydration; browser console smoke и изоляция dev build outputs всё ещё остаются в TASK-123.
 - Turkish покрытие preview-critical Audit Log, Seller Goal и modal/access states завершено; owner-only Supplier/FX и часть inventory controls требуют отдельного полного i18n pass.
 - Explicit Android/iOS PNG install assets и local manifest validation завершены в TASK-131; remote HTTPS validation и physical-device install остаются в TASK-134—TASK-136.
+- Новые black-and-white zebra icons собраны и ожидают Vercel deployment + repeat Android/iOS smoke; до него PWA gate не закрыт.
 - Нет e2e/RLS/concurrency tests и CI.
 - `app/page.tsx` остаётся перегруженным; routing и demo persistence не завершены.
 - Cancellation, exchange, reports, audit UI и initial inventory не готовы; следующим шагом Seller deactivate/reactivate.

@@ -1,1 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#7c3aed"/><path fill="#fff" d="M128 144h256v48L218 320h166v48H128v-48l166-128H128z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#09090b"/>
+  <clipPath id="zebra-z"><path d="M126 118h260v67L236 327h156v67H120v-66l151-143H126z"/></clipPath>
+  <g clip-path="url(#zebra-z)">
+    <rect x="100" y="100" width="312" height="312" fill="#fff"/>
+    <path d="M82 142 190 96l-22 78-108 46zm0 110 284-120-22 78L82 320zm0 110 284-120-22 78L82 430zm140 78 190-80v78l-88 37z" fill="#09090b"/>
+    <path d="m310 96 102 43v78l-124-53zm-42 110 144 61v78l-166-70zm-42 110 186 79v17H278z" fill="#09090b"/>
+  </g>
+  <path d="M126 118h260v67L236 327h156v67H120v-66l151-143H126z" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round"/>
+</svg>

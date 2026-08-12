@@ -246,3 +246,4 @@
 - Restored Overview KPI, chart and seller-ranking presentation after locale formatting changes.
 - Localized the PWA preview-critical Audit Log, Seller Goal, modal close/access-loading and navigation labels; added Turkish component and browser smoke coverage.
 - Published an isolated Vercel HTTPS demo preview for physical PWA installation testing; it is pinned to demo mode with no Supabase or VPS connection.
+- Replaced the PWA Android/iOS icon set with the approved black-and-white zebra-striped `Z`; regenerated PNG and maskable assets.
