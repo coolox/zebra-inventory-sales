@@ -39,6 +39,8 @@ UI получает нормализованные models и не должен �
 
 `lib/contracts/workspace.ts` определяет `WorkspaceSnapshotDto` для products, sales, sellers и activity. Live и demo adapters возвращают этот snapshot, копируя mutable arrays на transport boundary. Contracts не импортируют Supabase types; persistence, web API и будущий Telegram adapter должны зависеть от них, а не от raw database rows.
 
+Catalog, receipt и inventory contracts следуют тому же правилу: `CatalogVariantDto` содержит stable model/variant identity, optional barcode и native currency; `ConfirmReceiptCommand` явно содержит store, model, size/color lines, currency и idempotency key; `InventoryMovementDto` хранит variant, actor, source, reason и receipt reference. RPC payload собирается только в data adapter из command DTO.
+
 ## UI tokens and adaptive rules
 
 `app/globals.css` is the compact source of visual tokens: `--bg`, `--panel`, `--panel-2`, `--line`, `--text`, `--muted`, semantic purple/green/red/amber accents, control/panel radius, panel spacing and `--focus-ring`. Dark values are default; `html[data-theme="light"]` overrides only theme values. New components must consume these tokens rather than introduce critical hard-coded theme colours.

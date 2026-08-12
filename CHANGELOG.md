@@ -236,3 +236,4 @@
 - Added stable dashboard section URLs with deep-link and mobile-navigation coverage.
 - Persisted demo workspace mutations across reloads and added a reset-to-baseline control.
 - Added transport-independent session and workspace contracts at the API boundary.
+- Added catalog, receipt and inventory contracts with explicit receipt idempotency mapping.

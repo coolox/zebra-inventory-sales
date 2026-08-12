@@ -2,6 +2,7 @@ import type { Locale } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/client";
 import { receiptClientError, receiptErrorMessage } from "../model/receipt-errors";
 import type { ReceiptDraft } from "../model/types";
+import { toConfirmReceiptCommand } from "@/lib/contracts/receipts";
 
 type ConfirmLiveReceiptInput = {
   storeId: string;
@@ -13,20 +14,15 @@ export async function confirmLiveReceipt({ storeId, lines, locale }: ConfirmLive
   if (!storeId) throw new Error(receiptClientError("membership", locale));
   if (!lines.length) return;
 
-  const first = lines[0];
+  const command = toConfirmReceiptCommand(storeId, lines, crypto.randomUUID());
+  if (!command) return;
   const { error } = await createClient().rpc("confirm_inventory_receipt", {
-    p_store_id: storeId,
+    p_store_id: command.storeId,
     p_model: {
-      model_code: first.code,
-      name: first.name,
-      brand: first.brand,
-      category: first.category,
-      gender: first.gender,
-      supplier_name: first.supplier,
-      barcode: first.barcode ?? null,
+      model_code: command.model.code, name: command.model.name, brand: command.model.brand, category: command.model.category, gender: command.model.gender, supplier_name: command.model.supplier, barcode: command.model.barcode ?? null,
     },
-    p_lines: lines.map((line) => ({ color: line.color, size: line.size, quantity: line.stock, unit_cost: line.cost, currency: line.currency })),
-    p_idempotency_key: crypto.randomUUID(),
+    p_lines: command.lines.map((line) => ({ color: line.color, size: line.size, quantity: line.quantity, unit_cost: line.unitCost, currency: line.currency })),
+    p_idempotency_key: command.idempotencyKey,
   });
 
   if (!error) return;

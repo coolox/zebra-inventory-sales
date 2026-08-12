@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import type { Product } from "@/lib/types";
+import { toCatalogVariants } from "@/lib/contracts/catalog";
 
 type ModelRow = {
   id: string;
@@ -89,7 +90,7 @@ export async function loadLiveCatalog(storeId: string): Promise<Product[]> {
     });
   }
 
-  return variants.flatMap((variant) => {
+  return toCatalogVariants(variants.flatMap((variant) => {
     const model = modelsById.get(variant.product_model_id);
     if (!model) return [];
     const latestCost = latestCostByVariant.get(variant.id);
@@ -116,5 +117,5 @@ export async function loadLiveCatalog(storeId: string): Promise<Product[]> {
       store: "clothing",
       updated: "Live data",
     }];
-  });
+  }));
 }

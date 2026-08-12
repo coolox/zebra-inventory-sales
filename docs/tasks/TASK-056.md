@@ -1,6 +1,6 @@
 # TASK-056 — Описать catalog/receipt API contracts
 
-Статус: pending
+Статус: completed
 
 ## Цель
 
@@ -28,3 +28,9 @@ TASK-018, TASK-023, TASK-029.
 - Typecheck.
 - No direct Supabase row types in UI source scan.
 
+## Результат
+
+- Добавлены transport-independent catalog, receipt и inventory contracts.
+- Receipt command явно задаёт store, model, color/size quantities, native currency и idempotency key до RPC mapping.
+- Catalog и movement read adapters возвращают detached DTO, а UI продолжает работать только с normalized models.
+- Проверены type fixtures, TypeScript, полный unit/component suite и production build.

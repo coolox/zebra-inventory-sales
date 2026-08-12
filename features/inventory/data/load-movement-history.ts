@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import type { InventoryMovementHistoryItem, InventoryMovementSource } from "@/features/inventory/model/types";
+import { toInventoryMovements } from "@/lib/contracts/inventory";
 
 type MovementRow = {
   id: string;
@@ -27,7 +28,7 @@ export function movementSource(movementType: string): InventoryMovementSource {
 
 export function mapMovementHistory(rows: MovementRow[], profiles: ProfileRow[]): InventoryMovementHistoryItem[] {
   const namesById = new Map(profiles.map((profile) => [profile.id, profile.full_name?.trim() || "Zebra team member"]));
-  return rows.map((row) => ({
+  return toInventoryMovements(rows.map((row) => ({
     id: row.id,
     variantId: row.variant_id,
     quantity: Number(row.quantity),
@@ -36,7 +37,7 @@ export function mapMovementHistory(rows: MovementRow[], profiles: ProfileRow[]):
     source: movementSource(row.movement_type),
     reason: row.reason,
     receiptLineId: row.receipt_line_id,
-  }));
+  })));
 }
 
 export async function loadMovementHistory({ storeId, variantId, limit = 50 }: { storeId: string; variantId: string; limit?: number }): Promise<InventoryMovementHistoryItem[]> {

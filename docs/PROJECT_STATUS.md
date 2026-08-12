@@ -34,7 +34,7 @@
 
 ## Следующая задача
 
-- TASK-056 — описать catalog/receipt API contracts; TASK-055, TASK-054, TASK-053 и TASK-052 завершены.
+- TASK-057 — описать sales/payments API contracts; TASK-056—TASK-052 завершены.
 - TASK-040 — завершить staging Magic Link configuration.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
@@ -141,6 +141,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-052](tasks/TASK-052.md) — добавлены стабильные dashboard URLs, direct-link smoke coverage и mobile navigation transition.
 - [TASK-054](tasks/TASK-054.md) — demo workspace сохраняет inventory, sales, sellers и activity между reload; добавлен явный reset.
 - [TASK-055](tasks/TASK-055.md) — добавлены transport-independent session и workspace DTO, server-side session mapper и fixtures.
+- [TASK-056](tasks/TASK-056.md) — добавлены catalog/receipt/inventory DTO и commands, подключённые к live adapters.
 
 ## Список оставшихся задач
 
@@ -150,7 +151,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-041](tasks/TASK-041.md) — Добавить store-scoped audit log query
 - [TASK-042](tasks/TASK-042.md) — Добавить Owner Audit Log UI
 - [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
-- [TASK-056](tasks/TASK-056.md) — Описать catalog/receipt API contracts
 - [TASK-057](tasks/TASK-057.md) — Описать sales/payments API contracts
 - [TASK-058](tasks/TASK-058.md) — Завершить полный Turkish i18n pass
 - [TASK-059](tasks/TASK-059.md) — Сделать приложение installable PWA
