@@ -34,7 +34,7 @@
 
 ## Следующая задача
 
-- TASK-133 — закрыть оставшиеся Turkish UI gaps. Затем последовательно TASK-134—TASK-136: demo HTTPS preview, owner mobile install test и закрытие PWA gate. TASK-132 и TASK-131 завершены.
+- TASK-134 — развернуть изолированный demo HTTPS preview для PWA. Затем TASK-135—TASK-136: owner mobile install test и закрытие PWA gate. TASK-133—TASK-131 завершены.
 - До завершения TASK-136 не начинать TASK-060 или другие задачи основной разработки.
 - После закрытия PWA gate следующая задача: TASK-060 — провести accessibility pass.
 - TASK-040 — завершить staging Magic Link configuration.
@@ -149,6 +149,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-059](tasks/TASK-059.md) — добавлены standalone manifest, maskable branding icons и install-safe metadata без offline promise.
 - [TASK-131](tasks/TASK-131.md) — добавлены explicit Android/iOS PNG install assets, manifest/metadata checks и reproducible icon generator.
 - [TASK-132](tasks/TASK-132.md) — восстановлена visual parity Overview после i18n refactor с сохранением locale-aware formatting.
+- [TASK-133](tasks/TASK-133.md) — локализованы preview-critical Audit Log, Seller Goal, modal/access states и navigation labels; добавлены Turkish component/browser smoke checks.
 
 ## Список оставшихся задач
 
@@ -158,7 +159,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-041](tasks/TASK-041.md) — Добавить store-scoped audit log query
 - [TASK-042](tasks/TASK-042.md) — Добавить Owner Audit Log UI
 - [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
-- [TASK-133](tasks/TASK-133.md) — Закрыть оставшиеся Turkish UI gaps
 - [TASK-134](tasks/TASK-134.md) — Развернуть demo HTTPS preview для PWA
 - [TASK-135](tasks/TASK-135.md) — Проверить установку PWA на телефоне
 - [TASK-136](tasks/TASK-136.md) — Исправить PWA preview findings и закрыть gate
@@ -225,7 +225,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - Новая archive migration не применялась на staging/production. pgTAP-команды были запущены, но текущий local Supabase CLI не вернул итоговый вывод; повторить `npm run supabase:verify` в доступном Docker/local Supabase окружении перед staging apply.
 - Receive Flow содержит загрязнённые staging color suggestions (`Boundary EUR/USD`, case/EN/TR duplicates); безопасный audit, normalization и cleanup вынесены в TASK-118.
 - SSR/первый client render `Home` теперь используют детерминированный demo shell, а live mode включается после hydration; browser console smoke и изоляция dev build outputs всё ещё остаются в TASK-123.
-- Turkish покрытие неполное вне Sale Flow.
+- Turkish покрытие preview-critical Audit Log, Seller Goal и modal/access states завершено; owner-only Supplier/FX и часть inventory controls требуют отдельного полного i18n pass.
 - Explicit Android/iOS PNG install assets и local manifest validation завершены в TASK-131; remote HTTPS validation и physical-device install остаются в TASK-134—TASK-136.
 - Нет e2e/RLS/concurrency tests и CI.
 - `app/page.tsx` остаётся перегруженным; routing и demo persistence не завершены.

@@ -63,3 +63,16 @@ test("demo workspace restores saved inventory and resets to its baseline", async
   await page.getByRole("button", { name: "Reset demo data" }).click();
   await expect(page.getByText("37 pcs", { exact: true })).not.toBeVisible();
 });
+
+test("Turkish dashboard labels remain visible in each supported viewport", async ({ page }, testInfo) => {
+  await page.goto("/");
+
+  if (testInfo.project.name === "desktop") {
+    await page.getByRole("button", { name: "TR" }).click();
+  } else {
+    await page.getByRole("button", { name: "Change language" }).click();
+  }
+
+  await expect(page.getByRole("heading", { name: "İşletme özeti" })).toBeVisible();
+  await expect(page.getByText("Dikkat gerekli", { exact: true })).toBeVisible();
+});

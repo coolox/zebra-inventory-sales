@@ -14,6 +14,8 @@ describe("AppNav", () => {
       <AppNav
         items={[{ id: "overview", label: "Overview", Icon: LayoutDashboard }]}
         workspaceLabel="Workspace"
+        pilotStoreLabel="Pilot store"
+        retailSystemLabel="Retail system"
         storeLabel="Zebra Boutique"
         storeMeta="Active"
         profile={<span>Owner</span>}

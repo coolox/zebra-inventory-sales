@@ -518,7 +518,7 @@ export default function Home() {
   const displayName = isLiveMode ? authenticatedName || "Zebra team member" : role === "owner" ? "Arslan Zengin" : currentSeller.name;
   const displayInitials = displayName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "ZB";
 
-  const nav = <AppNav items={navItems} workspaceLabel={text.workspace} storeLabel="Zebra Boutique" storeMeta={text.clothingActive} onNavigate={jumpTo} onClose={() => setMobileNav(false)} closeLabel={text.close} profile={<div className="flex items-center gap-3">
+  const nav = <AppNav items={navItems} workspaceLabel={text.workspace} pilotStoreLabel={text.pilotStore} retailSystemLabel={text.retailSystem} storeLabel="Zebra Boutique" storeMeta={text.clothingActive} onNavigate={jumpTo} onClose={() => setMobileNav(false)} closeLabel={text.close} profile={<div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-300">{isLiveMode ? displayInitials : role === "owner" ? "AZ" : currentSeller.initials}</div>
             <div className="min-w-0">
               <p className="truncate text-xs font-medium text-zinc-200">{displayName}</p>
@@ -527,7 +527,7 @@ export default function Home() {
           </div>} />;
 
   if (!workspaceHydrated || (isLiveMode && accessLoading)) {
-    return <main className="flex min-h-screen items-center justify-center bg-[#09090b] text-sm text-zinc-500">Checking secure workspace access…</main>;
+    return <main className="flex min-h-screen items-center justify-center bg-[#09090b] text-sm text-zinc-500">{text.checkingAccess}</main>;
   }
 
   return (
@@ -664,10 +664,10 @@ export default function Home() {
       )}
 
       {modal === "activity" && role === "owner" && isLiveMode && (
-        <Modal title="Audit log" eyebrow="Owner-only store history" onClose={() => setModal(null)} wide><AuditLog load={(page, category) => activeStoreId ? loadAuditLog(activeStoreId, { page, categories: category ? [category] : undefined }) : Promise.resolve({ items: [], page, pageSize: 25, hasMore: false })} /></Modal>
+        <Modal title={text.auditLog} eyebrow={text.auditHistory} onClose={() => setModal(null)} wide closeLabel={text.close}><AuditLog locale={locale} load={(page, category) => activeStoreId ? loadAuditLog(activeStoreId, { page, categories: category ? [category] : undefined }) : Promise.resolve({ items: [], page, pageSize: 25, hasMore: false })} /></Modal>
       )}
       {modal === "activity" && (!isLiveMode || role !== "owner") && (
-        <Modal title="All activity" eyebrow="Store history" onClose={() => setModal(null)}>
+        <Modal title={text.allActivity} eyebrow={text.recentOperations} onClose={() => setModal(null)} closeLabel={text.close}>
           <ActivityFeed items={activities} locale={locale} formatMoney={money} />
         </Modal>
       )}

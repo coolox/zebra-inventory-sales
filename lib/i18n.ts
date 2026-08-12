@@ -89,6 +89,8 @@ export const copy = {
     periodDelta: "+12.7% vs previous period",
     itemsDelta: "+3 items",
     ofRevenue: "of revenue",
+    retailSystem: "Retail system", auditLog: "Audit log", auditHistory: "Owner-only store history", auditAll: "All", auditLoading: "Loading audit log…", auditError: "Audit log could not be loaded.", auditEmpty: "No audit events match this filter.", previous: "Previous", next: "Next", auditCategories: { sale: "Sale", receipt: "Receipt", fx: "FX", image: "Image", seller: "Seller", inventory: "Inventory", supplier: "Supplier", catalog: "Catalog", other: "Other" },
+    goalPeriod: { day: "Daily", week: "Weekly", month: "Monthly", year: "Yearly" }, goalRevenueTarget: "revenue target", edit: "Edit", save: "Save", progress: "Progress", of: "of", checkingAccess: "Checking secure workspace access…",
     stockAttention: "Stock attention", allClear: "All clear", noLowStock: "No low-stock products", needsAttention: "Needs attention", left: "left", thresholdReorder: "Threshold {threshold} · reorder suggested", previousProduct: "Previous product", nextProduct: "Next product",
   },
   tr: {
@@ -157,6 +159,8 @@ export const copy = {
     periodDelta: "+%12,7 önceki döneme göre",
     itemsDelta: "+3 ürün",
     ofRevenue: "ciro oranı",
+    retailSystem: "Perakende sistemi", auditLog: "Denetim kaydı", auditHistory: "Sahibe özel mağaza geçmişi", auditAll: "Tümü", auditLoading: "Denetim kaydı yükleniyor…", auditError: "Denetim kaydı yüklenemedi.", auditEmpty: "Bu filtreyle eşleşen denetim kaydı yok.", previous: "Önceki", next: "Sonraki", auditCategories: { sale: "Satış", receipt: "Kabul", fx: "Döviz", image: "Görsel", seller: "Satıcı", inventory: "Envanter", supplier: "Tedarikçi", catalog: "Katalog", other: "Diğer" },
+    goalPeriod: { day: "Günlük", week: "Haftalık", month: "Aylık", year: "Yıllık" }, goalRevenueTarget: "ciro hedefi", edit: "Düzenle", save: "Kaydet", progress: "İlerleme", of: "/", checkingAccess: "Güvenli çalışma alanı erişimi kontrol ediliyor…",
     stockAttention: "Stok takibi", allClear: "Her şey yolunda", noLowStock: "Düşük stoklu ürün yok", needsAttention: "Dikkat gerekli", left: "kaldı", thresholdReorder: "Eşik {threshold} · yeniden sipariş önerilir", previousProduct: "Önceki ürün", nextProduct: "Sonraki ürün",
   },
 } as const;

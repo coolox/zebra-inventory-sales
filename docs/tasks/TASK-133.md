@@ -1,6 +1,6 @@
 # TASK-133 — Закрыть оставшиеся Turkish UI gaps
 
-Статус: pending
+Статус: completed
 
 ## Цель
 
@@ -30,3 +30,8 @@ TASK-058, TASK-132.
 - Turkish component smoke tests.
 - Desktop/mobile Turkish browser smoke.
 
+## Результат
+
+- Локализованы Audit Log, Seller Goal, навигационные подписи, secure-access loading и закрытие диалогов; API category keys остались внутренними значениями.
+- Форматирование audit timestamp и денежных значений goal использует выбранную locale.
+- Добавлены Turkish component smoke tests и browser-сценарий штатного переключения языка. Local Playwright повторно подхватил live-конфигурацию из окружения вместо demo preview, поэтому внешний HTTPS/mobile прогон остаётся задачами TASK-134—TASK-136.

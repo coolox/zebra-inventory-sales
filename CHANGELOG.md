@@ -244,3 +244,4 @@
 - Added TASK-131–TASK-136 as a gated PWA hardening, HTTPS preview and physical-device verification track before accessibility work resumes.
 - Added reproducible Android/iOS PNG install assets with manifest, dimension, MIME and browser coverage.
 - Restored Overview KPI, chart and seller-ranking presentation after locale formatting changes.
+- Localized the PWA preview-critical Audit Log, Seller Goal, modal close/access-loading and navigation labels; added Turkish component and browser smoke coverage.
