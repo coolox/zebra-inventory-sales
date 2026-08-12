@@ -1,6 +1,6 @@
 # TASK-055 — Описать auth/workspace API contracts
 
-Статус: pending
+Статус: completed
 
 ## Цель
 
@@ -28,3 +28,9 @@ TASK-052.
 - Mapper unit tests.
 - Typecheck.
 
+## Результат
+
+- `SessionDto` фиксирует user, locale/theme, membership role/status и store metadata без Supabase types или snake_case в client contract.
+- `/api/session` нормализует join response до DTO до пересечения server/client boundary.
+- `WorkspaceSnapshotDto` стал общим контрактом для demo и live adapters; mapper выдаёт detached snapshot.
+- Проверены TypeScript, mapper fixtures и production build.

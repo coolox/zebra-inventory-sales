@@ -3,6 +3,7 @@ import { loadLiveSales } from "@/features/sales/data/load-live-sales";
 import { createClient } from "@/lib/supabase/client";
 import type { Seller } from "@/lib/types";
 import type { WorkspaceData } from "../model/workspace-data";
+import { toWorkspaceSnapshot } from "@/lib/contracts/workspace";
 type ProfileRow = { id: string; full_name: string; phone: string | null };
 type MembershipRow = { user_id: string; status: "invited" | "active" | "blocked" };
 
@@ -50,10 +51,10 @@ export async function loadLiveWorkspace(storeId: string): Promise<WorkspaceData>
     loadLiveSellers(storeId),
   ]);
 
-  return {
+  return toWorkspaceSnapshot({
     products,
     sales: salesData.sales,
     sellers,
     activities: salesData.activities,
-  };
+  });
 }

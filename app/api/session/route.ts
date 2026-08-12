@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { toSessionDto } from "@/lib/contracts/auth";
 
 export async function GET() {
   const supabase = await createClient();
@@ -20,9 +21,12 @@ export async function GET() {
     return NextResponse.json({ error: "No active store membership" }, { status: 403 });
   }
 
-  return NextResponse.json({
-    user: { id: user.id, email: user.email ?? "", fullName: profile?.full_name || user.email || "Zebra team member" },
-    profile: { locale: profile?.locale || "en", theme: profile?.theme || "dark" },
-    memberships,
-  });
+  return NextResponse.json(toSessionDto({
+    user: { id: user.id, email: user.email, fullName: profile?.full_name },
+    profile,
+    memberships: memberships.map((membership) => ({
+      ...membership,
+      stores: Array.isArray(membership.stores) ? membership.stores[0] ?? null : membership.stores,
+    })),
+  }));
 }

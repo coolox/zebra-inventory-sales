@@ -235,3 +235,4 @@
 - Extracted compact/full Activity Feed with unified original-currency formatting.
 - Added stable dashboard section URLs with deep-link and mobile-navigation coverage.
 - Persisted demo workspace mutations across reloads and added a reset-to-baseline control.
+- Added transport-independent session and workspace contracts at the API boundary.

@@ -268,7 +268,7 @@ export default function Home() {
         }
         const membership = body.memberships[0];
         setRole(membership.role === "owner" ? "owner" : "seller");
-        setActiveStoreId(membership.store_id);
+        setActiveStoreId(membership.storeId);
         setAuthenticatedUserId(body.user?.id || null);
         setAuthenticatedName(body.user?.fullName || "Zebra team member");
         const profileLocale: Locale = body.profile?.locale === "tr" ? "tr" : "en";

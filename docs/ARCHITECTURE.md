@@ -33,6 +33,12 @@ Next.js UI
 
 UI получает нормализованные models и не должен работать с raw Supabase rows. Business mutations находятся в feature data/application layer, не в page components.
 
+## API contracts
+
+`lib/contracts/auth.ts` определяет session DTO: user, profile (`locale`, `theme`) и active membership со стабильными camelCase полями `storeId`, `role`, `status` и store metadata. `/api/session` нормализует Supabase rows в этот DTO до передачи клиенту.
+
+`lib/contracts/workspace.ts` определяет `WorkspaceSnapshotDto` для products, sales, sellers и activity. Live и demo adapters возвращают этот snapshot, копируя mutable arrays на transport boundary. Contracts не импортируют Supabase types; persistence, web API и будущий Telegram adapter должны зависеть от них, а не от raw database rows.
+
 ## UI tokens and adaptive rules
 
 `app/globals.css` is the compact source of visual tokens: `--bg`, `--panel`, `--panel-2`, `--line`, `--text`, `--muted`, semantic purple/green/red/amber accents, control/panel radius, panel spacing and `--focus-ring`. Dark values are default; `html[data-theme="light"]` overrides only theme values. New components must consume these tokens rather than introduce critical hard-coded theme colours.
