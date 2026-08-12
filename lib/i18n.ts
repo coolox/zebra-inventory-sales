@@ -89,6 +89,7 @@ export const copy = {
     periodDelta: "+12.7% vs previous period",
     itemsDelta: "+3 items",
     ofRevenue: "of revenue",
+    stockAttention: "Stock attention", allClear: "All clear", noLowStock: "No low-stock products", needsAttention: "Needs attention", left: "left", thresholdReorder: "Threshold {threshold} · reorder suggested", previousProduct: "Previous product", nextProduct: "Next product",
   },
   tr: {
     close: "Kapat",
@@ -156,5 +157,6 @@ export const copy = {
     periodDelta: "+%12,7 önceki döneme göre",
     itemsDelta: "+3 ürün",
     ofRevenue: "ciro oranı",
+    stockAttention: "Stok takibi", allClear: "Her şey yolunda", noLowStock: "Düşük stoklu ürün yok", needsAttention: "Dikkat gerekli", left: "kaldı", thresholdReorder: "Eşik {threshold} · yeniden sipariş önerilir", previousProduct: "Önceki ürün", nextProduct: "Sonraki ürün",
   },
 } as const;

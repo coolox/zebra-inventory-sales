@@ -34,7 +34,7 @@
 
 ## Следующая задача
 
-- TASK-058 — завершить полный Turkish i18n pass; TASK-057—TASK-052 завершены.
+- TASK-059 — сделать приложение installable PWA; TASK-058—TASK-052 завершены.
 - TASK-040 — завершить staging Magic Link configuration.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
@@ -143,6 +143,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-055](tasks/TASK-055.md) — добавлены transport-independent session и workspace DTO, server-side session mapper и fixtures.
 - [TASK-056](tasks/TASK-056.md) — добавлены catalog/receipt/inventory DTO и commands, подключённые к live adapters.
 - [TASK-057](tasks/TASK-057.md) — добавлены sale/payment contracts, explicit money tolerance/idempotency и lifecycle DTO.
+- [TASK-058](tasks/TASK-058.md) — завершён Turkish pass для overview/low-stock states и locale-aware KPI formatting.
 
 ## Список оставшихся задач
 
@@ -152,7 +153,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-041](tasks/TASK-041.md) — Добавить store-scoped audit log query
 - [TASK-042](tasks/TASK-042.md) — Добавить Owner Audit Log UI
 - [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
-- [TASK-058](tasks/TASK-058.md) — Завершить полный Turkish i18n pass
 - [TASK-059](tasks/TASK-059.md) — Сделать приложение installable PWA
 - [TASK-060](tasks/TASK-060.md) — Провести accessibility pass
 - [TASK-061](tasks/TASK-061.md) — Провести desktop/tablet/mobile browser QA

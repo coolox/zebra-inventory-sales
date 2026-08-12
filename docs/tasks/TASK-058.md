@@ -1,6 +1,6 @@
 # TASK-058 — Завершить полный Turkish i18n pass
 
-Статус: pending
+Статус: completed
 
 ## Цель
 
@@ -28,3 +28,8 @@ TASK-019, TASK-024, TASK-039, TASK-047, TASK-051.
 - Component locale smoke suite.
 - Desktop/mobile Turkish browser pass.
 
+## Результат
+
+- Dashboard overview и low-stock states используют общий English/Turkish словарь, включая visible text и aria-labels.
+- KPI number/currency formatting выбирает `tr-TR` для Turkish и `en-IE` для English.
+- Проверены TypeScript, 100 unit/component tests и production build.

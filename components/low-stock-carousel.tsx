@@ -3,8 +3,10 @@
 import { Boxes, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/lib/types";
+import { copy, type Locale } from "@/lib/i18n";
 
-export function LowStockCarousel({ products }: { products: Product[] }) {
+export function LowStockCarousel({ products, locale = "en" }: { products: Product[]; locale?: Locale }) {
+  const text = copy[locale];
   const items = useMemo(
     () => products.filter((product) => product.stock <= (product.lowStockThreshold ?? 2)).sort((a, b) => a.stock - b.stock),
     [products],
@@ -26,9 +28,9 @@ export function LowStockCarousel({ products }: { products: Product[] }) {
   if (!items.length) {
     return (
       <article className="panel relative overflow-hidden rounded-2xl p-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Stock attention</p>
-        <p className="mt-3 text-2xl font-semibold tracking-tight text-zinc-50">All clear</p>
-        <p className="mt-3 text-xs text-emerald-400">No low-stock products</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">{text.stockAttention}</p>
+        <p className="mt-3 text-2xl font-semibold tracking-tight text-zinc-50">{text.allClear}</p>
+        <p className="mt-3 text-xs text-emerald-400">{text.noLowStock}</p>
       </article>
     );
   }
@@ -42,7 +44,7 @@ export function LowStockCarousel({ products }: { products: Product[] }) {
       <div className="relative z-10 flex h-full flex-col">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Needs attention</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">{text.needsAttention}</p>
             <p className="mt-3 truncate text-lg font-semibold tracking-tight text-zinc-50">{product.name || product.code}</p>
             <p className="mt-1 text-[11px] text-zinc-500">{product.code} · {product.color} · {product.size}</p>
           </div>
@@ -53,14 +55,14 @@ export function LowStockCarousel({ products }: { products: Product[] }) {
 
         <div className="mt-4 flex items-end justify-between gap-3">
           <div>
-            <p className="text-2xl font-semibold tracking-[-0.04em] text-white">{product.stock} left</p>
-            <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-amber-400">Threshold {product.lowStockThreshold ?? 2} · reorder suggested</p>
+            <p className="text-2xl font-semibold tracking-[-0.04em] text-white">{product.stock} {text.left}</p>
+            <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-amber-400">{text.thresholdReorder.replace("{threshold}", String(product.lowStockThreshold ?? 2))}</p>
           </div>
           {items.length > 1 && (
             <div className="flex items-center gap-1">
-              <button type="button" onClick={() => move(-1)} className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-700 text-zinc-500 hover:text-white" aria-label="Previous product"><ChevronLeft size={14} /></button>
+              <button type="button" onClick={() => move(-1)} className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-700 text-zinc-500 hover:text-white" aria-label={text.previousProduct}><ChevronLeft size={14} /></button>
               <span className="min-w-8 text-center text-[9px] text-zinc-600">{safeIndex + 1}/{items.length}</span>
-              <button type="button" onClick={() => move(1)} className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-700 text-zinc-500 hover:text-white" aria-label="Next product"><ChevronRight size={14} /></button>
+              <button type="button" onClick={() => move(1)} className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-700 text-zinc-500 hover:text-white" aria-label={text.nextProduct}><ChevronRight size={14} /></button>
             </div>
           )}
         </div>
