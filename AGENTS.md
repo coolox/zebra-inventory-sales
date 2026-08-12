@@ -16,13 +16,15 @@ Zebra Retail — система учёта товаров, приёмок и п�
 
 ## 2. Что читать в начале каждой новой сессии
 
-Читать строго в этом порядке:
+Проект использует task-based workflow с минимальным контекстом. Читать строго в этом порядке:
 
 1. `AGENTS.md` — правила работы и границы проекта.
-2. `docs/CURRENT_STATE.md` — где проект находится прямо сейчас.
-3. `docs/DECISIONS.md` — уже принятые и ещё не принятые решения.
-4. `docs/ROADMAP.md` — текущий этап и следующие задачи.
-5. Только затем профильный документ из `docs/`.
+2. `docs/PROJECT_STATUS.md` — что работает и какая задача следующая.
+3. Только выбранный `docs/tasks/TASK-NNN.md`.
+4. `docs/ARCHITECTURE.md` — только если для текущей TASK требуется архитектурный контекст.
+5. Только файлы, перечисленные в TASK; `docs/DECISIONS.md` читать дополнительно лишь когда задача зависит от продуктового решения.
+
+Не начинать следующую TASK автоматически. `docs/CURRENT_STATE.md` и `docs/ROADMAP.md` остаются историческим контекстом, но не являются обязательными для каждой task-сессии.
 
 Последнее прямое указание пользователя выше любой проектной документации. Если указание меняет продукт или архитектуру, после выполнения обновить соответствующие документы.
 
@@ -55,9 +57,10 @@ Zebra Retail — система учёта товаров, приёмок и п�
 Перед изменениями:
 
 1. Прочитать документы из раздела 2.
-2. Проверить `git status` и не затирать чужие изменения.
-3. Определить текущий этап roadmap и критерий готовности.
-4. Если задача зависит от открытого продуктового решения, не выбирать скрытно — зафиксировать допущение или запросить решение.
+2. Проверить, что выбранная TASK имеет статус `pending`, а её зависимости завершены.
+3. Проверить `git status` и не затирать чужие изменения.
+4. Работать только в границах одной TASK.
+5. Если задача зависит от открытого продуктового решения, не выбирать скрытно — зафиксировать допущение или запросить решение.
 
 Во время изменений:
 
@@ -72,11 +75,12 @@ Zebra Retail — система учёта товаров, приёмок и п�
 После существенной задачи:
 
 1. Выполнить релевантные проверки; минимум `npm run build` для frontend.
-2. Обновить `docs/CURRENT_STATE.md` — результат, следующий шаг, блокеры.
-3. Обновить checkbox и статус этапа в `docs/ROADMAP.md`.
+2. Изменить статус текущего `docs/tasks/TASK-NNN.md` на `completed`.
+3. Обновить `docs/PROJECT_STATUS.md`: выполненные/оставшиеся задачи, следующая TASK и известные проблемы.
 4. Если принято решение — добавить запись в `docs/DECISIONS.md`.
 5. Добавить краткую запись в `CHANGELOG.md`.
-6. В финальном ответе указать, что сделано, что проверено и какой следующий шаг.
+6. Не начинать следующую TASK без новой команды пользователя.
+7. В финальном ответе указать, что сделано, что проверено и какой следующий шаг.
 
 ## 6. Definition of Done
 
@@ -96,13 +100,10 @@ Zebra Retail — система учёта товаров, приёмок и п�
 
 Нельзя рассчитывать на историю чата. Всё, что должен знать следующий агент, должно быть записано в репозитории.
 
-В конце сессии `docs/CURRENT_STATE.md` должен отвечать на пять вопросов:
+В конце task-сессии актуальный контекст хранится в двух местах:
 
-1. Что сейчас работает?
-2. Что было сделано последним?
-3. Как это проверено?
-4. Что делать следующим?
-5. Какие решения или доступы блокируют работу?
+1. `docs/tasks/TASK-NNN.md` — статус, границы и критерии конкретной задачи.
+2. `docs/PROJECT_STATUS.md` — что реализовано, что работает, следующая задача, выполненный/оставшийся список и известные проблемы.
 
 ## 8. Основные команды
 
@@ -113,3 +114,75 @@ npm run build
 ```
 
 Рабочая директория содержит пробел в конце имени. Всегда заключать путь в кавычки при явном `cd`.
+
+## 9. Codex project instructions
+
+### Core workflow
+
+This is a large project. Work in small isolated tasks.
+
+Never attempt to implement the entire project or an entire large feature in one session.
+
+Before starting work:
+
+1. Read `docs/PROJECT_STATUS.md`.
+2. Read ONLY the current task file from `docs/tasks/`.
+3. Read `docs/ARCHITECTURE.md` only if architecture context is required.
+4. Inspect only the source files directly relevant to the current task.
+
+Do not load unrelated documentation or large parts of the repository without a specific reason.
+
+### One task per session
+
+Work on ONE task only.
+
+Do not automatically start the next task after completing the current one.
+
+If the current task is too large, stop and split it into smaller tasks before implementation.
+
+### Implementation rules
+
+For each task:
+
+1. Understand the acceptance criteria.
+2. Inspect the minimum necessary files.
+3. Implement only what is required for the task.
+4. Do not perform unrelated refactoring.
+5. Do not change unrelated APIs.
+6. Run relevant tests.
+7. Fix errors caused by the implementation.
+8. Verify the acceptance criteria.
+
+### Completion protocol
+
+When a task is complete:
+
+1. Update its TASK file with status `COMPLETED`.
+2. Record important implementation decisions if necessary.
+3. Update `docs/PROJECT_STATUS.md`.
+4. Set the next task in `PROJECT_STATUS.md`.
+5. Give a short completion report containing:
+   - what was changed;
+   - files changed;
+   - tests run;
+   - result;
+   - next task ID.
+6. Then STOP.
+
+Do not implement the next task until explicitly instructed.
+
+### Context management
+
+Keep context small.
+
+Prefer targeted file reads over scanning the repository.
+
+Do not repeatedly read large documents.
+
+Do not read completed task files unless the current task depends on them.
+
+Use `PROJECT_STATUS.md` as the primary handoff between sessions.
+
+If previous implementation details are needed, inspect the actual code or the relevant task file instead of relying on chat history.
+
+The repository is the source of truth, not the conversation history.

@@ -2,6 +2,26 @@ export const supportedLocales = ["en", "tr"] as const;
 
 export type Locale = (typeof supportedLocales)[number];
 
+export const authCopy = {
+  en: {
+    language: "Language", signIn: "Sign in securely", signInDescription: "Enter your work email. We will send a single-use sign-in link — no password needed.", workEmail: "Work email", emailPlaceholder: "you@zebra.store", unconfigured: "Sign-in is not configured in this environment yet. Ask the Owner for help.", rateLimited: "Too many sign-in emails were requested. Wait one minute, then try once more.", sendFailed: "We could not send a sign-in link. Check the email address or ask the Owner for an invitation.", sent: "Check your inbox. The link is single-use and expires automatically.", sending: "Sending link…", sentButton: "Link sent", tryAgain: "Try again in", send: "Send Magic Link", invitedOnly: "Only invited Zebra Retail team members can enter.", missingCode: "This sign-in link is incomplete. Request a new one from the sign-in page.", invalidLink: "This sign-in link is invalid or has expired. Request a new one.", accessDenied: "Access not assigned", accessDescription: "This account has no active store membership. Ask a Zebra Boutique Owner to invite you, or sign in with another work email.", signOut: "Sign out",
+  },
+  tr: {
+    language: "Dil", signIn: "Güvenli giriş", signInDescription: "İş e-posta adresinizi girin. Şifre gerekmeden, tek kullanımlık giriş bağlantısı göndeririz.", workEmail: "İş e-postası", emailPlaceholder: "siz@zebra.store", unconfigured: "Bu ortamda giriş henüz yapılandırılmadı. Yardım için mağaza sahibine başvurun.", rateLimited: "Çok fazla giriş e-postası istendi. Bir dakika bekleyip tekrar deneyin.", sendFailed: "Giriş bağlantısı gönderilemedi. E-posta adresini kontrol edin veya mağaza sahibinden davet isteyin.", sent: "Gelen kutunuzu kontrol edin. Bağlantı tek kullanımlıktır ve otomatik olarak sona erer.", sending: "Bağlantı gönderiliyor…", sentButton: "Bağlantı gönderildi", tryAgain: "Tekrar dene", send: "Magic Link gönder", invitedOnly: "Yalnızca davet edilen Zebra Retail ekip üyeleri giriş yapabilir.", missingCode: "Bu giriş bağlantısı eksik. Giriş sayfasından yeni bir bağlantı isteyin.", invalidLink: "Bu giriş bağlantısı geçersiz veya süresi dolmuş. Yeni bir bağlantı isteyin.", accessDenied: "Erişim atanmamış", accessDescription: "Bu hesabın aktif mağaza erişimi yok. Zebra Boutique sahibinden davet isteyin veya başka bir iş e-postasıyla giriş yapın.", signOut: "Çıkış yap",
+  },
+} as const;
+
+export function readStoredLocale(): Locale {
+  if (typeof window === "undefined") return "en";
+  const requested = new URLSearchParams(window.location.search).get("locale");
+  const stored = window.localStorage.getItem("zebra-locale");
+  return requested === "tr" || (requested !== "en" && stored === "tr") ? "tr" : "en";
+}
+
+export function persistLocale(locale: Locale) {
+  window.localStorage.setItem("zebra-locale", locale);
+}
+
 export const copy = {
   en: {
     close: "Close",

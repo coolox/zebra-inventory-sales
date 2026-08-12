@@ -1,0 +1,5 @@
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
+import { InviteSellerForm } from "./invite-seller-form";
+describe("InviteSellerForm", () => { it("validates and confirms a sent invitation", async () => { const user = userEvent.setup(); const onInvite = vi.fn().mockResolvedValue({ emailSent: true, idempotentReplay: false }); render(<InviteSellerForm locale="en" onInvite={onInvite} />); await user.click(screen.getByRole("button", { name: "Send invitation" })); expect(screen.getByRole("alert")).toBeInTheDocument(); await user.type(screen.getByLabelText("Full name"), "Test Seller"); await user.type(screen.getByLabelText("Email"), "test@example.com"); await user.type(screen.getByLabelText("Phone"), "+90 555 000 00 00"); await user.click(screen.getByRole("button", { name: "Send invitation" })); expect(await screen.findByRole("status")).toHaveTextContent("Invitation email sent."); }); });

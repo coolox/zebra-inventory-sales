@@ -8,6 +8,14 @@ export type Product = {
   modelId?: string;
   variantId?: string;
   code: string;
+  /** Barcode shared by every colour/size of a clothing model. */
+  barcode?: string;
+  /** Optional legacy/future barcode assigned to one specific variant. */
+  variantBarcode?: string;
+  /** Archived models remain in history but are excluded from normal inventory and sale flows. */
+  isActive?: boolean;
+  /** Model-specific low-stock policy. Undefined uses the store default of 2. */
+  lowStockThreshold?: number;
   name: string;
   brand: string;
   category: string;
@@ -35,6 +43,7 @@ export type Sale = {
   quantity: number;
   revenueEur: number;
   marginEur: number;
+  revenueIsAllocated?: boolean;
   dayOffset: number;
   time: string;
 };
@@ -47,6 +56,8 @@ export type Seller = {
   status: "online" | "offline";
   email: string;
   phone: string;
+  /** Store access is distinct from the live online/offline indicator. */
+  membershipStatus?: "invited" | "active" | "blocked";
 };
 
 export type Activity = {

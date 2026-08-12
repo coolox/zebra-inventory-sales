@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
   ArrowDownRight,
@@ -25,43 +25,67 @@ import {
   Store,
   Sun,
   Target,
-  Trash2,
   TrendingUp,
-  UserPlus,
   Users,
   WalletCards,
   X,
 } from "lucide-react";
 import { LowStockCarousel } from "@/components/low-stock-carousel";
-import { ProductCard } from "@/components/product-card";
-import { ReceiveFlow, type ReceiptDraft } from "@/components/receive-flow";
-import { SaleFlow, type PaymentMethod, type SaleDraftLine } from "@/components/sale-flow";
+import { Modal } from "@/components/modal";
+import { DashboardShell } from "@/components/layout/dashboard-shell";
+import { AppHeader } from "@/components/layout/app-header";
+import { AppNav } from "@/components/layout/app-nav";
+import { Overview } from "@/features/overview/ui/overview";
+import { ProductCard } from "@/features/catalog/ui/product-card";
+import { setProductModelArchived } from "@/features/catalog/data/archive-product";
+import { catalogCopy } from "@/features/catalog/model/catalog-copy";
+import { ReceiveFlow } from "@/features/receipts/ui/receive-flow";
+import { confirmLiveReceipt } from "@/features/receipts/data/confirm-live-receipt";
+import { createDemoReceipt } from "@/features/receipts/model/create-demo-receipt";
+import { receiptCopy } from "@/features/receipts/model/receipt-copy";
+import type { ReceiptDraft } from "@/features/receipts/model/types";
+import { confirmLiveSale } from "@/features/sales/data/confirm-live-sale";
+import { loadPaymentRates } from "@/features/sales/data/load-payment-rates";
+import { createDemoSale } from "@/features/sales/model/create-demo-sale";
+import { demoPaymentRates, type PaymentRateMap } from "@/features/sales/model/payments";
+import type { SaleDraftLine, SalePaymentDraft, SalePricingMode } from "@/features/sales/model/types";
+import { SaleFlow } from "@/features/sales/ui/sale-flow";
 import { SellerGoalCard } from "@/features/seller-goals/ui/seller-goal-card";
 import { FxRateManager } from "@/features/exchange-rates/ui/fx-rate-manager";
-import { isLiveMode } from "@/features/workspace/model/app-mode";
+import { loadMovementHistory } from "@/features/inventory/data/load-movement-history";
+import { MovementHistory } from "@/features/inventory/ui/movement-history";
+import { AdjustmentForm } from "@/features/inventory/ui/adjustment-form";
+import { confirmInventoryAdjustment } from "@/features/inventory/data/confirm-adjustment";
+import { setLowStockThreshold } from "@/features/inventory/data/set-low-stock-threshold";
+import { confirmInventoryCount } from "@/features/inventory-counts/data/confirm-inventory-count";
+import { InventoryCountForm } from "@/features/inventory-counts/ui/inventory-count-form";
+import { loadSuppliers, saveSupplier, setSupplierArchived } from "@/features/suppliers/data/suppliers";
+import { SupplierManager } from "@/features/suppliers/ui/supplier-manager";
+import type { Supplier } from "@/features/suppliers/model/types";
+import { inviteSeller } from "@/features/sellers/data/invite-seller";
+import { updateSellerStatus } from "@/features/sellers/data/update-seller-status";
+import { SellerManager } from "@/features/sellers/ui/seller-manager";
+import { AuditLog } from "@/features/audit/ui/audit-log";
+import { loadAuditLog } from "@/features/audit/data/load-audit-log";
+import type { SellerMembershipStatus } from "@/features/sellers/model/types";
+import { selectChartData, selectMetrics, selectSellerRanking } from "@/features/overview/model/metrics";
+import { filterInventoryProducts, paginateInventoryProducts } from "@/features/inventory/model/filter-products";
+import { isLiveMode as configuredLiveMode } from "@/features/workspace/model/app-mode";
 import { createInitialWorkspaceData } from "@/features/workspace/model/workspace-data";
 import { loadLiveWorkspace } from "@/features/workspace/data/load-live-workspace";
 import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 import { uploadProductImages } from "@/lib/product-images";
-import { copy, type Locale } from "@/lib/i18n";
+import { copy, persistLocale, readStoredLocale, type Locale } from "@/lib/i18n";
 import { stores } from "@/lib/mock-data";
 import type { Activity as ActivityType, Period, Product, Role, Sale, Seller, StoreId } from "@/lib/types";
 
 type StoreFilter = "all" | StoreId;
-type ModalName = "sale" | "receive" | "sellers" | "fx" | "activity" | null;
+type ModalName = "sale" | "receive" | "sellers" | "fx" | "activity" | "archived" | "count" | "suppliers" | null;
 
 const storeIcons: Record<StoreId, typeof Shirt> = {
   clothing: Shirt,
   shoes: Shirt,
   bags: BriefcaseBusiness,
-};
-
-const fxToEur: Record<SaleDraftLine["currency"], number> = {
-  EUR: 1,
-  USD: 0.93,
-  TRY: 0.028,
-  RUB: 0.011,
-  GBP: 1.17,
 };
 
 const initialWorkspaceData = createInitialWorkspaceData();
@@ -107,32 +131,11 @@ function MetricCard({
   );
 }
 
-function Modal({ title, eyebrow, onClose, children, wide = false }: { title: string; eyebrow: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/75 p-0 backdrop-blur-sm sm:items-center sm:p-5" onMouseDown={onClose}>
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        className={`fade-up max-h-[94vh] w-full overflow-y-auto rounded-t-[1.5rem] border border-zinc-800 bg-[#111114] shadow-2xl sm:rounded-[1.5rem] ${wide ? "max-w-3xl" : "max-w-xl"}`}
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <header className="sticky top-0 z-10 flex items-start justify-between border-b border-zinc-800/80 bg-[#111114]/95 px-5 py-5 backdrop-blur sm:px-7">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400">{eyebrow}</p>
-            <h2 className="mt-1 text-xl font-semibold tracking-tight">{title}</h2>
-          </div>
-          <button type="button" onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 text-zinc-500 transition hover:border-zinc-700 hover:text-white" aria-label="Close">
-            <X size={18} />
-          </button>
-        </header>
-        {children}
-      </section>
-    </div>
-  );
-}
-
 export default function Home() {
+  // Runtime environment values can differ between the Next server and the
+  // browser during local debugging. Start in a deterministic demo shell, then
+  // enable live mode after hydration so React never compares different trees.
+  const [isLiveMode, setIsLiveMode] = useState(false);
   const [role, setRole] = useState<Role>("owner");
   const [selectedStore, setSelectedStore] = useState<StoreFilter>("clothing");
   const [period, setPeriod] = useState<Period>("day");
@@ -147,23 +150,30 @@ export default function Home() {
   const [toast, setToast] = useState("");
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [selectedProductCode, setSelectedProductCode] = useState<string | null>(null);
+  const [historyVariant, setHistoryVariant] = useState<Product | null>(null);
+  const [adjustmentVariant, setAdjustmentVariant] = useState<Product | null>(null);
   const [saleCodePrefill, setSaleCodePrefill] = useState("");
-  const [newSeller, setNewSeller] = useState({ name: "", email: "", phone: "" });
-  const [accessLoading, setAccessLoading] = useState(isLiveMode);
-  const [workspaceStatus, setWorkspaceStatus] = useState<"idle" | "loading" | "ready" | "error">(isLiveMode ? "idle" : "ready");
+  const [accessLoading, setAccessLoading] = useState(false);
+  const [workspaceStatus, setWorkspaceStatus] = useState<"idle" | "loading" | "ready" | "error">("ready");
   const [authenticatedName, setAuthenticatedName] = useState("");
   const [authenticatedUserId, setAuthenticatedUserId] = useState<string | null>(null);
   const [locale, setLocale] = useState<Locale>("en");
   const [activeStoreId, setActiveStoreId] = useState<string | null>(null);
+  const [paymentRates, setPaymentRates] = useState<PaymentRateMap>(demoPaymentRates);
+  const [supplierDirectory, setSupplierDirectory] = useState<Supplier[]>(() => [...new Set(initialWorkspaceData.products.map((product) => product.supplier))].map((name, index) => ({ id: `demo-supplier-${index}`, name, phone: null, notes: null, isActive: true })));
+
+  useEffect(() => {
+    setIsLiveMode(configuredLiveMode);
+  }, []);
 
   useEffect(() => {
     const saved = window.localStorage.getItem("zebra-theme");
     const next = saved === "light" ? "light" : "dark";
     setTheme(next);
     document.documentElement.dataset.theme = next;
-    const savedLocale = window.localStorage.getItem("zebra-locale");
-    const nextLocale: Locale = savedLocale === "tr" ? "tr" : "en";
+    const nextLocale: Locale = readStoredLocale();
     setLocale(nextLocale);
+    persistLocale(nextLocale);
     document.documentElement.lang = nextLocale;
   }, []);
 
@@ -179,6 +189,19 @@ export default function Home() {
     const data = await loadLiveWorkspace(activeStoreId);
     applyWorkspaceData(data);
     setWorkspaceStatus("ready");
+  };
+
+  const refreshPaymentRates = async () => {
+    if (!isLiveMode) {
+      setPaymentRates(demoPaymentRates);
+      return;
+    }
+    if (!activeStoreId) return;
+    try {
+      setPaymentRates(await loadPaymentRates());
+    } catch {
+      setPaymentRates({ EUR: 1, USD: null, TRY: null, RUB: null, GBP: null });
+    }
   };
 
   useEffect(() => {
@@ -199,10 +222,16 @@ export default function Home() {
         if (active) setWorkspaceStatus("error");
       });
     return () => { active = false; };
-  }, [activeStoreId]);
+  }, [activeStoreId, isLiveMode]);
+
+  useEffect(() => {
+    void refreshPaymentRates();
+  }, [activeStoreId, isLiveMode]);
 
   useEffect(() => {
     if (!isLiveMode) return;
+
+    setAccessLoading(true);
 
     fetch("/api/session", { cache: "no-store" })
       .then(async (response) => ({ response, body: await response.json() }))
@@ -223,7 +252,7 @@ export default function Home() {
         setAccessLoading(false);
       })
       .catch(() => window.location.assign("/access-denied"));
-  }, []);
+  }, [isLiveMode]);
 
   const currentSeller = sellers.find((seller) => seller.id === authenticatedUserId) ?? sellers[0] ?? {
     id: authenticatedUserId ?? "current-user",
@@ -242,18 +271,13 @@ export default function Home() {
     [sales, roleStore, maxDays, role, currentSeller.id],
   );
 
-  const visibleProducts = useMemo(() => {
-    const needle = search.trim().toLowerCase();
-    return products.filter((product) => {
-      const storeMatch = product.store === roleStore;
-      const searchMatch = !needle || [product.code, product.name, product.brand, product.size, product.color, product.supplier].some((value) => String(value).toLowerCase().includes(needle));
-      return storeMatch && searchMatch;
-    });
-  }, [products, roleStore, search]);
+  const visibleProducts = useMemo(() => filterInventoryProducts(products, roleStore, search), [products, roleStore, search]);
+  const archivedProducts = useMemo(
+    () => products.filter((product) => product.store === roleStore && product.isActive === false),
+    [products, roleStore],
+  );
   const inventoryPageSize = 10;
-  const inventoryPageCount = Math.max(1, Math.ceil(visibleProducts.length / inventoryPageSize));
-  const safeInventoryPage = Math.min(inventoryPage, inventoryPageCount);
-  const paginatedProducts = visibleProducts.slice((safeInventoryPage - 1) * inventoryPageSize, safeInventoryPage * inventoryPageSize);
+  const { page: safeInventoryPage, pageCount: inventoryPageCount, items: paginatedProducts } = paginateInventoryProducts(visibleProducts, inventoryPage, inventoryPageSize);
 
   const selectedProductVariants = useMemo(
     () => selectedProductCode ? products.filter((product) => product.code === selectedProductCode && product.store === "clothing") : [],
@@ -264,38 +288,15 @@ export default function Home() {
     setInventoryPage(1);
   }, [search, activeStoreId]);
 
-  const metrics = useMemo(() => {
-    const revenue = visibleSales.reduce((sum, sale) => sum + sale.revenueEur, 0);
-    const margin = visibleSales.reduce((sum, sale) => sum + sale.marginEur, 0);
-    const units = visibleProducts.reduce((sum, product) => sum + product.stock, 0);
-    const low = visibleProducts.filter((product) => product.stock <= 2).length;
-    return { revenue, margin, units, low, count: visibleSales.reduce((sum, sale) => sum + sale.quantity, 0) };
-  }, [visibleSales, visibleProducts]);
+  const metrics = useMemo(() => selectMetrics(visibleSales, visibleProducts), [visibleSales, visibleProducts]);
 
   const chartData = useMemo(() => {
-    const labels = ["Wed", "Thu", "Fri", "Sat", "Sun", "Mon", "Today"];
-    return labels.map((label, index) => {
-      const offset = 6 - index;
-      const total = sales
-        .filter((sale) => sale.dayOffset === offset && sale.store === roleStore && (role === "owner" || sale.sellerId === currentSeller.id))
-        .reduce((sum, sale) => sum + sale.revenueEur, 0);
-      return { label, value: total };
-    });
+    return selectChartData(sales, roleStore, role === "owner" ? undefined : currentSeller.id);
   }, [sales, roleStore, role, currentSeller.id]);
   const chartMax = Math.max(...chartData.map((day) => day.value), 1);
 
   const rankedSellers = useMemo(() => {
-    return sellers
-      .filter((seller) => selectedStore === "all" || seller.store === selectedStore)
-      .map((seller) => {
-        const sellerSales = sales.filter((sale) => sale.sellerId === seller.id && sale.store === "clothing" && sale.dayOffset <= maxDays);
-        return {
-          ...seller,
-          revenue: sellerSales.reduce((sum, sale) => sum + sale.revenueEur, 0),
-          count: sellerSales.reduce((sum, sale) => sum + sale.quantity, 0),
-        };
-      })
-      .sort((a, b) => b.revenue - a.revenue);
+    return selectSellerRanking(sellers, sales, selectedStore === "all" ? roleStore : selectedStore, maxDays);
   }, [sellers, sales, selectedStore, maxDays]);
 
   const notify = (message: string) => {
@@ -329,113 +330,40 @@ export default function Home() {
     window.localStorage.setItem("zebra-theme", next);
   };
 
-  const completeSale = async (lines: SaleDraftLine[], paymentMethod: PaymentMethod = "cash") => {
+  const completeSale = async (lines: SaleDraftLine[], payments: SalePaymentDraft[], pricingMode: SalePricingMode) => {
     if (!lines.length) return;
     if (isLiveMode) {
-      if (!activeStoreId) throw new Error("Missing store membership.");
-      const saleLines = lines.map((line) => {
-        const product = products.find((item) => item.id === line.productId);
-        if (!product?.variantId) throw new Error("Selected product is no longer available. Refresh the catalog and try again.");
-        return { variant_id: product.variantId, quantity: line.quantity, unit_price: line.price, currency: line.currency };
-      });
-      const { error } = await createSupabaseClient().rpc("confirm_sale_with_payment", {
-        p_store_id: activeStoreId,
-        p_lines: saleLines,
-        p_payment_method: paymentMethod,
-        p_idempotency_key: crypto.randomUUID(),
-      });
-      if (error) {
-        if (/Insufficient stock/i.test(error.message)) throw new Error("This size has just sold out. Refresh the catalog and try again.");
-        if (/exchange rate/i.test(error.message)) throw new Error("Today’s exchange rate for this sale currency is missing. Ask the Owner to save it first.");
-        throw new Error("Sale could not be saved. Please try again.");
-      }
+      await confirmLiveSale({ storeId: activeStoreId ?? "", lines, payments, products, locale, pricingMode });
       await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
       setModal(null);
       notify(locale === "tr" ? "Satış kaydedildi" : "Sale saved to the staging database");
       return;
     }
-    const stamp = Date.now();
     const seller = role === "seller" ? currentSeller : sellers[0] ?? currentSeller;
-    const time = new Date().toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
-    const created = lines.flatMap((line, index) => {
-      const product = products.find((item) => item.id === line.productId);
-      if (!product || product.stock < line.quantity) return [];
-      const revenueEur = line.price * line.quantity * fxToEur[line.currency];
-      const costEur = product.cost * line.quantity * fxToEur[product.currency];
-      const sale: Sale = {
-        id: stamp + index,
-        productId: product.id,
-        sellerId: seller.id,
-        seller: seller.name,
-        store: "clothing",
-        product: product.name,
-        code: product.code,
-        size: product.size,
-        quantity: line.quantity,
-        revenueEur: Math.round(revenueEur),
-        marginEur: Math.round(revenueEur - costEur),
-        dayOffset: 0,
-        time,
-      };
-      return [sale];
-    });
-    if (!created.length) return;
-    setSales((current) => [...created, ...current]);
-    setProducts((current) => current.map((product) => {
-      const sold = lines.filter((line) => line.productId === product.id).reduce((sum, line) => sum + line.quantity, 0);
-      return sold ? { ...product, stock: Math.max(0, product.stock - sold), updated: "Just now" } : product;
-    }));
-    const totalItems = created.reduce((sum, sale) => sum + sale.quantity, 0);
-    const totalEur = created.reduce((sum, sale) => sum + sale.revenueEur, 0);
-    const saleActivity: ActivityType = { id: stamp, type: "sale", title: `Sale · ${totalItems} items`, meta: `${seller.name} · Zebra Boutique · just now`, amount: totalEur };
-    setActivities((current) => [saleActivity, ...current].slice(0, 6));
+    const result = createDemoSale(lines, products, seller, locale, new Date(), pricingMode, payments, paymentRates);
+    setSales((current) => [...result.sales, ...current]);
+    setProducts(result.products);
+    setActivities((current) => [result.activity, ...current].slice(0, 6));
     setModal(null);
-    notify(`Sale with ${totalItems} items recorded for ${seller.name}`);
+    notify(locale === "tr"
+      ? `${seller.name} adına ${result.totalItems} ürünlük satış kaydedildi`
+      : `Sale with ${result.totalItems} items recorded for ${seller.name}`);
   };
 
   const saveReceipt = async (lines: ReceiptDraft[]) => {
     if (!lines.length) return;
     if (isLiveMode) {
-      if (!activeStoreId) throw new Error("Missing store membership");
-      const first = lines[0];
-      const gender = first.gender;
-      const { error } = await createSupabaseClient().rpc("confirm_inventory_receipt", {
-        p_store_id: activeStoreId,
-        p_model: {
-          model_code: first.code,
-          name: first.name,
-          brand: first.brand,
-          category: first.category,
-          gender,
-          supplier_name: first.supplier,
-        },
-        p_lines: lines.map((line) => ({ color: line.color, size: line.size, quantity: line.stock, unit_cost: line.cost, currency: line.currency })),
-        p_idempotency_key: crypto.randomUUID(),
-      });
-      if (error) {
-        throw new Error(error.message || "Receipt could not be saved.");
-      }
+      await confirmLiveReceipt({ storeId: activeStoreId ?? "", lines, locale });
       await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
       setModal(null);
       notify(locale === "tr" ? "Kabul staging veritabanına kaydedildi" : "Receipt saved to the staging database");
       return;
     }
-    const stamp = Date.now();
-    setProducts((current) => {
-      const next = [...current];
-      lines.forEach((line, index) => {
-        const existingIndex = next.findIndex((product) => product.store === "clothing" && product.code.toLowerCase() === line.code.toLowerCase() && product.color.toLowerCase() === line.color.toLowerCase() && product.size.toLowerCase() === line.size.toLowerCase());
-        if (existingIndex >= 0) next[existingIndex] = { ...next[existingIndex], ...line, stock: next[existingIndex].stock + line.stock, updated: "Just now" };
-        else next.unshift({ ...line, id: stamp + index, updated: "Just now" });
-      });
-      return next;
-    });
-    const total = lines.reduce((sum, product) => sum + product.stock, 0);
-    const suppliers = [...new Set(lines.map((line) => line.supplier))];
-    const receiptActivity: ActivityType = { id: stamp, type: "receipt", title: `Receipt from ${suppliers[0]}`, meta: `${total} items · Zebra Boutique · just now` };
-    setActivities((current) => [receiptActivity, ...current].slice(0, 6));
+    const result = createDemoReceipt(lines, products);
+    setProducts(result.products);
+    setActivities((current) => [result.activity, ...current].slice(0, 6));
     setModal(null);
-    notify(`${total} items received`);
+    notify(`${result.totalItems} items received`);
   };
 
   const addProductPhotos = async (files: File[]) => {
@@ -448,19 +376,92 @@ export default function Home() {
     notify(locale === "tr" ? "Fotoğraflar eklendi" : "Photos added to the product card");
   };
 
-  const sellProductFromCard = (code: string) => {
-    setSelectedProductCode(null);
+  const setSelectedProductArchived = async (archived: boolean) => {
+    const model = selectedProductVariants[0];
+    if (!model) throw new Error("Product model is unavailable.");
+    if (isLiveMode) {
+      if (!activeStoreId || !model.modelId) throw new Error("Product model is unavailable.");
+      await setProductModelArchived({ storeId: activeStoreId, modelId: model.modelId, archived });
+      await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
+    } else {
+      setProducts((current) => current.map((product) => product.code === model.code ? { ...product, isActive: !archived } : product));
+    }
+    notify(locale === "tr" ? (archived ? "Ürün arşivlendi" : "Ürün geri yüklendi") : (archived ? "Product archived" : "Product restored"));
+  };
+
+  const saveAdjustment = async (delta: number, reason: string) => {
+    const variant = adjustmentVariant;
+    if (!variant) return;
+    if (isLiveMode) {
+      if (!activeStoreId || !variant.variantId) throw new Error("Variant is unavailable.");
+      await confirmInventoryAdjustment({ storeId: activeStoreId, variantId: variant.variantId, quantityDelta: delta, reason, locale });
+      await refreshLiveWorkspace();
+    } else {
+      setProducts((current) => current.map((product) => product.id === variant.id ? { ...product, stock: product.stock + delta } : product));
+    }
+    setAdjustmentVariant(null);
+    notify(locale === "tr" ? "Stok düzeltmesi kaydedildi" : "Stock adjustment saved");
+  };
+
+  const saveInventoryCount = async (lines: { variantId?: string; productId: Product["id"]; countedQuantity: number }[], notes: string) => {
+    if (isLiveMode) {
+      if (!activeStoreId || lines.some((line) => !line.variantId)) throw new Error("Saved variants are required for a live count.");
+      await confirmInventoryCount({ storeId: activeStoreId, lines: lines.map((line) => ({ variantId: line.variantId!, countedQuantity: line.countedQuantity })), notes, locale });
+      await refreshLiveWorkspace();
+    } else {
+      const next = new Map(lines.map((line) => [String(line.productId), line.countedQuantity]));
+      setProducts((current) => current.map((product) => next.has(String(product.id)) ? { ...product, stock: next.get(String(product.id))! } : product));
+    }
+    setModal(null);
+    notify(locale === "tr" ? "Stok sayımı onaylandı" : "Inventory count confirmed");
+  };
+
+  const refreshSuppliers = async () => {
+    if (isLiveMode && activeStoreId) setSupplierDirectory(await loadSuppliers(activeStoreId, true));
+  };
+  const saveSupplierDirectory = async (values: { supplier?: Supplier; name: string; phone: string; notes: string }) => {
+    if (isLiveMode) {
+      if (!activeStoreId) throw new Error("Store is unavailable.");
+      await saveSupplier({ storeId: activeStoreId, ...values }); await refreshSuppliers();
+    } else {
+      const id = values.supplier?.id ?? `demo-supplier-${crypto.randomUUID()}`;
+      setSupplierDirectory((current) => values.supplier ? current.map((item) => item.id === id ? { ...item, name: values.name.trim(), phone: values.phone || null, notes: values.notes || null } : item) : [...current, { id, name: values.name.trim(), phone: values.phone || null, notes: values.notes || null, isActive: true }]);
+    }
+  };
+  const archiveSupplierDirectory = async (supplier: Supplier) => {
+    if (isLiveMode) { if (!activeStoreId) throw new Error("Store is unavailable."); await setSupplierArchived(activeStoreId, supplier.id, supplier.isActive); await refreshSuppliers(); }
+    else setSupplierDirectory((current) => current.map((item) => item.id === supplier.id ? { ...item, isActive: !item.isActive } : item));
+  };
+  const sendSellerInvite = async (values: { fullName: string; email: string; phone: string }) => {
+    if (isLiveMode) { if (!activeStoreId) throw new Error("Store is unavailable."); const result = await inviteSeller({ storeId: activeStoreId, ...values }); await refreshLiveWorkspace(); return result; }
+    const initials = values.fullName.split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join(""); setSellers((current) => [...current, { id: Date.now(), name: values.fullName, initials, store: "clothing", status: "offline", email: values.email, phone: values.phone }]); return { emailSent: false, idempotentReplay: false };
+  };
+  const setSellerMembershipStatus = async (seller: Seller, status: SellerMembershipStatus) => {
+    if (isLiveMode) {
+      if (!activeStoreId) throw new Error("Store is unavailable.");
+      await updateSellerStatus({ storeId: activeStoreId, sellerId: String(seller.id), status });
+      await refreshLiveWorkspace();
+      return;
+    }
+    setSellers((current) => current.map((item) => item.id === seller.id ? { ...item, membershipStatus: status } : item));
+  };
+  const saveLowStockThreshold = async (threshold: number) => {
+    const model = selectedProductVariants[0];
+    if (!model) return;
+    if (isLiveMode) { if (!activeStoreId || !model.modelId) throw new Error("Product model is unavailable."); await setLowStockThreshold(activeStoreId, model.modelId, threshold); await refreshLiveWorkspace(); }
+    else setProducts((current) => current.map((product) => product.code === model.code ? { ...product, lowStockThreshold: threshold } : product));
+    notify(locale === "tr" ? "Düşük stok eşiği kaydedildi" : "Low-stock threshold saved");
+  };
+
+  const openSale = async (code = "") => {
     setSaleCodePrefill(code);
+    await refreshPaymentRates();
     setModal("sale");
   };
 
-  const addSeller = (event: FormEvent) => {
-    event.preventDefault();
-    if (!newSeller.name.trim()) return;
-    const initials = newSeller.name.split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("");
-    setSellers((current) => [...current, { id: Date.now(), name: newSeller.name.trim(), initials, store: "clothing", status: "offline", email: newSeller.email.trim(), phone: newSeller.phone || "+90 —" }]);
-    setNewSeller({ name: "", email: "", phone: "" });
-    notify(text.sellerAdded);
+  const sellProductFromCard = (code: string) => {
+    setSelectedProductCode(null);
+    void openSale(code);
   };
 
   const jumpTo = (id: string) => {
@@ -480,62 +481,21 @@ export default function Home() {
   const displayName = isLiveMode ? authenticatedName || "Zebra team member" : role === "owner" ? "Arslan Zengin" : currentSeller.name;
   const displayInitials = displayName.split(/\s+/).filter(Boolean).slice(0, 2).map((part) => part[0]?.toUpperCase()).join("") || "ZB";
 
-  const nav = (
-    <>
-      <div className="flex h-[72px] items-center gap-3 border-b border-zinc-800/80 px-5">
-        <div className="flex h-9 w-9 items-center justify-center bg-violet-600 text-sm font-black tracking-tighter text-white">ZB</div>
-        <div>
-          <p className="text-sm font-bold tracking-[0.18em] text-zinc-100">ZEBRA</p>
-          <p className="text-[9px] uppercase tracking-[0.18em] text-zinc-600">Retail system</p>
-        </div>
-        <button onClick={() => setMobileNav(false)} className="ml-auto text-zinc-500 lg:hidden" aria-label={text.close}><X size={20} /></button>
-      </div>
-      <div className="flex flex-1 flex-col px-3 py-5">
-        <p className="px-3 text-[9px] font-semibold uppercase tracking-[0.2em] text-zinc-600">{text.workspace}</p>
-        <div className="mt-3 space-y-1">
-          {navItems.map(({ id, label, Icon }, index) => (
-            <button key={id} type="button" onClick={() => jumpTo(id)} className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ${index === 0 ? "bg-violet-500/10 text-violet-300" : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-200"}`}>
-              <Icon size={17} strokeWidth={1.8} />
-              <span>{label}</span>
-            </button>
-          ))}
-        </div>
-
-        <p className="mt-8 px-3 text-[9px] font-semibold uppercase tracking-[0.2em] text-zinc-600">{text.pilotStore}</p>
-        <div className="mt-3 flex items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900/70 px-3 py-3">
-          <Shirt size={16} className="text-zinc-500" />
-          <div className="min-w-0 flex-1"><p className="truncate text-xs font-medium text-zinc-200">Zebra Boutique</p><p className="mt-0.5 text-[9px] text-zinc-600">{text.clothingActive}</p></div>
-          <span className="h-1.5 w-1.5 rounded-full bg-violet-400 shadow-[0_0_8px_#8b5cf6]" />
-        </div>
-
-        <div className="mt-auto rounded-xl border border-zinc-800 bg-zinc-900/50 p-3">
-          <div className="flex items-center gap-3">
+  const nav = <AppNav items={navItems} workspaceLabel={text.workspace} storeLabel="Zebra Boutique" storeMeta={text.clothingActive} onNavigate={jumpTo} onClose={() => setMobileNav(false)} closeLabel={text.close} profile={<div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-300">{isLiveMode ? displayInitials : role === "owner" ? "AZ" : currentSeller.initials}</div>
             <div className="min-w-0">
               <p className="truncate text-xs font-medium text-zinc-200">{displayName}</p>
               <p className="text-[10px] text-zinc-600">{role === "owner" ? text.networkOwner : text.sellerClothing}</p>
             </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+          </div>} />;
 
   if (isLiveMode && accessLoading) {
     return <main className="flex min-h-screen items-center justify-center bg-[#09090b] text-sm text-zinc-500">Checking secure workspace access…</main>;
   }
 
   return (
-    <div className="min-h-screen bg-transparent text-zinc-100">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[224px] flex-col border-r border-zinc-800/80 bg-[#0d0d10] lg:flex">{nav}</aside>
-      {mobileNav && <div className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden" onClick={() => setMobileNav(false)}><aside className="flex h-full w-[270px] flex-col border-r border-zinc-800 bg-[#0d0d10]" onClick={(event) => event.stopPropagation()}>{nav}</aside></div>}
-
-      <div className="lg:pl-[224px]">
-        <header className="sticky top-0 z-30 flex h-[72px] items-center border-b border-zinc-800/80 bg-[#0a0a0c]/88 px-4 backdrop-blur-xl sm:px-6 xl:px-8">
-          <button type="button" onClick={() => setMobileNav(true)} className="mr-3 flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 lg:hidden" aria-label={text.workspace}><Menu size={19} /></button>
-          {role === "owner" && <div className="flex h-9 items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 text-xs font-medium text-zinc-200"><Store size={14} className="text-zinc-500" /> Zebra Boutique</div>}
-
-          <div className="ml-auto flex items-center gap-2 sm:gap-3">
+    <DashboardShell nav={nav} mobileOpen={mobileNav} onMobileClose={() => setMobileNav(false)}>
+        <AppHeader navigation={<button type="button" onClick={() => setMobileNav(true)} className="mr-3 flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 lg:hidden" aria-label={text.workspace}><Menu size={19} /></button>} store={role === "owner" ? <div className="flex h-9 items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 text-xs font-medium text-zinc-200"><Store size={14} className="text-zinc-500" /> Zebra Boutique</div> : undefined} controls={<>
             {!isLiveMode && <div className="hidden rounded-lg border border-zinc-800 bg-zinc-900 p-0.5 sm:flex">
               <button type="button" onClick={() => switchRole("owner")} className={`rounded-md px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition ${role === "owner" ? "bg-violet-600 text-white" : "text-zinc-600 hover:text-zinc-300"}`}>{text.owner}</button>
               <button type="button" onClick={() => switchRole("seller")} className={`rounded-md px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition ${role === "seller" ? "bg-violet-600 text-white" : "text-zinc-600 hover:text-zinc-300"}`}>{text.seller}</button>
@@ -551,8 +511,7 @@ export default function Home() {
               <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-violet-400" />
             </button>
             {isLiveMode ? <button type="button" onClick={signOut} className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 transition hover:text-zinc-200" aria-label="Sign out"><LogOut size={16} /></button> : <button type="button" onClick={() => switchRole(role === "owner" ? "seller" : "owner")} className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-200 sm:hidden">{role === "owner" ? "AZ" : "ED"}</button>}
-          </div>
-        </header>
+        </>} />
 
         <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:py-8 xl:px-8">
           {isLiveMode && workspaceStatus === "loading" && <div className="mb-4 rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-4 py-3 text-xs text-violet-200">{text.loadingData}</div>}
@@ -572,7 +531,7 @@ export default function Home() {
                 <button type="button" onClick={() => setModal("receive")} className="flex h-10 items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 text-xs font-semibold text-zinc-300 transition hover:border-zinc-600 hover:text-white">
                   <PackageCheck size={16} /> {text.receive}
                 </button>
-                <button type="button" onClick={() => { setSaleCodePrefill(""); setModal("sale"); }} className="purple-shadow flex h-10 items-center gap-2 rounded-lg bg-violet-600 px-4 text-xs font-semibold text-white transition hover:bg-violet-500">
+                <button type="button" onClick={() => void openSale()} className="purple-shadow flex h-10 items-center gap-2 rounded-lg bg-violet-600 px-4 text-xs font-semibold text-white transition hover:bg-violet-500">
                   <Plus size={16} /> {text.newSale}
                 </button>
               </div>
@@ -584,53 +543,20 @@ export default function Home() {
               ))}
             </div>
 
-            <div className={`mt-4 grid gap-3 ${role === "owner" ? "grid-cols-2 xl:grid-cols-4" : "grid-cols-1 sm:grid-cols-3"}`}>
-              <MetricCard label={text.revenue} value={money(metrics.revenue)} delta={isLiveMode ? text.liveData : period === "day" ? text.todayDelta : text.periodDelta} icon={WalletCards} accent />
-              <MetricCard label={text.salesMetric} value={`${integer(metrics.count)} ${text.unitsShort}`} delta={isLiveMode ? text.liveData : text.itemsDelta} icon={ReceiptText} />
-              <MetricCard label={role === "owner" ? text.grossMargin : text.myResult} value={money(metrics.margin)} delta={`${metrics.revenue ? Math.round((metrics.margin / metrics.revenue) * 100) : 0}% ${text.ofRevenue}`} icon={TrendingUp} />
-              {role === "owner" && <LowStockCarousel products={visibleProducts} />}
-            </div>
-          </section>
-
-          <section id="sales" className="mt-4 scroll-mt-24 grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,.75fr)]">
-            <article className="panel rounded-2xl p-5 sm:p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-sm font-semibold">{text.salesTrend}</p>
-                  <p className="mt-1 text-xs text-zinc-600">{text.lastSevenDays}</p>
-                </div>
-                <div className="flex items-center gap-2 text-[10px] text-zinc-500"><span className="h-2 w-2 rounded-full bg-violet-500" /> {text.revenue}</div>
-              </div>
-              <div className="chart-grid mt-8 flex h-52 items-end gap-2 rounded-lg px-1 pt-5 sm:gap-4">
-                {chartData.map((day) => (
-                  <div key={day.label} className="group flex h-full min-w-0 flex-1 flex-col items-center justify-end gap-2">
-                    <div className="relative flex h-full w-full items-end justify-center">
-                      <span className="pointer-events-none absolute bottom-[calc(var(--bar-height)+8px)] hidden -translate-x-1/2 whitespace-nowrap rounded-md border border-zinc-700 bg-zinc-800 px-2 py-1 text-[10px] font-medium text-white group-hover:block" style={{ left: "50%", ["--bar-height" as string]: `${Math.max(6, (day.value / chartMax) * 100)}%` }}>{money(day.value)}</span>
-                      <div className="w-full max-w-11 rounded-t-md bg-gradient-to-t from-violet-700 to-violet-400 transition-all duration-500 group-hover:from-violet-600 group-hover:to-violet-300" style={{ height: `${Math.max(4, (day.value / chartMax) * 100)}%`, opacity: day.value ? 1 : 0.18 }} />
-                    </div>
-                    <span className="text-[10px] text-zinc-600">{day.label}</span>
-                  </div>
-                ))}
-              </div>
-            </article>
-
-            {role === "owner" ? <article id="team" className="panel scroll-mt-24 rounded-2xl p-5 sm:p-6">
-              <div className="flex items-start justify-between"><div><p className="text-sm font-semibold">{text.sellerResults}</p><p className="mt-1 text-xs text-zinc-600">{periodLabels[period].toLowerCase()} · {text.revenueRanking}</p></div>{!isLiveMode && <button type="button" onClick={() => setModal("sellers")} className="text-[11px] font-medium text-violet-400 transition hover:text-violet-300">{text.manage}</button>}</div>
-              <div className="mt-5 space-y-4">{rankedSellers.slice(0, 4).map((seller, index) => <div key={seller.id} className="flex items-center gap-3"><span className="w-3 text-[10px] text-zinc-700">{String(index + 1).padStart(2, "0")}</span><span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-300">{seller.initials}<span className={`absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#111114] ${seller.status === "online" ? "bg-emerald-400" : "bg-zinc-600"}`} /></span><div className="min-w-0 flex-1"><div className="flex items-baseline justify-between gap-2"><p className="truncate text-xs font-medium text-zinc-300">{seller.name}</p><p className="text-xs font-semibold text-zinc-100">{money(seller.revenue)}</p></div><div className="mt-1.5 h-1 overflow-hidden rounded-full bg-zinc-800"><div className="h-full rounded-full bg-violet-500" style={{ width: `${Math.max(8, (seller.revenue / Math.max(rankedSellers[0]?.revenue || 1, 1)) * 100)}%` }} /></div></div><span className="w-8 text-right text-[10px] text-zinc-600">{seller.count} pcs</span></div>)}</div>
-            </article> : <SellerGoalCard actual={metrics.revenue} period={period} />}
+            <Overview role={role} period={period} metrics={metrics} chartData={chartData} rankedSellers={rankedSellers} products={visibleProducts} live={isLiveMode} onManageTeam={() => setModal("sellers")} labels={{ revenue: text.revenue, sales: text.salesMetric, grossMargin: text.grossMargin, myResult: text.myResult, unitsShort: text.unitsShort, todayDelta: text.todayDelta, periodDelta: text.periodDelta, itemsDelta: text.itemsDelta, ofRevenue: text.ofRevenue, salesTrend: text.salesTrend, lastSevenDays: text.lastSevenDays, sellerResults: text.sellerResults, revenueRanking: text.revenueRanking, manage: text.manage }} />
           </section>
 
           <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,.75fr)]">
-            <article id="inventory" className="panel scroll-mt-24 overflow-hidden rounded-2xl">
+            <article id="inventory" className="panel min-w-0 scroll-mt-24 overflow-hidden rounded-2xl">
               <div className="flex flex-col gap-4 border-b border-zinc-800/80 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
                 <div>
                   <p className="text-sm font-semibold">{text.stock}</p>
-                  <p className="mt-1 text-xs text-zinc-600">{integer(metrics.units)} {text.units} · {visibleProducts.length} SKU</p>
+                  <div className="mt-1 flex items-center gap-2"><p className="text-xs text-zinc-600">{integer(metrics.units)} {text.units} · {visibleProducts.length} SKU</p>{role === "owner" && archivedProducts.length > 0 && <button type="button" onClick={() => setModal("archived")} className="text-[10px] font-semibold text-violet-400 transition hover:text-violet-300">{locale === "tr" ? `Arşiv (${archivedProducts.length})` : `Archived (${archivedProducts.length})`}</button>}</div>
                 </div>
-                <div className="relative sm:w-72">
+                <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">{role === "owner" && <div className="grid grid-cols-2 gap-2 sm:contents"><button type="button" onClick={() => { void refreshSuppliers(); setModal("suppliers"); }} className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-[10px] font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-white"><Store size={13} /> {locale === "tr" ? "Tedarikçi" : "Suppliers"}</button><button type="button" onClick={() => setModal("count")} className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-[10px] font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-white"><Boxes size={14} /> {locale === "tr" ? "Sayım" : "Count stock"}</button></div>}<div className="relative w-full sm:w-72">
                   <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
                   <input value={search} onChange={(event) => { setSearch(event.target.value); setInventoryPage(1); }} placeholder={text.search} className="h-9 w-full rounded-lg border border-zinc-800 bg-zinc-900 pl-9 pr-3 text-xs text-zinc-200 outline-none placeholder:text-zinc-700 focus:border-violet-500" />
-                </div>
+                </div></div>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full min-w-[720px] border-collapse text-left">
@@ -696,19 +622,18 @@ export default function Home() {
             <p>{isLiveMode ? text.liveNotice : text.mockNotice}</p>
           </footer>
         </main>
-      </div>
 
       {toast && <div className="fade-up fixed bottom-5 left-1/2 z-[70] flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-xl border border-emerald-500/25 bg-[#121713] px-4 py-3 text-xs font-medium text-emerald-300 shadow-2xl"><Check size={15} />{toast}</div>}
 
       {modal === "sale" && (
-        <Modal title="New sale" eyebrow="Cash operation" onClose={() => setModal(null)} wide>
-          <SaleFlow key={`sale-${saleCodePrefill}`} initialCode={saleCodePrefill} products={products} sellerName={isLiveMode ? displayName : role === "seller" ? currentSeller.name : sellers[0]?.name ?? displayName} onCancel={() => setModal(null)} onComplete={completeSale} />
+        <Modal title={locale === "tr" ? "Yeni satış" : "New sale"} eyebrow={locale === "tr" ? "Satış işlemi" : "Sale operation"} onClose={() => setModal(null)} wide>
+          <SaleFlow key={`sale-${saleCodePrefill}`} locale={locale} paymentRates={paymentRates} initialCode={saleCodePrefill} products={products.filter((product) => product.isActive !== false)} sellerName={isLiveMode ? displayName : role === "seller" ? currentSeller.name : sellers[0]?.name ?? displayName} onCancel={() => setModal(null)} onComplete={completeSale} />
         </Modal>
       )}
 
       {modal === "receive" && (
-        <Modal title="Receive products" eyebrow="Manual receipt" onClose={() => setModal(null)} wide>
-          <ReceiveFlow locale={locale} products={isLiveMode ? [] : products} onCancel={() => setModal(null)} onSave={saveReceipt} />
+        <Modal title={receiptCopy[locale].dialogTitle} eyebrow={receiptCopy[locale].dialogEyebrow} onClose={() => setModal(null)} wide>
+          <ReceiveFlow locale={locale} products={products.filter((product) => product.isActive !== false)} onCancel={() => setModal(null)} onSave={saveReceipt} />
         </Modal>
       )}
 
@@ -718,26 +643,57 @@ export default function Home() {
         </Modal>
       )}
 
-      {modal === "activity" && (
+      {modal === "activity" && role === "owner" && isLiveMode && (
+        <Modal title="Audit log" eyebrow="Owner-only store history" onClose={() => setModal(null)} wide><AuditLog load={(page, category) => activeStoreId ? loadAuditLog(activeStoreId, { page, categories: category ? [category] : undefined }) : Promise.resolve({ items: [], page, pageSize: 25, hasMore: false })} /></Modal>
+      )}
+      {modal === "activity" && (!isLiveMode || role !== "owner") && (
         <Modal title="All activity" eyebrow="Store history" onClose={() => setModal(null)}>
           <div className="divide-y divide-zinc-800/70 p-5 sm:p-7">{activities.length ? activities.map((item) => { const Icon = item.type === "sale" ? CircleDollarSign : item.type === "receipt" ? PackagePlus : Boxes; return <div key={item.id} className="flex gap-3 py-4 first:pt-0"><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border ${item.type === "sale" ? "border-violet-500/20 bg-violet-500/10 text-violet-400" : "border-zinc-800 bg-zinc-900 text-zinc-500"}`}><Icon size={15} /></span><div className="min-w-0 flex-1"><div className="flex justify-between gap-3"><p className="truncate text-xs font-medium text-zinc-200">{item.title}</p>{item.amount !== undefined && <span className="shrink-0 text-xs font-semibold text-zinc-100">+{item.converted ? "≈" : ""}{money(item.amount, item.currency)}</span>}</div><p className="mt-1 text-[11px] text-zinc-600">{item.meta}</p></div></div>; }) : <p className="py-10 text-center text-xs text-zinc-600">No operations yet.</p>}</div>
         </Modal>
       )}
 
-      {selectedProductVariants.length > 0 && (
-        <Modal title={selectedProductVariants[0].name} eyebrow="Product details" onClose={() => setSelectedProductCode(null)} wide>
-        <ProductCard variants={selectedProductVariants} onUploadPhotos={isLiveMode ? addProductPhotos : undefined} onSell={sellProductFromCard} />
+      {historyVariant && (
+        <Modal title={locale === "tr" ? "Stok hareketleri" : "Stock movements"} eyebrow={`${historyVariant.name} · ${historyVariant.color} / ${historyVariant.size}`} onClose={() => { setSelectedProductCode(historyVariant.code); setHistoryVariant(null); }}>
+          <MovementHistory locale={locale} loadHistory={() => isLiveMode && activeStoreId && historyVariant.variantId ? loadMovementHistory({ storeId: activeStoreId, variantId: historyVariant.variantId }) : Promise.resolve([])} />
         </Modal>
       )}
 
-      {modal === "sellers" && role === "owner" && !isLiveMode && (
-        <Modal title="Seller team" eyebrow="Access and stores" onClose={() => setModal(null)} wide>
-          <div className="grid gap-7 p-5 sm:p-7 md:grid-cols-[1.1fr_.9fr]">
-            <div><p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Active sellers</p><div className="mt-3 divide-y divide-zinc-800/70 rounded-xl border border-zinc-800">{sellers.map((seller) => <div key={seller.id} className="flex items-center gap-3 p-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-300">{seller.initials}</span><div className="min-w-0 flex-1"><p className="truncate text-xs font-medium text-zinc-200">{seller.name}</p><p className="mt-1 truncate text-[10px] text-zinc-600">{seller.email} · {seller.phone}</p></div><button type="button" onClick={() => { setSellers((current) => current.filter((item) => item.id !== seller.id)); notify("Seller removed from demo"); }} className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-700 transition hover:bg-red-500/10 hover:text-red-400" aria-label={`Remove ${seller.name}`}><Trash2 size={15} /></button></div>)}</div></div>
-            <form onSubmit={addSeller}><div className="flex items-center gap-2"><UserPlus size={15} className="text-violet-400" /><p className="text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Add seller</p></div><p className="mt-2 text-[10px] leading-relaxed text-zinc-600">Production will send this email a Magic Link for secure sign-in.</p><div className="mt-4 space-y-4"><label className="block"><span className="mb-2 block text-[10px] text-zinc-600">Full name</span><input required value={newSeller.name} onChange={(event) => setNewSeller((current) => ({ ...current, name: event.target.value }))} placeholder="For example, Deniz Arslan" className="h-10 w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 text-xs outline-none placeholder:text-zinc-700 focus:border-violet-500" /></label><label className="block"><span className="mb-2 block text-[10px] text-zinc-600">Magic Link email</span><input required type="email" value={newSeller.email} onChange={(event) => setNewSeller((current) => ({ ...current, email: event.target.value }))} placeholder="seller@zebra.store" className="h-10 w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 text-xs outline-none placeholder:text-zinc-700 focus:border-violet-500" /></label><label className="block"><span className="mb-2 block text-[10px] text-zinc-600">Phone</span><input required value={newSeller.phone} onChange={(event) => setNewSeller((current) => ({ ...current, phone: event.target.value }))} placeholder="+90 5__ ___ __ __" className="h-10 w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 text-xs outline-none placeholder:text-zinc-700 focus:border-violet-500" /></label><div className="rounded-lg border border-zinc-800 bg-zinc-900/60 px-3 py-2 text-[10px] text-zinc-500">Store access: <span className="text-zinc-300">Zebra Boutique</span></div><button type="submit" className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-violet-600 text-xs font-semibold text-white hover:bg-violet-500"><UserPlus size={15} /> Add and send link</button></div></form>
-          </div>
+      {adjustmentVariant && role === "owner" && (
+        <Modal title={locale === "tr" ? "Stok düzeltme" : "Stock adjustment"} eyebrow={`${adjustmentVariant.name} · ${adjustmentVariant.color} / ${adjustmentVariant.size}`} onClose={() => setAdjustmentVariant(null)}>
+          <AdjustmentForm locale={locale} currentStock={adjustmentVariant.stock} onConfirm={saveAdjustment} />
         </Modal>
       )}
-    </div>
+
+      {modal === "count" && role === "owner" && (
+        <Modal title={locale === "tr" ? "Başlangıç stok sayımı" : "Initial inventory count"} eyebrow={locale === "tr" ? "Sahip kontrolü" : "Owner control"} onClose={() => setModal(null)} wide>
+          <InventoryCountForm locale={locale} products={visibleProducts} onConfirm={saveInventoryCount} />
+        </Modal>
+      )}
+
+      {modal === "suppliers" && role === "owner" && (
+        <Modal title={locale === "tr" ? "Tedarikçiler" : "Suppliers"} eyebrow={locale === "tr" ? "Mağaza rehberi" : "Store directory"} onClose={() => setModal(null)} wide>
+          <SupplierManager suppliers={supplierDirectory} onSave={saveSupplierDirectory} onArchive={archiveSupplierDirectory} />
+        </Modal>
+      )}
+
+      {modal === "sellers" && role === "owner" && (
+        <Modal title={locale === "tr" ? "Satıcı ekibi" : "Seller team"} eyebrow={locale === "tr" ? "Mağaza erişimi" : "Store access"} onClose={() => setModal(null)} wide>
+          <SellerManager locale={locale} role={role} sellers={sellers} onInvite={sendSellerInvite} onSetStatus={setSellerMembershipStatus} />
+        </Modal>
+      )}
+
+      {modal === "archived" && role === "owner" && (
+        <Modal title={locale === "tr" ? "Arşivlenen ürünler" : "Archived products"} eyebrow={catalogCopy[locale].productDetails} onClose={() => setModal(null)}>
+          <div className="divide-y divide-zinc-800/70 p-5 sm:p-7">{archivedProducts.length ? [...new Map(archivedProducts.map((product) => [product.code, product])).values()].map((product) => <button key={product.code} type="button" onClick={() => { setModal(null); setSelectedProductCode(product.code); }} className="flex w-full items-center justify-between gap-4 py-4 text-left first:pt-0 last:pb-0"><span><span className="block text-xs font-medium text-zinc-200">{product.name}</span><span className="mt-1 block font-mono text-[10px] text-zinc-600">{product.brand} · {product.code}</span></span><span className="rounded-md border border-violet-500/25 bg-violet-500/10 px-2 py-1 text-[10px] font-semibold text-violet-200">{locale === "tr" ? "Geri yükle" : "Restore"}</span></button>) : <p className="py-8 text-center text-xs text-zinc-600">{locale === "tr" ? "Arşivlenen ürün yok." : "No archived products."}</p>}</div>
+        </Modal>
+      )}
+
+      {selectedProductVariants.length > 0 && (
+        <Modal title={selectedProductVariants[0].name} eyebrow={catalogCopy[locale].productDetails} onClose={() => setSelectedProductCode(null)} wide>
+        <ProductCard locale={locale} variants={selectedProductVariants} onUploadPhotos={isLiveMode ? addProductPhotos : undefined} onSell={sellProductFromCard} canManageArchive={role === "owner"} isArchived={selectedProductVariants[0].isActive === false} onSetArchived={setSelectedProductArchived} onViewHistory={(variant) => { setHistoryVariant(variant); setSelectedProductCode(null); }} onAdjust={role === "owner" ? (variant) => { setAdjustmentVariant(variant); setSelectedProductCode(null); } : undefined} onSetLowStockThreshold={role === "owner" ? saveLowStockThreshold : undefined} />
+        </Modal>
+      )}
+
+    </DashboardShell>
   );
 }

@@ -1,12 +1,18 @@
 "use client";
 
 import { LogOut, ShieldAlert } from "lucide-react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { authCopy, persistLocale, readStoredLocale, type Locale } from "@/lib/i18n";
 
 export default function AccessDeniedPage() {
+  const [locale, setLocale] = useState<Locale>("en");
+  useEffect(() => { const next = readStoredLocale(); setLocale(next); persistLocale(next); }, []);
+  const text = authCopy[locale];
+  const changeLocale = (next: Locale) => { setLocale(next); persistLocale(next); };
   const signOut = async () => {
     await createClient().auth.signOut();
-    window.location.assign("/login");
+    window.location.assign(`/login?locale=${locale}`);
   };
 
   return (
@@ -14,9 +20,9 @@ export default function AccessDeniedPage() {
       <section className="w-full max-w-md rounded-3xl border border-zinc-800 bg-[#111114] p-7 shadow-2xl sm:p-8">
         <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-amber-500/25 bg-amber-500/10 text-amber-300"><ShieldAlert size={22} /></div>
         <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400">Zebra Retail</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight">Access not assigned</h1>
-        <p className="mt-3 text-sm leading-6 text-zinc-500">This account has no active store membership. Ask a Zebra Boutique Owner to invite you, or sign in with another work email.</p>
-        <button type="button" onClick={signOut} className="mt-7 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 text-sm font-semibold text-zinc-200 transition hover:border-zinc-500 hover:text-white"><LogOut size={16} />Sign out</button>
+        <div className="mt-5 flex items-center justify-between gap-3"><h1 className="text-2xl font-semibold tracking-tight">{text.accessDenied}</h1><div aria-label={text.language} className="flex rounded-lg border border-zinc-800 p-0.5 text-[10px]"><button type="button" onClick={() => changeLocale("en")} className={`rounded-md px-2 py-1 ${locale === "en" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>EN</button><button type="button" onClick={() => changeLocale("tr")} className={`rounded-md px-2 py-1 ${locale === "tr" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>TR</button></div></div>
+        <p className="mt-3 text-sm leading-6 text-zinc-500">{text.accessDescription}</p>
+        <button type="button" onClick={signOut} className="mt-7 flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 text-sm font-semibold text-zinc-200 transition hover:border-zinc-500 hover:text-white"><LogOut size={16} />{text.signOut}</button>
       </section>
     </main>
   );

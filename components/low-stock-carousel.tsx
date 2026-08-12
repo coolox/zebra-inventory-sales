@@ -6,7 +6,7 @@ import type { Product } from "@/lib/types";
 
 export function LowStockCarousel({ products }: { products: Product[] }) {
   const items = useMemo(
-    () => products.filter((product) => product.stock <= 2).sort((a, b) => a.stock - b.stock),
+    () => products.filter((product) => product.stock <= (product.lowStockThreshold ?? 2)).sort((a, b) => a.stock - b.stock),
     [products],
   );
   const [index, setIndex] = useState(0);
@@ -54,7 +54,7 @@ export function LowStockCarousel({ products }: { products: Product[] }) {
         <div className="mt-4 flex items-end justify-between gap-3">
           <div>
             <p className="text-2xl font-semibold tracking-[-0.04em] text-white">{product.stock} left</p>
-            <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-amber-400">Reorder suggested</p>
+            <p className="mt-1 text-[10px] uppercase tracking-[0.14em] text-amber-400">Threshold {product.lowStockThreshold ?? 2} · reorder suggested</p>
           </div>
           {items.length > 1 && (
             <div className="flex items-center gap-1">

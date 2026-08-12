@@ -1,6 +1,6 @@
 # Предметная модель Zebra Retail
 
-Обновлено: 2026-08-08  
+Обновлено: 2026-08-11
 Статус: предлагаемый production baseline, требует утверждения MVP
 
 ## 1. Основные сущности
@@ -44,7 +44,8 @@ Owner создаёт invitation для Seller. Supabase Auth отправляе�
 - внутренний код модели; в clothing этот code общий для всех вариантов size/color;
 - name, brand, category, gender, description;
 - supplier или связь с несколькими supplier;
-- фотографии и штрихкод модели, если используется.
+- обязательный `model_code` / `Product code / Ürün Kodu` как human-facing code-first identifier;
+- фотографии, optional brand/supplier article и optional model-level identifier, если он действительно общий для модели.
 
 ### ProductVariant
 
@@ -54,11 +55,13 @@ Owner создаёт invitation для Seller. Supabase Auth отправляе�
 - размер;
 - цвет;
 - SKU/internal code;
-- barcode;
+- optional barcode/identifier конкретного color/size variant;
 - active status.
 
 Один вариант не должен объединять разные размеры в строке `"S,M,L"`.
-Так как clothing model code повторяется, database identity варианта строится на отдельном `id`, а не на уникальности model code. Barcode может быть сохранён отдельно от model code.
+Database identity модели и варианта строится на отдельных UUID. Все receipts, movements и sales ссылаются на UUID, поэтому barcode можно оставить пустым или добавить позже без изменения stock/history. Clothing variants одной модели используют обязательный model code как human-facing lookup.
+
+Barcode — optional identifier, а не основа inventory и не alias обязательного model code. Один непустой barcode может принадлежать либо модели, либо конкретному варианту, но только одному catalog record в пределах магазина. QR хранится только после декодирования и проверки payload. Policy и локальная migration TASK-026 должны быть пересмотрены в TASK-117 до staging application.
 
 ### PurchaseReceipt
 
@@ -70,6 +73,8 @@ Owner создаёт invitation для Seller. Supabase Auth отправляе�
 - created_by, confirmed_by;
 - source: manual / text / photo / PDF / import;
 - ссылка на исходный файл.
+
+Фото/PDF сначала создаёт отдельный неподтверждённый document draft. OCR/AI заполняет header/lines с confidence и source references; catalog matching и color/size reconciliation выполняются до явного Confirm. Только Confirm создаёт receipt lines и inventory movements атомарно.
 
 ### PurchaseReceiptLine
 
@@ -95,14 +100,17 @@ Owner создаёт invitation для Seller. Supabase Auth отправляе�
 - store, seller;
 - timestamp и business date;
 - status;
-- totals by original currencies and EUR;
+- pricing mode: `per_item` или `sale_total`;
+- authoritative total revenue в EUR;
+- в `sale_total` payment lines задают фактически полученную общую сумму за всю корзину;
 - idempotency key.
 
 ### SaleLine
 
 - sale, variant;
 - quantity;
-- actual unit price и currency;
+- actual unit price и currency для `per_item`;
+- в `sale_total` фактическая цена отдельной строки отсутствует и не выдумывается;
 - cost snapshot;
 - exchange-rate snapshot;
 - margin snapshot;
@@ -121,6 +129,7 @@ Owner создаёт invitation для Seller. Supabase Auth отправляе�
 - EUR snapshot.
 
 Сумма payment lines должна совпадать с итогом sale в согласованной валютной модели.
+Single и Mixed payment всегда относятся ко всей Sale, а не к отдельной SaleLine.
 
 ### Exchange
 

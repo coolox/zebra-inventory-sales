@@ -1,155 +1,67 @@
 # Архитектура Zebra Retail
 
-Обновлено: 2026-08-09
-Статус: начат постепенный переход к feature-модулям; demo/live data boundary реализована
+## Назначение
 
-## 1. Текущая frontend-архитектура
+Zebra Retail — Next.js web/PWA для каталога, приёмки, продаж и отчётов сети магазинов. Первый production pilot — только Zebra Boutique. Supabase предоставляет Auth, Postgres, RLS и private Storage.
 
-```text
-Next.js dashboard composition (`app/page.tsx`)
-  ├── `features/workspace` — app mode и единый workspace snapshot
-  │     ├── demo source — только `lib/mock-data.ts`
-  │     └── live source — только Supabase с RLS
-  ├── `features/catalog` — live catalog query
-  ├── `features/exchange-rates` — FX conversion model и Owner rate UI
-  ├── `features/seller-goals` — personal Seller goal
-  ├── components — Sale/Receive/Product UI flows
-  └── Supabase RPC — атомарные receipt/sale/FX mutations
-```
-
-`NEXT_PUBLIC_APP_MODE=demo|live` задаёт явную границу окружения. При отсутствии переменной сохраняется обратная совместимость: наличие Supabase URL/key включает live. В live-режиме ошибка загрузки не заменяется mock-данными.
-
-## 2. Предлагаемая логическая архитектура
-
-Конкретные технологии будут выбраны после ответов владельца, но границы должны оставаться такими:
+## Runtime boundary
 
 ```text
-Web / PWA                    Telegram bot
-     │                            │
-     └──────── Application API ───┘
-                    │
-        ┌───────────┼────────────┐
-        │           │            │
-   Identity     Inventory      Sales
-        │           │            │
-        └──────── Domain services ┘
-                    │
-             Relational database
-                    │
-        Files / images / documents
+Next.js UI
+  ├── demo mode → local mock/persistence adapter
+  └── live mode → Supabase client/server boundary
+                         ├── Auth + memberships
+                         ├── RLS-protected reads
+                         ├── audited transactional RPC
+                         └── private product Storage
 ```
 
-Web и Telegram не должны иметь независимые источники остатков. Оба клиента вызывают одни и те же application services или API.
+`NEXT_PUBLIC_APP_MODE=demo|live` задаёт источник данных. Live mode никогда не заменяет ошибку mock-данными. Production и staging должны использовать разные Supabase/Vercel projects.
 
-## 3. Архитектурные принципы
+## Frontend modules
 
-### Один источник правды
+- `app/` — routes, auth callback, session endpoint и dashboard composition.
+- `components/layout/` — общий shell, navigation, header и modal host после декомпозиции.
+- `components/ui/` — небольшие переиспользуемые controls и states.
+- `features/workspace/` — mode boundary и workspace snapshot.
+- `features/catalog/` — модели, варианты, поиск, Product Card и фотографии.
+- `features/inventory/`, `features/receipts/` — movements, stock и приёмка.
+- `features/sales/` — cart, payment drafts, sale queries/mutations и domain errors.
+- `features/sellers/`, `features/audit/`, `features/reports/` — Owner operations.
+- `lib/contracts/` — transport-independent DTO и commands.
+- `lib/supabase/` — browser/server clients; не содержит domain UI.
 
-Production-база является единственным источником правды для товаров, движений и продаж. Google Sheets может быть импортом или экспортом, но не параллельной master-базой.
+UI получает нормализованные models и не должен работать с raw Supabase rows. Business mutations находятся в feature data/application layer, не в page components.
 
-### Склад как журнал движений
+## UI tokens and adaptive rules
 
-Остаток нельзя надёжно хранить только редактируемым числом. Каждая приёмка, продажа, обмен, перемещение, списание и корректировка создаёт складское движение. Текущий остаток вычисляется или поддерживается транзакционно из этого журнала.
+`app/globals.css` is the compact source of visual tokens: `--bg`, `--panel`, `--panel-2`, `--line`, `--text`, `--muted`, semantic purple/green/red/amber accents, control/panel radius, panel spacing and `--focus-ring`. Dark values are default; `html[data-theme="light"]` overrides only theme values. New components must consume these tokens rather than introduce critical hard-coded theme colours.
 
-### Денежный снимок
+- Selected controls use the purple accent; error uses `--red`; focus uses the shared `--focus-ring` and remains visible in both themes.
+- Mobile is the base layout (single column, bottom-sheet modals); `sm` (640px) introduces horizontal form/action rows; `lg` (1024px) enables persistent dashboard navigation and multi-column panels.
+- Tables must retain a compact card/list presentation below `sm`; text/action targets must not rely on hover alone.
 
-Строка продажи хранит фактическую цену, валюту, себестоимость и использованный курс на момент операции. Последующее изменение карточки товара или курса не меняет историческую маржу.
+## Data model
 
-### Server-side безопасность
+- Identity: `profiles`, `stores`, `store_memberships`.
+- Catalog: `suppliers`, `product_models`, `product_variants`, `product_images`.
+- Inventory: `purchase_receipts`, `purchase_receipt_lines`, `inventory_movements`.
+- Sales: `sales`, `sale_lines`, `sale_payments`; позже cancellation и exchange.
+- Finance/Audit: `exchange_rates`, `audit_logs`.
 
-API проверяет роль и доступ к магазину для каждой операции. Frontend-фильтр не является авторизацией.
+Model code общий для size/color variants. Variant identity — UUID. Stock воспроизводится суммой inventory movements.
 
-### Идемпотентность
+## Обязательные инварианты
 
-Повторная отправка запроса, Telegram update или AI-документа не должна создавать вторую продажу или приёмку. Для внешних операций нужен idempotency key.
+- Authenticated user видит только stores с active membership.
+- UI visibility не заменяет server-side RLS/RPC authorization.
+- Receipt, sale, cancellation, exchange и adjustment изменяют stock только атомарно.
+- Financial rows сохраняют original currency, FX и EUR snapshots.
+- Исторические snapshots не пересчитываются новым курсом или catalog data.
+- Critical operation имеет actor, source, reason при необходимости и audit record.
+- Повтор внешнего command защищён idempotency key.
+- Production secrets и персональные данные не попадают в repository или logs.
 
-### Подтверждение AI
+## Task workflow
 
-AI/OCR создаёт только черновик приёмки. Остатки меняются после явного подтверждения человеком.
-
-### Аудит и отмена
-
-Критическая операция не удаляется бесследно. Исправление выполняется корректирующей операцией или контролируемым статусом отмены с автором, временем и причиной.
-
-## 4. Frontend boundaries
-
-После утверждения MVP текущий `app/page.tsx` следует разделить примерно так:
-
-```text
-app/
-  (auth)/
-  (dashboard)/
-features/
-  auth/
-  stores/
-  catalog/
-  inventory/
-  receipts/
-  sales/
-  sellers/
-  reports/
-components/
-  ui/
-  layout/
-lib/
-  api/
-  validation/
-  formatting/
-```
-
-Это ориентир, не требование создать пустые папки до появления кода.
-
-## 5. Environment strategy
-
-Минимум три изолированных окружения:
-
-- local — mock или локальная база;
-- staging — тестовые/обезличенные данные;
-- production — реальные магазины.
-
-Нельзя использовать production-базу для разработки UI или тестов.
-
-## 6. Backup и восстановление
-
-До пилотного запуска должны существовать:
-
-- автоматические database backups;
-- backup файлов товара и накладных;
-- политика хранения;
-- проверенный restore-процесс;
-- миграционный rollback plan.
-
-Наличие backup без теста восстановления не считается выполненным требованием.
-
-## 7. Выбранное направление
-
-- client: Next.js web/PWA;
-- authentication: Supabase Auth Magic Link;
-- базовая валюта данных и отчётов: EUR;
-- interface locales: English (`en`) и Turkish (`tr`);
-- первый production module: clothing store; shoes и bags подключаются позже;
-- Telegram-бот подключается к общей системе на более позднем этапе;
-- production начинается с чистого каталога и остатков.
-- Clothing MVP использует ручной ввод model barcode/code; AI extraction фотографии этикетки добавляется после MVP.
-
-Предварительная рекомендация до подтверждения владельца:
-
-- Vercel размещает Next.js PWA;
-- managed Supabase предоставляет Postgres, Auth, Row Level Security и Storage;
-- Supabase Edge Functions или защищённые Next.js server routes выполняют привилегированные операции и внешние интеграции;
-- существующий VPS временно продолжает запускать Telegram-бот отдельно до этапа интеграции.
-
-Для production Magic Link потребуется настроить собственный SMTP provider, разрешённые redirect URLs и branded email template. Встроенный почтовый сервис Supabase нельзя считать production-доставкой.
-
-## 8. Нерешённые технологические вопросы
-
-- backend runtime и framework;
-- подтверждение Vercel + managed Supabase для production;
-- storage для фото и PDF;
-- тип авторизации;
-- real-time нужен или достаточно обычного обновления;
-- точная граница между Next.js server routes, database RPC и Edge Functions;
-- стратегия PWA/USB/Bluetooth barcode scanning;
-- OCR/AI provider и требования к приватности.
-
-Ответы фиксируются в `DECISIONS.md`, не только в чате.
+Каждая новая сессия читает `AGENTS.md`, `docs/PROJECT_STATUS.md`, выбранный `docs/tasks/TASK-NNN.md` и только перечисленные там файлы. `docs/DECISIONS.md` читается лишь когда задача требует продуктового решения. После завершения обновляются task status и `PROJECT_STATUS.md`; следующая задача не начинается автоматически.

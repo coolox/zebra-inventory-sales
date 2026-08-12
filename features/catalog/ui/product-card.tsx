@@ -1,0 +1,212 @@
+"use client";
+
+import { ArchiveRestore, Check, ChevronLeft, ChevronRight, History, ImageOff, Maximize2, Minus, Package, Plus, Settings2, Shirt, ShoppingBag, Upload, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import type { Product } from "@/lib/types";
+import type { Locale } from "@/lib/i18n";
+import { catalogCopy, productArchiveErrorMessage, productCardErrorMessage } from "@/features/catalog/model/catalog-copy";
+
+function unique(values: string[]) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+export function ProductCard({ locale, variants, onUploadPhotos, onSell, canManageArchive = false, isArchived = false, onSetArchived, onViewHistory, onAdjust, onSetLowStockThreshold }: { locale: Locale; variants: Product[]; onUploadPhotos?: (files: File[]) => Promise<void>; onSell?: (code: string) => void; canManageArchive?: boolean; isArchived?: boolean; onSetArchived?: (archived: boolean) => Promise<void>; onViewHistory?: (variant: Product) => void; onAdjust?: (variant: Product) => void; onSetLowStockThreshold?: (threshold: number) => Promise<void> }) {
+  const text = catalogCopy[locale];
+  const model = variants[0];
+  const photos = model?.photos ?? [];
+  const [photoIndex, setPhotoIndex] = useState(0);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [archiveConfirmationOpen, setArchiveConfirmationOpen] = useState(false);
+  const [archiveSaving, setArchiveSaving] = useState(false);
+  const [archiveError, setArchiveError] = useState("");
+  const [threshold, setThreshold] = useState(String(model?.lowStockThreshold ?? 2));
+  const [thresholdError, setThresholdError] = useState("");
+  const [thresholdSaving, setThresholdSaving] = useState(false);
+  const [thresholdSaved, setThresholdSaved] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
+  const drag = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
+  const [color, setColor] = useState(model?.color ?? "");
+  const [selectedVariantId, setSelectedVariantId] = useState(model?.id);
+  const colors = useMemo(() => unique(variants.map((variant) => variant.color)), [variants]);
+  const colorVariants = variants.filter((variant) => variant.color === color);
+  const totalStock = variants.reduce((sum, variant) => sum + variant.stock, 0);
+  const selectedVariant = colorVariants.find((variant) => variant.id === selectedVariantId) ?? colorVariants[0];
+
+  useEffect(() => {
+    setSelectedVariantId(colorVariants[0]?.id);
+  }, [color]);
+
+  useEffect(() => {
+    if (!viewerOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setViewerOpen(false);
+        return;
+      }
+      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+        event.preventDefault();
+        const direction = event.key === "ArrowLeft" ? -1 : 1;
+        setPhotoIndex((current) => photos.length ? (current + direction + photos.length) % photos.length : current);
+        setZoom(1);
+        setPan({ x: 0, y: 0 });
+        return;
+      }
+      if (event.key === "+" || event.key === "=") setZoom((current) => Math.min(3, current + 0.25));
+      if (event.key === "-") setZoom((current) => Math.max(1, current - 0.25));
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [viewerOpen, photos.length]);
+
+  if (!model) return null;
+
+  const movePhoto = (direction: number) => {
+    if (!photos.length) return;
+    setPhotoIndex((current) => (current + direction + photos.length) % photos.length);
+  };
+
+  const openViewer = () => {
+    if (!photos.length) return;
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+    setViewerOpen(true);
+  };
+
+  const changeZoom = (delta: number) => {
+    setZoom((current) => {
+      const next = Math.min(3, Math.max(1, current + delta));
+      if (next === 1) setPan({ x: 0, y: 0 });
+      return next;
+    });
+  };
+
+  const changeViewerPhoto = (direction: number) => {
+    movePhoto(direction);
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
+  const startDrag = (event: PointerEvent<HTMLDivElement>) => {
+    if (zoom <= 1) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    drag.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, originX: pan.x, originY: pan.y };
+  };
+
+  const moveDrag = (event: PointerEvent<HTMLDivElement>) => {
+    const current = drag.current;
+    if (!current || current.pointerId !== event.pointerId) return;
+    setPan({ x: current.originX + event.clientX - current.startX, y: current.originY + event.clientY - current.startY });
+  };
+
+  const endDrag = (event: PointerEvent<HTMLDivElement>) => {
+    if (drag.current?.pointerId === event.pointerId) drag.current = null;
+  };
+
+  const uploadPhotos = async (files: FileList | null) => {
+    if (!files?.length || !onUploadPhotos || uploading) return;
+    setUploading(true);
+    setUploadError("");
+    try {
+      await onUploadPhotos([...files]);
+    } catch (error) {
+      setUploadError(error instanceof Error ? error.message : "");
+    } finally {
+      setUploading(false);
+      if (fileInput.current) fileInput.current.value = "";
+    }
+  };
+
+  const setArchived = async (archived: boolean) => {
+    if (!onSetArchived || archiveSaving) return;
+    setArchiveSaving(true);
+    setArchiveError("");
+    try {
+      await onSetArchived(archived);
+      setArchiveConfirmationOpen(false);
+    } catch (error) {
+      setArchiveError(error instanceof Error ? error.message : "");
+    } finally {
+      setArchiveSaving(false);
+    }
+  };
+
+  const saveThreshold = async () => {
+    const value = Number(threshold);
+    if (!Number.isInteger(value) || value < 0) {
+      setThresholdSaved(false);
+      setThresholdError("Enter a whole number of 0 or more.");
+      return;
+    }
+    if (!onSetLowStockThreshold || thresholdSaving) return;
+    setThresholdSaving(true);
+    setThresholdSaved(false);
+    setThresholdError("");
+    try {
+      await onSetLowStockThreshold(value);
+      setThresholdSaved(true);
+    } catch (error) {
+      setThresholdError(error instanceof Error ? error.message : "Unable to save threshold.");
+    } finally {
+      setThresholdSaving(false);
+    }
+  };
+
+  return (
+    <div className="grid lg:grid-cols-[1.05fr_.95fr]">
+      <div className="border-b border-zinc-800 p-4 sm:p-6 lg:border-b-0 lg:border-r">
+        <div className="relative aspect-square overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950">
+          {photos.length ? (
+            <button type="button" onClick={openViewer} className="group h-full w-full cursor-zoom-in" aria-label={text.openPhotoFullscreen}><img src={photos[photoIndex]} alt={text.photoAlt(model.name, photoIndex + 1)} className="h-full w-full object-contain" /><span className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur transition group-hover:opacity-100"><Maximize2 size={17} /></span></button>
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center gap-3 text-zinc-700"><ImageOff size={30} /><span className="text-xs">{text.noPhotos}</span></div>
+          )}
+          {photos.length > 1 && <>
+            <button type="button" onClick={() => movePhoto(-1)} className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/55 text-white backdrop-blur hover:bg-black/75" aria-label={text.previousPhoto}><ChevronLeft size={20} /></button>
+            <button type="button" onClick={() => movePhoto(1)} className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-black/55 text-white backdrop-blur hover:bg-black/75" aria-label={text.nextPhoto}><ChevronRight size={20} /></button>
+            <span className="absolute bottom-3 right-3 rounded-full bg-black/65 px-2.5 py-1 text-[10px] text-white">{photoIndex + 1} / {photos.length}</span>
+          </>}
+        </div>
+        {photos.length > 1 && <div className="mt-3 grid grid-cols-3 gap-2">{photos.map((photo, index) => <button key={photo} type="button" onClick={() => setPhotoIndex(index)} className={`aspect-[4/3] overflow-hidden rounded-lg border ${index === photoIndex ? "border-violet-500 ring-1 ring-violet-500/30" : "border-zinc-800 opacity-55 hover:opacity-100"}`}><img src={photo} alt="" className="h-full w-full object-cover" /></button>)}</div>}
+        {onUploadPhotos && <div className="mt-3"><input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" multiple className="sr-only" onChange={(event) => void uploadPhotos(event.target.files)} /><button type="button" disabled={uploading} onClick={() => fileInput.current?.click()} className="flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 text-xs font-semibold text-violet-300 transition hover:bg-violet-500/15 disabled:cursor-not-allowed disabled:opacity-50"><Upload size={15} />{uploading ? text.uploadingPhotos : text.addPhotos}</button>{uploadError && <p className="mt-2 text-[11px] text-red-300">{productCardErrorMessage(uploadError, locale)}</p>}<p className="mt-2 text-[10px] text-zinc-600">{text.uploadHint}</p></div>}
+      </div>
+
+      <div className="p-5 sm:p-7">
+        <div className="flex items-start justify-between gap-4">
+          <div><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-violet-400">{model.code}</p><h3 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-50">{model.name}</h3><p className="mt-1 text-sm text-zinc-500">{model.brand} · {model.category}</p></div>
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-500"><Shirt size={20} /></span>
+        </div>
+
+        <div className="mt-6 grid grid-cols-2 gap-3">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-3"><p className="text-[9px] uppercase tracking-[0.14em] text-zinc-600">{text.totalStock}</p><p className="mt-2 text-lg font-semibold text-zinc-100">{text.pieces(totalStock)}</p></div>
+          <div className="rounded-xl border border-violet-500/20 bg-violet-500/[0.06] p-3"><p className="text-[9px] uppercase tracking-[0.14em] text-zinc-500">{text.sellPrice}</p><p className="mt-2 text-lg font-semibold text-zinc-100">{model.cost * 3} {model.currency}</p></div>
+        </div>
+
+        <div className="mt-6"><p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">{text.color}</p><div className="mt-2 flex flex-wrap gap-2">{colors.map((value) => <button key={value} type="button" onClick={() => setColor(value)} className={`rounded-lg border px-3.5 py-2.5 text-xs font-medium ${color === value ? "theme-selected border-violet-500 bg-violet-500/15 text-violet-200" : "border-zinc-800 bg-zinc-900 text-zinc-500 hover:text-zinc-200"}`}>{value}</button>)}</div></div>
+
+        <div className="mt-6"><div className="flex items-center justify-between"><p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">{text.availableSizes}</p><span className="text-[10px] text-zinc-600">{text.stockByVariant}</span></div><div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">{colorVariants.map((variant) => <button key={variant.id} type="button" onClick={() => setSelectedVariantId(variant.id)} className={`rounded-xl border p-3 text-left transition ${selectedVariant?.id === variant.id ? "border-violet-500 ring-1 ring-violet-500/25" : ""} ${variant.stock > 0 ? "border-zinc-800 bg-zinc-900/70" : "border-amber-500/20 bg-amber-500/[0.06]"}`}><div className="flex items-center justify-between gap-2"><span className="text-sm font-semibold text-zinc-200">{variant.size}</span><span className={`text-[10px] font-medium ${variant.stock > 2 ? "text-emerald-400" : "text-amber-400"}`}>{text.pieces(variant.stock)}</span></div></button>)}</div></div>
+
+        <div className="mt-6 space-y-2 border-t border-zinc-800 pt-5 text-xs"><div className="flex items-center justify-between"><span className="text-zinc-600">{text.supplier}</span><span className="text-zinc-300">{model.supplier}</span></div>{model.barcode && <div className="flex items-center justify-between gap-3"><span className="text-zinc-600">{text.barcode}</span><span className="truncate font-mono text-zinc-300">{model.barcode}</span></div>}<div className="flex items-center justify-between"><span className="text-zinc-600">{text.gender}</span><span className="text-zinc-300">{text.genderNames[model.gender]}</span></div><div className="flex items-center justify-between"><span className="text-zinc-600">{text.variants}</span><span className="flex items-center gap-1.5 text-zinc-300"><Package size={13} /> {variants.length}</span></div>{onSetLowStockThreshold && <form className="flex flex-wrap items-center justify-between gap-3 pt-2" onSubmit={(event) => { event.preventDefault(); void saveThreshold(); }}><span className="text-zinc-600">Low-stock threshold</span><span className="flex items-center gap-2"><input aria-label="Low-stock threshold" inputMode="numeric" value={threshold} onChange={(event) => { setThreshold(event.target.value); setThresholdSaved(false); }} className="h-8 w-12 rounded-md border border-zinc-800 bg-zinc-900 px-2 text-center text-xs text-zinc-100 outline-none focus:border-violet-500" /><button type="submit" disabled={thresholdSaving} className={`flex h-8 min-w-16 items-center justify-center gap-1 rounded-md border px-2 text-[10px] transition disabled:opacity-50 ${thresholdSaved ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300" : "border-zinc-700 text-zinc-300"}`}>{thresholdSaving ? "Saving…" : thresholdSaved ? <><Check size={12} /> Saved</> : "Save"}</button></span></form>}{thresholdError && <p role="alert" className="text-[11px] text-red-300">{thresholdError}</p>}</div>
+        <div className="mt-6 space-y-3">
+          {onSell && !isArchived && <button type="button" onClick={() => onSell(model.code)} className="purple-shadow flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-violet-600 text-sm font-semibold text-white transition hover:bg-violet-500"><ShoppingBag size={17} /> {text.sellThisProduct}</button>}
+          {onViewHistory && selectedVariant && <button type="button" onClick={() => onViewHistory(selectedVariant)} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-violet-200"><History size={16} /> {locale === "tr" ? "Hareket geçmişi" : "Movement history"}</button>}
+          {onAdjust && selectedVariant && !isArchived && <button type="button" onClick={() => onAdjust(selectedVariant)} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-violet-200"><Settings2 size={16} /> {locale === "tr" ? "Stok düzelt" : "Adjust stock"}</button>}
+          {canManageArchive && onSetArchived && (isArchived ? <button type="button" disabled={archiveSaving} onClick={() => void setArchived(false)} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-violet-500/35 bg-violet-500/10 text-xs font-semibold text-violet-200 transition hover:bg-violet-500/15 disabled:cursor-not-allowed disabled:opacity-50"><ArchiveRestore size={16} /> {archiveSaving ? text.archivingProduct : text.restoreProduct}</button> : archiveConfirmationOpen ? <div className="rounded-xl border border-amber-500/25 bg-amber-500/[0.06] p-3"><p className="text-xs leading-relaxed text-amber-100">{text.archiveConfirm}</p><div className="mt-3 flex gap-2"><button type="button" disabled={archiveSaving} onClick={() => void setArchived(true)} className="flex h-9 flex-1 items-center justify-center rounded-lg bg-amber-500 px-3 text-xs font-semibold text-zinc-950 disabled:opacity-50">{archiveSaving ? text.archivingProduct : text.archiveConfirmAction}</button><button type="button" disabled={archiveSaving} onClick={() => setArchiveConfirmationOpen(false)} className="h-9 rounded-lg border border-zinc-700 px-3 text-xs font-medium text-zinc-300">{text.cancelArchive}</button></div></div> : <button type="button" onClick={() => setArchiveConfirmationOpen(true)} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-300 transition hover:border-amber-500/50 hover:text-amber-200"><ArchiveRestore size={16} /> {text.archiveProduct}</button>)}
+          {archiveError && <p className="text-[11px] text-red-300">{productArchiveErrorMessage(archiveError, locale)}</p>}
+        </div>
+      </div>
+
+      {viewerOpen && photos[photoIndex] && <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/95 p-3 sm:p-8" role="dialog" aria-modal="true" aria-label={text.photoViewer} onMouseDown={(event) => { event.stopPropagation(); if (event.target === event.currentTarget) setViewerOpen(false); }}>
+        <div className="absolute left-4 top-4 flex items-center gap-2 sm:left-7 sm:top-7"><span className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] text-white">{photoIndex + 1} / {photos.length}</span><span className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] text-white">{Math.round(zoom * 100)}%</span></div>
+        <div className="absolute right-4 top-4 z-10 flex items-center gap-2 sm:right-7 sm:top-7"><button type="button" onMouseDown={(event) => event.stopPropagation()} onClick={() => changeZoom(-0.25)} disabled={zoom <= 1} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 disabled:opacity-35" aria-label={text.zoomOut}><Minus size={18} /></button><button type="button" onMouseDown={(event) => event.stopPropagation()} onClick={() => changeZoom(0.25)} disabled={zoom >= 3} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 disabled:opacity-35" aria-label={text.zoomIn}><Plus size={18} /></button><button type="button" onMouseDown={(event) => event.stopPropagation()} onClick={() => setViewerOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20" aria-label={text.closePhotoViewer}><X size={19} /></button></div>
+        {photos.length > 1 && <button type="button" onMouseDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); changeViewerPhoto(-1); }} className="absolute left-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:left-7" aria-label={text.previousPhoto}><ChevronLeft size={22} /></button>}
+        <div className={`flex h-full w-full items-center justify-center overflow-hidden touch-none ${zoom > 1 ? "cursor-grab active:cursor-grabbing" : "cursor-default"}`} onMouseDown={(event) => event.stopPropagation()} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag} onPointerCancel={endDrag}><img draggable={false} src={photos[photoIndex]} alt={text.enlargedPhotoAlt(model.name, photoIndex + 1)} className="max-h-full max-w-full select-none object-contain transition-transform duration-150" style={{ transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }} /></div>
+        {photos.length > 1 && <button type="button" onMouseDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); changeViewerPhoto(1); }} className="absolute right-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:right-7" aria-label={text.nextPhoto}><ChevronRight size={22} /></button>}
+      </div>}
+    </div>
+  );
+}

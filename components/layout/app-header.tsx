@@ -1,0 +1,2 @@
+import type { ReactNode } from "react";
+export function AppHeader({ navigation, store, controls }: { navigation: ReactNode; store?: ReactNode; controls: ReactNode }) { return <header className="sticky top-0 z-30 flex h-[72px] items-center border-b border-zinc-800/80 bg-[#0a0a0c]/88 px-4 backdrop-blur-xl sm:px-6 xl:px-8">{navigation}{store}<div className="ml-auto flex items-center gap-2 sm:gap-3">{controls}</div></header>; }

@@ -1,6 +1,6 @@
 # Roadmap Zebra Retail
 
-Обновлено: 2026-08-09
+Обновлено: 2026-08-11
 Текущий этап: Этап 2  
 Правило: следующий этап начинается только после выполнения exit criteria текущего
 
@@ -42,11 +42,11 @@ Exit criteria: нет открытых вопросов, блокирующих 
 
 Статус: в работе
 
-- [ ] Разделить `app/page.tsx` на feature-модули и переиспользуемые компоненты. Начато: добавлены `features/workspace`, `features/catalog`, `features/exchange-rates` и `features/seller-goals`; demo/live sources больше не смешиваются. Следующий slice — `features/sales`.
+- [ ] Разделить `app/page.tsx` на feature-модули и переиспользуемые компоненты. Начато: добавлены `features/workspace`, `features/catalog`, `features/exchange-rates`, `features/seller-goals` и `features/sales`; demo/live sources больше не смешиваются. Следующий slice — `features/receipts`.
 - [ ] Зафиксировать design tokens, состояния компонентов и адаптивные правила. Начато: добавлены Light/Dark theme tokens и responsive Product/Receive flows.
-- [ ] Реализовать i18n для English и Turkish. Начато: добавлены en/tr dictionary, persistent language switcher и локализация основных dashboard/nav/stock labels; modal flows/login ещё требуют полного покрытия.
+- [ ] Реализовать i18n для English и Turkish. Начато: добавлены en/tr dictionary, persistent language switcher и локализация основных dashboard/nav/stock labels; Sale Flow покрыт полностью, Receive/Product/login ещё требуют полного покрытия.
 - [ ] Ввести routing будущих разделов без потери цельности продукта.
-- [ ] Добавить form validation и единый слой доменных ошибок.
+- [ ] Добавить form validation и единый слой доменных ошибок. Начато: `features/sales` централизует проверку остатков/доступности и локализует ошибки live mutation.
 - [ ] Добавить test runner, component tests и e2e smoke tests.
 - [ ] Добавить локальный persistence adapter для development/demo.
 - [ ] Описать API contracts независимо от выбранного transport.
@@ -77,7 +77,7 @@ Exit criteria: безопасный пользователь может войт
 - [ ] Магазины и доступы пользователей.
 - [ ] Фабрики/поставщики.
 - [ ] Модели товара и варианты размер/цвет.
-- [ ] Фотографии, внутренние коды и штрихкоды. Начато: private Storage bucket, store-scoped RLS policies, image metadata RPC and product-card upload flow подготовлены; требуется применить staging migration и проверить реальную загрузку.
+- [ ] Фотографии и product identity. Inventory является code-first: обязательный `Product code / Ürün Kodu` и internal UUID; barcode nullable, не блокирует операции и до TASK-117 не применяется на staging. Private Storage/RLS и product-card upload подготовлены.
 - [ ] Документы приёмки и строки приёмки. Начато: idempotent RPC applied to staging, live Receive Flow invokes it, and live catalog refreshes after a receipt; follow-up migration исправляет business-date FX lookup, затем остаётся manual integration test.
 - [ ] Журнал складских движений. Начато: receipt RPC атомарно создаёт приходные movements, а live catalog суммирует их для остатка; sale/exchange/cancellation ещё не реализованы.
 - [ ] Дневные курсы валют. Начато: Owner-only upsert RPC applied to staging and Owner FX settings UI invokes it; manual integration test remains.
@@ -92,7 +92,9 @@ Exit criteria: остаток каждого варианта воспроизв
 Статус: ожидает
 
 - [ ] Корзина и продажа нескольких позиций.
-- [ ] Свободная фактическая цена без discount entity; mixed payment lines.
+- [ ] Camera / multi-photo label intake: AI извлекает brand, Product code, color и size, находит только in-stock variant и формирует review draft; barcode optional, фактическая цена с бирки не переносится.
+- [ ] Seller явно проверяет каждый label match и добавляет его в обычную cart; manual и AI-derived items используют один pricing/payment/atomic sale flow.
+- [ ] Свободная фактическая цена без discount entity; mixed payment lines. UI и unit/component tests готовы: Per-item/Total sale pricing и opt-in Mixed payment работают; остаётся staging smoke-test.
 - [ ] Атомарное списание остатков.
 - [ ] Снимок себестоимости и валютного курса.
 - [ ] Обмен товара согласно утверждённой политике; денежные возвраты не входят в Clothing MVP.
@@ -120,9 +122,12 @@ Exit criteria: отчёты согласованы с журналом прод�
 
 Статус: ожидает
 
-- [ ] Загрузка фото и PDF накладных.
-- [ ] OCR/AI extraction в черновик, но не автоматическая запись.
-- [ ] Проверка и подтверждение пользователем.
+- [ ] Загрузка фото/PDF накладной в private store-scoped draft без изменения stock.
+- [ ] OCR/AI extraction header и строк: supplier, invoice number/date/currency, `Ürün Kodu`, description, quantity, unit cost и totals с confidence/source references.
+- [ ] Exact catalog matching по Product code; unknown/ambiguous строки требуют явного review, fuzzy auto-merge запрещён.
+- [ ] Распределение invoice quantity по color/size variants; barcode optional и относится к variant только когда это подтверждено биркой.
+- [ ] Проверка expected/distributed totals и явное подтверждение пользователем.
+- [ ] Атомарное создание receipt, variants, FX/cost snapshots, movements и audit; повторная обработка документа идемпотентна.
 - [ ] Общий backend для web и Telegram-бота либо утверждённая замена бота.
 - [ ] Идемпотентность повторной обработки сообщений и документов.
 - [ ] Миграция существующих фото и SQLite-данных.

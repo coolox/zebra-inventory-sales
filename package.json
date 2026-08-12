@@ -6,7 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "supabase:start": "npx --yes supabase@2.113.0 start",
+    "supabase:reset": "npx --yes supabase@2.113.0 db reset --local",
+    "supabase:test": "npx --yes supabase@2.113.0 test db --local supabase/tests/database",
+    "supabase:verify": "npm run supabase:reset && npm run supabase:test"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",
@@ -17,11 +24,18 @@
     "react-dom": "19.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.55.0",
     "@tailwindcss/postcss": "4.1.18",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/node": "^20.17.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^24.1.3",
     "tailwindcss": "4.1.18",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.9"
   }
 }

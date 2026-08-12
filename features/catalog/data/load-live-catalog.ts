@@ -8,10 +8,13 @@ type ModelRow = {
   brand: string;
   category: string;
   gender: Product["gender"];
+  is_active: boolean;
+  low_stock_threshold: number | null;
+  barcode: string | null;
   suppliers: { name: string } | { name: string }[] | null;
 };
 
-type VariantRow = { id: string; product_model_id: string; color: string; size: string };
+type VariantRow = { id: string; product_model_id: string; color: string; size: string; barcode: string | null };
 type MovementRow = { variant_id: string; quantity: number };
 type ReceiptLineRow = { variant_id: string; unit_cost: number; currency: Product["currency"] };
 type ImageRow = { product_model_id: string; storage_path: string; position: number };
@@ -20,9 +23,8 @@ export async function loadLiveCatalog(storeId: string): Promise<Product[]> {
   const client = createClient();
   const { data: modelData, error: modelsError } = await client
     .from("product_models")
-    .select("id, model_code, name, brand, category, gender, suppliers(name)")
+    .select("id, model_code, barcode, name, brand, category, gender, is_active, low_stock_threshold, suppliers(name)")
     .eq("store_id", storeId)
-    .eq("is_active", true)
     .order("created_at", { ascending: false });
 
   if (modelsError) throw modelsError;
@@ -32,7 +34,7 @@ export async function loadLiveCatalog(storeId: string): Promise<Product[]> {
   const modelIds = models.map((model) => model.id);
   const { data: variantData, error: variantsError } = await client
     .from("product_variants")
-    .select("id, product_model_id, color, size")
+    .select("id, product_model_id, color, size, barcode")
     .in("product_model_id", modelIds)
     .eq("is_active", true);
   if (variantsError) throw variantsError;
@@ -96,6 +98,10 @@ export async function loadLiveCatalog(storeId: string): Promise<Product[]> {
       modelId: model.id,
       variantId: variant.id,
       code: model.model_code,
+      barcode: model.barcode ?? undefined,
+      variantBarcode: variant.barcode ?? undefined,
+      isActive: model.is_active,
+      lowStockThreshold: model.low_stock_threshold ?? undefined,
       name: model.name,
       brand: model.brand,
       category: model.category,
