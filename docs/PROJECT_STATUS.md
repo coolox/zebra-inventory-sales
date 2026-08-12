@@ -34,7 +34,7 @@
 
 ## Следующая задача
 
-- TASK-131 — усилить PWA install assets. Затем последовательно TASK-132—TASK-136: visual parity, Turkish gaps, demo HTTPS preview, owner mobile install test и закрытие PWA gate.
+- TASK-132 — восстановить visual parity Overview. Затем последовательно TASK-133—TASK-136: Turkish gaps, demo HTTPS preview, owner mobile install test и закрытие PWA gate. TASK-131 завершена.
 - До завершения TASK-136 не начинать TASK-060 или другие задачи основной разработки.
 - После закрытия PWA gate следующая задача: TASK-060 — провести accessibility pass.
 - TASK-040 — завершить staging Magic Link configuration.
@@ -147,6 +147,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-057](tasks/TASK-057.md) — добавлены sale/payment contracts, explicit money tolerance/idempotency и lifecycle DTO.
 - [TASK-058](tasks/TASK-058.md) — завершён Turkish pass для overview/low-stock states и locale-aware KPI formatting.
 - [TASK-059](tasks/TASK-059.md) — добавлены standalone manifest, maskable branding icons и install-safe metadata без offline promise.
+- [TASK-131](tasks/TASK-131.md) — добавлены explicit Android/iOS PNG install assets, manifest/metadata checks и reproducible icon generator.
 
 ## Список оставшихся задач
 
@@ -156,7 +157,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-041](tasks/TASK-041.md) — Добавить store-scoped audit log query
 - [TASK-042](tasks/TASK-042.md) — Добавить Owner Audit Log UI
 - [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
-- [TASK-131](tasks/TASK-131.md) — Усилить PWA install assets
 - [TASK-132](tasks/TASK-132.md) — Восстановить visual parity Overview
 - [TASK-133](tasks/TASK-133.md) — Закрыть оставшиеся Turkish UI gaps
 - [TASK-134](tasks/TASK-134.md) — Развернуть demo HTTPS preview для PWA
@@ -226,7 +226,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - Receive Flow содержит загрязнённые staging color suggestions (`Boundary EUR/USD`, case/EN/TR duplicates); безопасный audit, normalization и cleanup вынесены в TASK-118.
 - SSR/первый client render `Home` теперь используют детерминированный demo shell, а live mode включается после hydration; browser console smoke и изоляция dev build outputs всё ещё остаются в TASK-123.
 - Turkish покрытие неполное вне Sale Flow.
-- TASK-059 использует SVG install icons; explicit Android PNG 192/512 и iOS PNG 180, remote manifest validation и physical-device install вынесены в TASK-131—TASK-136.
+- Explicit Android/iOS PNG install assets и local manifest validation завершены в TASK-131; remote HTTPS validation и physical-device install остаются в TASK-134—TASK-136.
 - Нет e2e/RLS/concurrency tests и CI.
 - `app/page.tsx` остаётся перегруженным; routing и demo persistence не завершены.
 - Cancellation, exchange, reports, audit UI и initial inventory не готовы; следующим шагом Seller deactivate/reactivate.

@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "pwa:icons": "node scripts/generate-pwa-icons.mjs",
     "supabase:start": "npx --yes supabase@2.113.0 start",
     "supabase:reset": "npx --yes supabase@2.113.0 db reset --local",
     "supabase:test": "npx --yes supabase@2.113.0 test db --local supabase/tests/database",
