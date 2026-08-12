@@ -241,3 +241,4 @@
 - Localized dashboard low-stock states and made KPI formatting locale-aware.
 - Added install-safe Zebra Retail PWA manifest, standalone metadata and maskable icons.
 - Paused the task sequence for owner mobile verification of the PWA install flow before continuing non-PWA work.
+- Added TASK-131–TASK-136 as a gated PWA hardening, HTTPS preview and physical-device verification track before accessibility work resumes.
