@@ -1,4 +1,4 @@
-import type { Activity, Product, Sale, Seller } from "@/lib/types";
+import type { Activity, Product, Sale, SaleExchange, Seller } from "@/lib/types";
 
 /** Transport-safe workspace payload: normalized UI models, never database rows. */
 export type WorkspaceSnapshotDto = {
@@ -6,6 +6,7 @@ export type WorkspaceSnapshotDto = {
   sales: Sale[];
   sellers: Seller[];
   activities: Activity[];
+  exchanges: SaleExchange[];
 };
 
 export function toWorkspaceSnapshot(source: WorkspaceSnapshotDto): WorkspaceSnapshotDto {
@@ -14,5 +15,6 @@ export function toWorkspaceSnapshot(source: WorkspaceSnapshotDto): WorkspaceSnap
     sales: source.sales.map((sale) => ({ ...sale })),
     sellers: source.sellers.map((seller) => ({ ...seller })),
     activities: source.activities.map((activity) => ({ ...activity })),
+    exchanges: source.exchanges.map((exchange) => ({ ...exchange })),
   };
 }

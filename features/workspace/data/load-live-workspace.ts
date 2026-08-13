@@ -56,5 +56,6 @@ export async function loadLiveWorkspace(storeId: string): Promise<WorkspaceData>
     sales: salesData.sales,
     sellers,
     activities: salesData.activities,
+    exchanges: [],
   });
 }

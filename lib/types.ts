@@ -53,6 +53,28 @@ export type Sale = {
   time: string;
 };
 
+/** Immutable demo snapshot of an exchange applied to an existing sale line. */
+export type SaleExchange = {
+  id: EntityId;
+  saleId: string;
+  sourceSaleLineId: string;
+  sourceProductId: EntityId;
+  replacementProductId: EntityId;
+  replacementProduct: string;
+  replacementCode: string;
+  replacementSize: string;
+  sellerId: EntityId;
+  seller: string;
+  store: StoreId;
+  quantity: number;
+  topUpEur: number;
+  marginDeltaEur: number;
+  reason: string;
+  paymentSnapshot?: string;
+  dayOffset: number;
+  time: string;
+};
+
 export type Seller = {
   id: EntityId;
   name: string;

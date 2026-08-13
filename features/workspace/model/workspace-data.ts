@@ -12,5 +12,6 @@ export function createInitialWorkspaceData(): WorkspaceData {
     sales: initialSales.map((sale) => ({ ...sale })),
     sellers: initialSellers.map((seller) => ({ ...seller })),
     activities: initialActivity.map((activity) => ({ ...activity })),
+    exchanges: [],
   });
 }

@@ -93,7 +93,7 @@ import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 import { uploadProductImages } from "@/lib/product-images";
 import { copy, persistLocale, readStoredLocale, type Locale } from "@/lib/i18n";
 import { stores } from "@/lib/mock-data";
-import type { Activity as ActivityType, Period, Product, Role, Sale, Seller, StoreId } from "@/lib/types";
+import type { Activity as ActivityType, Period, Product, Role, Sale, SaleExchange, Seller, StoreId } from "@/lib/types";
 
 type StoreFilter = "all" | StoreId;
 type ModalName = "sale" | "receive" | "sellers" | "fx" | "activity" | "archived" | "count" | "suppliers" | null;
@@ -162,6 +162,7 @@ export default function Home() {
   const [sales, setSales] = useState<Sale[]>(initialWorkspaceData.sales);
   const [sellers, setSellers] = useState<Seller[]>(initialWorkspaceData.sellers);
   const [activities, setActivities] = useState<ActivityType[]>(initialWorkspaceData.activities);
+  const [exchanges, setExchanges] = useState<SaleExchange[]>(initialWorkspaceData.exchanges);
   const [search, setSearch] = useState("");
   const [inventoryPage, setInventoryPage] = useState(1);
   const [modal, setModal] = useState<ModalName>(null);
@@ -189,14 +190,15 @@ export default function Home() {
       setSales(workspace.sales);
       setSellers(workspace.sellers);
       setActivities(workspace.activities);
+      setExchanges(workspace.exchanges);
     }
     setWorkspaceHydrated(true);
   }, []);
 
   useEffect(() => {
     if (!workspaceHydrated || isLiveMode) return;
-    writeDemoWorkspace({ products, sales, sellers, activities });
-  }, [activities, isLiveMode, products, sales, sellers, workspaceHydrated]);
+    writeDemoWorkspace({ products, sales, sellers, activities, exchanges });
+  }, [activities, exchanges, isLiveMode, products, sales, sellers, workspaceHydrated]);
 
   useEffect(() => {
     const section = Object.entries(dashboardPaths).find(([, path]) => path === window.location.pathname)?.[0] ?? "overview";
@@ -221,6 +223,7 @@ export default function Home() {
     setSales(data.sales);
     setSellers(data.sellers);
     setActivities(data.activities);
+    setExchanges(data.exchanges);
   };
 
   const refreshLiveWorkspace = async () => {
@@ -251,6 +254,7 @@ export default function Home() {
     setSales([]);
     setSellers([]);
     setActivities([]);
+    setExchanges([]);
     void loadLiveWorkspace(activeStoreId)
       .then((data) => {
         if (!active) return;
@@ -309,6 +313,10 @@ export default function Home() {
     () => sales.filter((sale) => sale.store === roleStore && sale.dayOffset <= maxDays && (role === "owner" || sale.sellerId === currentSeller.id)),
     [sales, roleStore, maxDays, role, currentSeller.id],
   );
+  const visibleExchanges = useMemo(
+    () => exchanges.filter((exchange) => exchange.store === roleStore && exchange.dayOffset <= maxDays && (role === "owner" || exchange.sellerId === currentSeller.id)),
+    [currentSeller.id, exchanges, maxDays, role, roleStore],
+  );
 
   const visibleProducts = useMemo(() => filterInventoryProducts(products, roleStore, search), [products, roleStore, search]);
   const archivedProducts = useMemo(
@@ -327,17 +335,17 @@ export default function Home() {
     setInventoryPage(1);
   }, [search, activeStoreId]);
 
-  const metrics = useMemo(() => selectMetrics(visibleSales, visibleProducts), [visibleSales, visibleProducts]);
+  const metrics = useMemo(() => selectMetrics(visibleSales, visibleProducts, visibleExchanges), [visibleExchanges, visibleProducts, visibleSales]);
 
   const chartData = useMemo(() => {
-    return selectChartData(sales, roleStore, role === "owner" ? undefined : currentSeller.id);
-  }, [sales, roleStore, role, currentSeller.id]);
+    return selectChartData(sales, roleStore, role === "owner" ? undefined : currentSeller.id, exchanges);
+  }, [sales, roleStore, role, currentSeller.id, exchanges]);
   const chartMax = Math.max(...chartData.map((day) => day.value), 1);
 
   const rankedSellers = useMemo(() => {
-    return selectSellerRanking(sellers, sales, selectedStore === "all" ? roleStore : selectedStore, maxDays);
-  }, [sellers, sales, selectedStore, maxDays]);
-  const saleHistory = useMemo(() => toSaleHistory(sales, roleStore, role === "seller" ? currentSeller.id : undefined), [currentSeller.id, role, roleStore, sales]);
+    return selectSellerRanking(sellers, sales, selectedStore === "all" ? roleStore : selectedStore, maxDays, exchanges);
+  }, [sellers, sales, selectedStore, maxDays, exchanges]);
+  const saleHistory = useMemo(() => toSaleHistory(sales, roleStore, role === "seller" ? currentSeller.id : undefined, exchanges), [currentSeller.id, exchanges, role, roleStore, sales]);
 
   const notify = (message: string) => {
     setToast(message);
@@ -409,8 +417,14 @@ export default function Home() {
       await confirmExchange({ storeId: activeStoreId ?? "", sourceSaleLineId: source.sourceSaleLineId, replacementVariantId: String(input.replacement.id), quantity: source.quantity, replacementUnitPrice: input.price, replacementCurrency: input.currency, payments: input.topUpEur > 0 ? [{ method: input.method, amount: input.paymentAmount, currency: input.paymentCurrency }] : [], reason: input.reason, idempotencyKey: crypto.randomUUID(), locale });
       await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
     } else {
+      const exchangeId = `exchange-${Date.now()}`;
+      const replacementCostRate = paymentRates[input.replacement.currency] ?? 0;
+      const sourceCostEur = source.revenueEur - source.marginEur;
+      const replacementCostEur = input.replacement.cost * replacementCostRate * source.quantity;
+      const marginDeltaEur = Number((input.topUpEur + sourceCostEur - replacementCostEur).toFixed(2));
       setProducts((current) => current.map((product) => product.id === source.productId ? { ...product, stock: product.stock + source.quantity, updated: "Just now" } : product.id === input.replacement.id ? { ...product, stock: product.stock - source.quantity, updated: "Just now" } : product));
-      setActivities((current) => [{ id: `exchange-${Date.now()}`, type: "stock" as const, title: "Exchange · 1 item", meta: `${input.reason} · just now`, amount: input.topUpEur, dayOffset: 0 }, ...current].slice(0, 6));
+      setExchanges((current) => [{ id: exchangeId, saleId: source.saleId, sourceSaleLineId: source.sourceSaleLineId ?? String(source.id), sourceProductId: source.productId, replacementProductId: input.replacement.id, replacementProduct: input.replacement.name, replacementCode: input.replacement.code, replacementSize: input.replacement.size, sellerId: source.sellerId, seller: source.seller, store: source.store, quantity: source.quantity, topUpEur: input.topUpEur, marginDeltaEur, reason: input.reason, paymentSnapshot: input.topUpEur > 0 ? `${input.paymentAmount.toFixed(2)} ${input.paymentCurrency}` : undefined, dayOffset: 0, time: new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date()) }, ...current]);
+      setActivities((current) => [{ id: exchangeId, type: "stock" as const, title: "Exchange · 1 item", meta: `${input.reason} · just now`, amount: input.topUpEur, dayOffset: 0 }, ...current].slice(0, 6));
     }
     notify(locale === "tr" ? "Değişim kaydedildi ve stok güncellendi" : "Exchange recorded and stock updated");
   };
@@ -524,6 +538,7 @@ export default function Home() {
     setSales(workspace.sales);
     setSellers(workspace.sellers);
     setActivities(workspace.activities);
+    setExchanges(workspace.exchanges);
     setModal(null);
     notify(locale === "tr" ? "Demo verileri sıfırlandı" : "Demo data reset");
   };
@@ -620,8 +635,8 @@ export default function Home() {
             </div>
 
             <Overview role={role} period={period} metrics={metrics} chartData={chartData} rankedSellers={rankedSellers} products={visibleProducts} live={isLiveMode} locale={locale} onManageTeam={() => setModal("sellers")} labels={{ revenue: text.revenue, sales: text.salesMetric, grossMargin: text.grossMargin, myResult: text.myResult, unitsShort: text.unitsShort, todayDelta: text.todayDelta, periodDelta: text.periodDelta, itemsDelta: text.itemsDelta, ofRevenue: text.ofRevenue, salesTrend: text.salesTrend, lastSevenDays: text.lastSevenDays, sellerResults: text.sellerResults, revenueRanking: text.revenueRanking, manage: text.manage, liveData: text.liveData }} />
-            {role === "owner" && <ReportsDashboard role={role} locale={locale} exportStoreId={activeStoreId ?? undefined} refreshKey={`${sales.map((sale) => `${sale.id}:${sale.status}:${sale.revenueEur}`).join("|")}:${products.map((product) => `${product.id}:${product.stock}`).join("|")}:${activities.map((activity) => `${activity.id}:${activity.amount ?? 0}`).join("|")}`} load={async (reportPeriod, dimension) => {
-              if (!isLiveMode) return demoReportData({ sales, products, activities, period: reportPeriod, dimension });
+            {role === "owner" && <ReportsDashboard role={role} locale={locale} exportStoreId={activeStoreId ?? undefined} refreshKey={`${sales.map((sale) => `${sale.id}:${sale.status}:${sale.revenueEur}`).join("|")}:${products.map((product) => `${product.id}:${product.stock}`).join("|")}:${exchanges.map((exchange) => `${exchange.id}:${exchange.topUpEur}`).join("|")}`} load={async (reportPeriod, dimension) => {
+              if (!isLiveMode) return demoReportData({ sales, products, exchanges, period: reportPeriod, dimension });
               if (!activeStoreId) throw new Error("Store is unavailable.");
               const [reportMetrics, breakdowns, inventory] = await Promise.all([loadMetrics(activeStoreId, reportPeriod), loadBreakdowns(activeStoreId, reportPeriod, dimension), loadInventoryReport(activeStoreId, reportPeriod)]);
               return { metrics: reportMetrics, breakdowns, inventory };

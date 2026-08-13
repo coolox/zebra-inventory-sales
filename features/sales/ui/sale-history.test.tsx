@@ -43,6 +43,16 @@ describe("SaleHistory", () => {
     expect(screen.queryByRole("button", { name: "Cancel sale" })).not.toBeInTheDocument();
   });
 
+  it("shows exchange details and prevents a second mutation of the same line", async () => {
+    const user = userEvent.setup();
+    const exchange = { id: "exchange", saleId: "sale-1", sourceSaleLineId: "line-1", sourceProductId: "variant-1", replacementProductId: "variant-2", replacementProduct: "Structured Jacket", replacementCode: "TR-07", replacementSize: "L", sellerId: "seller-1", seller: "Elif Demir", store: "clothing" as const, quantity: 1, topUpEur: 20, marginDeltaEur: 5, reason: "Different size", paymentSnapshot: "20.00 EUR", dayOffset: 0, time: "13:00" };
+    render(<SaleHistory locale="en" records={[{ ...records[0], paymentSnapshot: "€120.00", exchange }]} canCancel canExchange onCancel={async () => undefined} onExchange={async () => undefined} products={[]} paymentRates={{ EUR: 1, USD: 1, TRY: 1, RUB: 1, GBP: 1 }} />);
+    await user.click(screen.getByRole("button", { name: /Structured Jacket/ }));
+    expect(screen.getByRole("dialog", { name: "Sale details" })).toHaveTextContent("Exchange top-up€20.00 · 20.00 EUR");
+    expect(screen.queryByRole("button", { name: "Exchange item" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Cancel sale" })).not.toBeInTheDocument();
+  });
+
   it("lets Owner filter sellers but locks Seller to their own scope", async () => {
     const user = userEvent.setup();
     const twoSellers = [...records, { ...records[0], id: "sale-2:line-2", saleId: "sale-2", sellerId: "seller-2", seller: "Mert Kaya", product: "Wool Jacket" }];

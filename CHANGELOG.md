@@ -2,6 +2,7 @@
 
 ## 2026-08-13
 
+- Added persistent demo sale-exchange snapshots: a positive top-up now increases Overview/report revenue, chart and Seller ranking while keeping one ticket/unit; margin replaces the returned item's cost, and Sales History shows the replacement and final ticket total.
 - Fixed demo exchange payment options to show each currency's actual FX-equivalent top-up before selection. Demo Owner Reports now derive from local sales, cancellations, exchanges and inventory and refresh after those changes; Seller no longer sees the empty Owner-only Reports block.
 - Added local-only real concurrent inventory transaction harness for sale/sale, sale/adjustment and sale/exchange conflicts; each clean run proves one rejection and non-negative ledger balances.
 - Added Owner-only reconciliation report for payment mismatches, missing sale movements, negative balances and manual inventory corrections, including source IDs, RLS, clean-ledger coverage and Reports UI states.

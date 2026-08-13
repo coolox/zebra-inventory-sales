@@ -1,7 +1,7 @@
 import { createInitialWorkspaceData, type WorkspaceData } from "@/features/workspace/model/workspace-data";
 
 const storageKey = "zebra-demo-workspace";
-const version = 1;
+const version = 2;
 type StoredWorkspace = { version: number; data: WorkspaceData };
 
 function browserStorage(): Storage | null {
@@ -15,8 +15,8 @@ export function readDemoWorkspace(storage: Storage | null = browserStorage()): W
     const value = storage.getItem(storageKey);
     if (!value) return fallback;
     const parsed = JSON.parse(value) as Partial<StoredWorkspace>;
-    if (parsed.version !== version || !parsed.data || !Array.isArray(parsed.data.products) || !Array.isArray(parsed.data.sales) || !Array.isArray(parsed.data.sellers) || !Array.isArray(parsed.data.activities)) throw new Error("Invalid demo workspace");
-    return parsed.data;
+    if ((parsed.version !== 1 && parsed.version !== version) || !parsed.data || !Array.isArray(parsed.data.products) || !Array.isArray(parsed.data.sales) || !Array.isArray(parsed.data.sellers) || !Array.isArray(parsed.data.activities)) throw new Error("Invalid demo workspace");
+    return { ...parsed.data, exchanges: Array.isArray(parsed.data.exchanges) ? parsed.data.exchanges : [] };
   } catch {
     storage.removeItem(storageKey);
     return fallback;

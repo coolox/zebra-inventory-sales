@@ -12,5 +12,6 @@ describe("toWorkspaceSnapshot", () => {
     expect(snapshot.sales).toEqual(source.sales);
     expect(snapshot.sellers).toEqual(source.sellers);
     expect(snapshot.activities).toEqual(source.activities);
+    expect(snapshot.exchanges).toEqual(source.exchanges);
   });
 });

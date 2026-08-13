@@ -9,13 +9,20 @@ function storage(): Storage {
 
 describe("demo persistence", () => {
   it("round-trips a versioned workspace and resets it", () => {
-    const target = storage(); const data = createInitialWorkspaceData(); data.products[0].stock = 99; data.sellers[0].name = "Persisted seller"; data.activities[0].title = "Persisted receipt";
+    const target = storage(); const data = createInitialWorkspaceData(); data.products[0].stock = 99; data.sellers[0].name = "Persisted seller"; data.activities[0].title = "Persisted receipt"; data.exchanges.push({ id: "exchange", saleId: "sale", sourceSaleLineId: "line", sourceProductId: 1, replacementProductId: 2, replacementProduct: "Jacket", replacementCode: "J-1", replacementSize: "M", sellerId: 1, seller: "Elif", store: "clothing", quantity: 1, topUpEur: 20, marginDeltaEur: 5, reason: "Size", dayOffset: 0, time: "12:00" });
     writeDemoWorkspace(data, target);
     expect(readDemoWorkspace(target).products[0].stock).toBe(99);
     expect(readDemoWorkspace(target).sellers[0].name).toBe("Persisted seller");
     expect(readDemoWorkspace(target).activities[0].title).toBe("Persisted receipt");
+    expect(readDemoWorkspace(target).exchanges[0].topUpEur).toBe(20);
     expect(resetDemoWorkspace(target).products[0].stock).not.toBe(99);
     expect(target.getItem(demoWorkspaceStorageKey)).toBeNull();
+  });
+
+  it("migrates a version 1 workspace without losing sales", () => {
+    const target = storage(); const data = createInitialWorkspaceData();
+    target.setItem(demoWorkspaceStorageKey, JSON.stringify({ version: 1, data: { products: data.products, sales: data.sales, sellers: data.sellers, activities: data.activities } }));
+    expect(readDemoWorkspace(target)).toMatchObject({ sales: data.sales, exchanges: [] });
   });
 
   it("drops corrupt or old stored data and returns the mock baseline", () => {
