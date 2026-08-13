@@ -38,7 +38,7 @@ TASK-072.
 
 ## Проверка
 
-- XLSX создаётся и повторно открывается ExcelJS: проверены имена листов, typed dates, numeric EUR values/formats, autofilter и защита formula-prefix text.
+- XLSX package проходит structural inspection: проверены workbook/sheet XML, typed dates, numeric EUR values/formats, autofilter и защита formula-prefix text.
 - API authorization/filter tests подтверждают `401`/`403` до выполнения report RPC и успешный workbook для active Owner.
 - `npm test -- --run` — 156/156; `npm run build` — успешно.
 - LibreOffice не установлен в текущем окружении; визуальный smoke доступен через скачивание из Owner live Reports.

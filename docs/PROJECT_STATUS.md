@@ -230,6 +230,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - PWA preview gate и desktop/tablet/mobile QA закрыты: Vercel HTTPS preview, Android/iOS physical-device smoke и local viewport matrix подтверждены.
 - Нет e2e/RLS/concurrency tests и CI.
 - `app/page.tsx` остаётся перегруженным; routing и demo persistence не завершены.
-- XLSX export завершён с server-side workbook structural checks. В текущем окружении нет LibreOffice, поэтому его visual open smoke выполняется в Owner live browser после скачивания.
+- XLSX export завершён без новой production-зависимости: server-side structural checks подтверждают workbook/sheet XML. В текущем окружении нет LibreOffice, поэтому его visual open smoke выполняется в Owner live browser после скачивания.
 - В staging остаются legacy/test color values. UI скрывает и нормализует их; удаление/merge данных разрешается только после отдельного read-only audit и подтверждения владельца (TASK-118).
 - Production projects, SMTP, monitoring, backup/restore и pilot launch не настроены.
