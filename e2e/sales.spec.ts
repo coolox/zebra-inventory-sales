@@ -11,7 +11,7 @@ async function addTr07Line(dialog: import("@playwright/test").Locator, price: st
 test("demo sale preserves two same-variant EUR and USD lines", async ({ page }) => {
   await page.goto("/");
 
-  const productRow = page.getByRole("button").filter({ hasText: "TR-07" }).first();
+  const productRow = page.locator("#inventory").getByRole("button").filter({ hasText: "TR-07" }).first();
   await expect(productRow).toContainText("2 pcs");
 
   await page.getByRole("button", { name: "New sale" }).click();

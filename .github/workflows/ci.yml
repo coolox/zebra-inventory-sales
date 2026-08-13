@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend:
+    name: Frontend checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: TypeScript and production build
+        run: npm run build
+
+      - name: Unit and component tests
+        run: npm test
+
+      - name: Install Chromium for smoke tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Desktop, tablet and mobile smoke tests
+        # Demo persistence intentionally exercises a single shared browser origin.
+        # Keep these stateful smoke scenarios deterministic in CI.
+        run: npm run test:e2e -- --workers=1
+
+  database:
+    name: Local Supabase checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.113.0
+
+      - name: Apply migrations on a clean local database
+        run: npm run supabase:reset
+
+      - name: Run RLS and database integration tests
+        run: npm run supabase:test
+
+      - name: Recreate clean database for concurrency checks
+        run: npm run supabase:reset
+
+      - name: Run concurrent inventory transactions
+        run: npm run supabase:concurrency

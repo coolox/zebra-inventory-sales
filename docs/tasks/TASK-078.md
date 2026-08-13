@@ -1,6 +1,6 @@
 # TASK-078 — Добавить CI pipeline
 
-Статус: pending
+Статус: COMPLETED
 
 ## Цель
 
@@ -28,3 +28,10 @@ TASK-013, TASK-014, TASK-044, TASK-077.
 - One controlled failing check confirms pipeline failure.
 - Green clean run.
 
+## Выполнено
+
+- Добавлен GitHub Actions workflow для `push` и `pull_request`, не требующий production/staging secrets.
+- Frontend job проверяет production TypeScript build, unit/component suite и Playwright desktop/tablet/mobile smoke.
+- Database job запускает pinned local Supabase CLI, применяет migrations на чистой базе, выполняет pgTAP/RLS suite и отдельный clean-run concurrency harness.
+- Stateful demo Playwright scenarios намеренно запускаются одним worker: это сохраняет проверку всех viewport'ов и исключает взаимное влияние localStorage сценариев.
+- Локально подтверждено, что failing smoke command возвращает non-zero; после стабилизации selectors/hydration ожидания полный suite проходит.

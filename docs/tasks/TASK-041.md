@@ -1,6 +1,6 @@
 # TASK-041 — Добавить store-scoped audit log query
 
-Статус: pending
+Статус: COMPLETED
 
 ## Цель
 
@@ -27,3 +27,8 @@ TASK-012.
 - Mapper/pagination unit tests.
 - Cross-store denial test.
 
+## Выполнено
+
+- Добавлен store-scoped loader с нормализованными категориями событий и безопасным именем actor без email или иных контактных данных profile.
+- Contract поддерживает action/category filters и ограниченную, стабильную pagination.
+- Owner/Seller/cross-store RLS boundary покрыта pgTAP fixture; mapper покрыт unit test.

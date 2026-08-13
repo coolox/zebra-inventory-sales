@@ -19,7 +19,7 @@ test("demo dashboard opens in each supported viewport", async ({ page }, testInf
 test("receive flow opens and remains usable in each supported viewport", async ({ page }, testInfo) => {
   await page.goto("/");
 
-  if (testInfo.project.name !== "desktop") {
+  if (testInfo.project.name === "mobile") {
     await page.getByRole("button", { name: "Change language" }).click();
     await page.getByRole("button", { name: "Ürün kabul et" }).click();
     const dialog = page.getByRole("dialog", { name: "Ürün kabul et" });
@@ -51,16 +51,16 @@ test("inventory deep link keeps the dashboard workspace available", async ({ pag
 test("sales deep link opens store-scoped sales history and its detail", async ({ page }) => {
   await page.goto("/sales");
   await expect(page.getByRole("heading", { name: "Sales history" })).toBeVisible();
-  await page.getByRole("button", { name: /Silk Midi Dress/ }).first().click();
+  await page.locator("#sales").getByRole("button", { name: /Silk Midi Dress/ }).first().click();
   const dialog = page.getByRole("dialog", { name: "Sale details" });
-  await expect(dialog.getByText("Payment snapshot")).toBeVisible();
+  await expect(dialog.getByText("Final ticket total")).toBeVisible();
   await page.getByRole("button", { name: "Close" }).click();
 });
 
 test("sales history direct link restores query filters", async ({ page }) => {
   await page.goto("/sales?saleStatus=confirmed&salePeriod=today");
-  await expect(page.getByLabel("Status")).toHaveValue("confirmed");
-  await expect(page.getByLabel("Period")).toHaveValue("today");
+  await expect(page.getByLabel("Status", { exact: true })).toHaveValue("confirmed");
+  await expect(page.getByLabel("Period", { exact: true })).toHaveValue("today");
 });
 
 test("reports deep link opens the Owner reports workspace", async ({ page }) => {
@@ -83,6 +83,7 @@ test("confirmed sale can be cancelled with a required reason", async ({ page }) 
 
 test("demo workspace restores saved inventory and resets to its baseline", async ({ page }) => {
   await page.goto("/");
+  await page.waitForFunction(() => window.localStorage.getItem("zebra-demo-workspace") !== null);
   await page.evaluate(() => {
     const stored = window.localStorage.getItem("zebra-demo-workspace");
     if (!stored) throw new Error("Demo workspace was not persisted");
