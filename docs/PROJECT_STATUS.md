@@ -38,7 +38,7 @@
 - PWA gate закрыт: Owner повторно подтвердил Android/iOS install, новую чёрно-белую zebra `Z`, standalone launch, основные flows и EN/TR на Vercel HTTPS preview. TASK-131—TASK-136 завершены.
 - TASK-043 завершена локально: Seller invite/status и session получили единый runtime validation boundary, safe domain errors и scoped rate limits; 165/165 tests и production build проходят. Staging/production не изменялись.
 - TASK-123 завершена локально: demo/live mode теперь explicit и изолированы по `.next-demo`/`.next-live`; Chrome smoke и production hydration assertion не нашли hydration diagnostics. Staging/production не изменялись.
-- Текущая незавершённая задача: TASK-078 — CI pipeline. Репозиторий сделан public для бесплатных standard GitHub runners, но GitHub account billing lock всё ещё останавливает jobs (`CI #1`, run `31717664237`) до их запуска. Нужен первый green remote run после снятия account lock. TASK-040 временно отложена; TASK-079 заблокирована TASK-040 и TASK-078.
+- TASK-078 завершена: GitHub account billing block снят, а `CI #3` (run `31751839301`, commit `b75d1d0`) зелёный для frontend и clean local Supabase jobs. CI не использует production/staging secrets. TASK-040 временно отложена; TASK-079 теперь заблокирована только TASK-040.
 - Следующую локально независимую задачу не начинать без новой команды владельца.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
@@ -73,7 +73,7 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 ## Сводка учёта задач
 
 - Всего TASK-файлов: 138.
-- Завершено: 99; pending: 36; in progress: 3 (`TASK-040`, `TASK-078`, `TASK-118`).
+- Завершено: 100; pending: 35; in progress: 2 (`TASK-040`, `TASK-118`).
 - Все 138 TASK представлены ровно один раз в списках ниже; сверка выполнена 2026-08-14.
 
 ## Список выполненных задач
@@ -183,6 +183,7 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 - [TASK-075](tasks/TASK-075.md) — добавлен Owner-only PDF export reports: compact landscape A4 metrics/breakdown, pagination, filter parity и API authorization coverage.
 - [TASK-076](tasks/TASK-076.md) — добавлен Owner-only reconciliation report для payment/movement/balance discrepancies и manual corrections с source IDs и RLS coverage.
 - [TASK-077](tasks/TASK-077.md) — добавлен local-only harness реальных concurrent inventory transactions для sale/adjustment/exchange с clean-run coverage.
+- [TASK-078](tasks/TASK-078.md) — GitHub Actions CI подтверждён зелёным remote run: frontend build/tests/Playwright и isolated clean Supabase migrations/RLS/concurrency jobs.
 - [TASK-137](tasks/TASK-137.md) — исправлены preview QA: эквиваленты валют в exchange top-up, живые demo Reports и скрытие Reports для Seller.
 - [TASK-138](tasks/TASK-138.md) — exchange top-up хранится как часть исходного чека и учитывается в общей выручке, графике, Seller ranking, Owner Reports и Sales History без увеличения tickets/units.
 
@@ -191,7 +192,6 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 - [TASK-022](tasks/TASK-022.md) — Завершить fresh upload и MIME/oversize smoke для staging product images
 - [TASK-038](tasks/TASK-038.md) — Подтвердить Seller status UI через staging visual и mobile smoke
 - [TASK-040](tasks/TASK-040.md) — Завершить staging Magic Link configuration
-- [TASK-078](tasks/TASK-078.md) — Добавить CI pipeline
 - [TASK-079](tasks/TASK-079.md) — Развернуть отдельный staging frontend
 - [TASK-080](tasks/TASK-080.md) — Добавить observability и error monitoring
 - [TASK-081](tasks/TASK-081.md) — Настроить автоматические backups
