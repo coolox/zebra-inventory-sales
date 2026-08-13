@@ -1,12 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { toSessionDto } from "@/lib/contracts/auth";
+import { domainError } from "@/lib/http/errors";
+import { checkRateLimit, rateLimitKey, rateLimitPolicies } from "@/lib/rate-limit/sliding-window";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const policy = rateLimitPolicies.session;
+  const limit = checkRateLimit(rateLimitKey(request, "session"), policy.limit, policy.windowMs);
+  if (!limit.allowed) return domainError("rate_limited", 429, { "Retry-After": String(limit.retryAfterSeconds) });
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!user) return domainError("unauthorized", 401);
 
   const [{ data: profile }, { data: memberships, error: membershipError }] = await Promise.all([
     supabase.from("profiles").select("full_name, phone, locale, theme").eq("id", user.id).maybeSingle(),
@@ -18,7 +23,7 @@ export async function GET() {
   ]);
 
   if (membershipError || !memberships?.length) {
-    return NextResponse.json({ error: "No active store membership" }, { status: 403 });
+    return domainError("forbidden", 403);
   }
 
   return NextResponse.json(toSessionDto({

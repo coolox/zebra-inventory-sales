@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-08-14
+
+- Added a server-side validation and rate-limit boundary for Seller invitation, Seller access changes and session reads. Malformed/oversized external payloads are rejected before privileged actions; API errors use safe domain codes without exposing provider/RPC messages or client PII. Full Vitest suite passes 165/165 and production build passes.
+
 ## 2026-08-13
 
 - Published the GitHub Actions CI workflow and created the first remote run. GitHub blocked it before jobs began because the account billing is locked; TASK-078 remains in progress pending Billing & plans resolution and a green rerun.

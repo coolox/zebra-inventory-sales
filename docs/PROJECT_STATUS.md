@@ -36,7 +36,9 @@
 ## Следующая задача
 
 - PWA gate закрыт: Owner повторно подтвердил Android/iOS install, новую чёрно-белую zebra `Z`, standalone launch, основные flows и EN/TR на Vercel HTTPS preview. TASK-131—TASK-136 завершены.
-- Текущая задача: TASK-078 — CI pipeline. Workflow опубликован и первый GitHub Actions run создан, но GitHub остановил его до jobs из-за locked billing account (failed recent payment или insufficient spending limit). После исправления Billing & plans нужен первый зелёный remote run; затем следующая доступная задача — TASK-043. TASK-040 временно отложена; TASK-079 заблокирована TASK-040 и TASK-078.
+- TASK-043 завершена локально: Seller invite/status и session получили единый runtime validation boundary, safe domain errors и scoped rate limits; 165/165 tests и production build проходят. Staging/production не изменялись.
+- Текущая незавершённая задача: TASK-078 — CI pipeline. Репозиторий сделан public для бесплатных standard GitHub runners, но GitHub account billing lock всё ещё останавливает jobs (`CI #1`, run `31717664237`) до их запуска. Нужен первый green remote run после снятия account lock. TASK-040 временно отложена; TASK-079 заблокирована TASK-040 и TASK-078.
+- Следующая локально независимая задача по новой команде владельца: TASK-123. Не начинать автоматически.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
 
@@ -70,7 +72,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 ## Сводка учёта задач
 
 - Всего TASK-файлов: 138.
-- Завершено: 97; pending: 38; in progress: 3 (`TASK-040`, `TASK-078`, `TASK-118`).
+- Завершено: 98; pending: 37; in progress: 3 (`TASK-040`, `TASK-078`, `TASK-118`).
 - Все 138 TASK представлены ровно один раз в списках ниже; сверка выполнена 2026-08-13.
 
 ## Список выполненных задач
@@ -138,6 +140,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-039](tasks/TASK-039.md) — локализованы login/access-denied/callback, locale сохраняется и error redirects безопасны.
 - [TASK-041](tasks/TASK-041.md) — добавлен store-scoped Owner audit-log query с безопасным actor mapping, filters/pagination и RLS cross-store coverage.
 - [TASK-042](tasks/TASK-042.md) — добавлен Owner Audit Log UI с фильтрами, pagination, safe details и Owner/Seller boundary.
+- [TASK-043](tasks/TASK-043.md) — добавлены единые runtime validation и rate-limit boundaries для Seller invite/status и session; API errors безопасны, 165/165 tests и build проходят.
 - [TASK-044](tasks/TASK-044.md) — добавлен pgTAP RLS regression suite для Owner/Seller/cross-store/anonymous boundaries и прямых writes.
 - [TASK-045](tasks/TASK-045.md) — добавлены общие доступные form controls/error presenter; Invite Seller переведён на primitives.
 - [TASK-051](tasks/TASK-051.md) — Seller list, invite и status actions объединены в Owner-only SellerManager с явными source adapters.
@@ -186,7 +189,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-022](tasks/TASK-022.md) — Завершить fresh upload и MIME/oversize smoke для staging product images
 - [TASK-038](tasks/TASK-038.md) — Подтвердить Seller status UI через staging visual и mobile smoke
 - [TASK-040](tasks/TASK-040.md) — Завершить staging Magic Link configuration
-- [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
 - [TASK-078](tasks/TASK-078.md) — Добавить CI pipeline
 - [TASK-079](tasks/TASK-079.md) — Развернуть отдельный staging frontend
 - [TASK-080](tasks/TASK-080.md) — Добавить observability и error monitoring
@@ -235,7 +237,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - SSR/первый client render `Home` теперь используют детерминированный demo shell, а live mode включается после hydration; browser console smoke и изоляция dev build outputs всё ещё остаются в TASK-123.
 - Turkish покрытие preview-critical Audit Log, Seller Goal и modal/access states завершено; owner-only Supplier/FX и часть inventory controls требуют отдельного полного i18n pass.
 - PWA preview gate и desktop/tablet/mobile QA закрыты: Vercel HTTPS preview, Android/iOS physical-device smoke и local viewport matrix подтверждены.
-- CI workflow опубликован; run `31716168276` не стартовал из-за GitHub billing lock, поэтому frontend/database jobs ещё не получили remote evidence. E2E, RLS и concurrency suites включены без production secrets. После исправления Billing & plans повторно запустить run.
+- Repository visibility изменена на public для бесплатных standard GitHub runners. CI workflow опубликован и распознан, но run `31717664237` также остановлен до jobs из-за GitHub account billing lock. Frontend/database jobs ещё не получили remote evidence; E2E, RLS и concurrency suites включены без production secrets. После снятия account lock повторно запустить run.
 - `app/page.tsx` остаётся перегруженным; routing и demo persistence не завершены.
 - XLSX export завершён без новой production-зависимости: server-side structural checks подтверждают workbook/sheet XML. В текущем окружении нет LibreOffice, поэтому его visual open smoke выполняется в Owner live browser после скачивания.
 - TASK-040 ожидает установки Vercel Preview environment variables (`NEXT_PUBLIC_APP_MODE=live`, Supabase URL и publishable key) и controlled Owner/Seller/unknown-email/expired-link/mobile auth matrix. Не добавлять временный Preview wildcard в Supabase redirects.
