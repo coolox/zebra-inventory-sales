@@ -1,0 +1,12 @@
+import { useEffect, useState } from "react";
+import type { ReconciliationDiscrepancy } from "../data/load-discrepancies";
+
+const money = (value: number | null) => value === null ? "—" : new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR" }).format(value);
+
+export function DiscrepancyReport({ role, load }: { role: "owner" | "seller"; load: () => Promise<ReconciliationDiscrepancy[]> }) {
+  const [state, setState] = useState<"loading" | "ready" | "error">("loading"); const [rows, setRows] = useState<ReconciliationDiscrepancy[]>([]);
+  const refresh = () => { setState("loading"); void load().then((next) => { setRows(next); setState("ready"); }).catch(() => setState("error")); };
+  useEffect(() => { if (role === "owner") refresh(); }, [role]);
+  if (role !== "owner") return null;
+  return <section className="mt-6 border-t border-zinc-800 pt-5" aria-label="Reconciliation"><div className="flex items-center justify-between gap-3"><div><h3 className="text-sm font-semibold">Reconciliation</h3><p className="mt-1 text-xs text-zinc-500">Immutable-ledger checks for payments, movements and balances.</p></div><button type="button" onClick={refresh} className="rounded-md border border-zinc-700 px-3 py-1.5 text-xs text-zinc-300">Refresh</button></div>{state === "loading" && <p className="py-6 text-center text-xs text-zinc-500">Checking ledgers…</p>}{state === "error" && <p className="py-6 text-center text-xs text-red-300">Reconciliation could not be loaded. <button type="button" onClick={refresh} className="font-semibold underline">Retry</button></p>}{state === "ready" && !rows.length && <p className="py-6 text-center text-xs text-emerald-300">No discrepancies found.</p>}{state === "ready" && rows.length > 0 && <div className="mt-4 overflow-x-auto"><table className="w-full min-w-[680px] text-left text-xs"><thead className="text-zinc-500"><tr><th className="p-2">Type</th><th className="p-2">Expected</th><th className="p-2">Actual</th><th className="p-2">Source IDs</th></tr></thead><tbody>{rows.map((row, index) => <tr key={`${row.type}-${index}`} className="border-t border-zinc-800"><td className="p-2"><span className={row.severity === "error" ? "text-red-300" : "text-amber-300"}>{row.type.replaceAll("_", " ")}</span><p className="mt-1 text-zinc-500">{row.summary}</p></td><td className="p-2">{money(row.expectedValue)}</td><td className="p-2">{money(row.actualValue)}</td><td className="max-w-72 break-all p-2 font-mono text-[10px] text-zinc-400">{JSON.stringify(row.sourceIds)}</td></tr>)}</tbody></table></div>}</section>;
+}

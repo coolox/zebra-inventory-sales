@@ -1,6 +1,6 @@
 # TASK-136 — Исправить PWA preview findings и закрыть gate
 
-Статус: pending — implementation ready; awaiting repeat owner icon smoke
+Статус: COMPLETED
 
 ## Цель
 
@@ -30,8 +30,10 @@ TASK-135.
 - Typecheck, full unit/component suite и production build.
 - Повторный install/standalone smoke на затронутом устройстве.
 
-## Выполнено до повторной проверки
+## Выполнено
 
 - Старые violet icons заменены на утверждённый black-and-white знак: zebra-striped `Z`.
 - Перегенерированы Android 192/512, maskable 512 и iOS apple-touch PNG assets; manifest regression и production build проходят.
-- После push Vercel автоматически обновит HTTPS preview. Для закрытия gate нужен только repeat physical-device check новой иконки по checklist.
+- Vercel HTTPS preview обновлён; удалённая главная страница и Android/iOS PNG assets отвечают `200` с актуальными размерами файлов.
+- Owner повторно подтвердил на Android Chrome и iPhone Safari новую иконку, standalone launch, Overview, Workspace, New sale, Receive products и переключение EN/TR. PWA gate закрыт.
+- `npm test` проходит: 104/104; `npm run build` проходит.

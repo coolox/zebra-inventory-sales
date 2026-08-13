@@ -34,9 +34,8 @@
 
 ## Следующая задача
 
-- TASK-136 — чёрно-белые zebra PWA icons готовы локально; после Vercel update нужен repeat Owner physical-device smoke. Только после него снять PWA pause и перейти к TASK-060. TASK-135—TASK-131 завершены.
-- До завершения TASK-136 не начинать TASK-060 или другие задачи основной разработки.
-- После закрытия PWA gate следующая задача: TASK-060 — провести accessibility pass.
+- PWA gate закрыт: Owner повторно подтвердил Android/iOS install, новую чёрно-белую zebra `Z`, standalone launch, основные flows и EN/TR на Vercel HTTPS preview. TASK-131—TASK-136 завершены.
+- Следующая задача: TASK-074 — добавить XLSX export reports.
 - TASK-040 — завершить staging Magic Link configuration.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
@@ -152,6 +151,24 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-133](tasks/TASK-133.md) — локализованы preview-critical Audit Log, Seller Goal, modal/access states и navigation labels; добавлены Turkish component/browser smoke checks.
 - [TASK-134](tasks/TASK-134.md) — создан изолированный Vercel demo HTTPS preview, без Supabase/VPS/production, с remote manifest и desktop/mobile smoke checks.
 - [TASK-135](tasks/TASK-135.md) — Owner подтвердил Android/iOS installation и standalone launch; единственный finding — замена визуальных PWA icons в TASK-136.
+- [TASK-136](tasks/TASK-136.md) — обновлены PWA icons; Owner повторно подтвердил Android/iOS install, standalone flow и ключевую navigation на Vercel HTTPS preview. PWA gate закрыт.
+- [TASK-060](tasks/TASK-060.md) — проведён accessibility pass: dialog focus lifecycle, mobile drawer semantics, status announcements, contrast tokens, reduced motion и axe/keyboard browser coverage.
+- [TASK-061](tasks/TASK-061.md) — desktop/tablet/iPhone/Android QA пройдён без новых defects; navigation, catalog, Sale, Receive, themes и locale имеют browser/physical-device evidence.
+- [TASK-062](tasks/TASK-062.md) — добавлен store-scoped Sales History с snapshots, pagination, localized detail/empty states и browser coverage.
+- [TASK-063](tasks/TASK-063.md) — добавлена атомарная, reason-required cancellation RPC с payment reversal snapshots, stock ledger reversal, audit и local pgTAP RLS/idempotency coverage.
+- [TASK-064](tasks/TASK-064.md) — добавлен Cancellation UI с обязательной причиной, confirmation/loading/error states, live/demo refresh и mobile coverage; cancellation migration применена и проверена на staging.
+- [TASK-065](tasks/TASK-065.md) — добавлен атомарный exchange ledger/RPC с source-line traceability, stock reversal/outbound, native top-up snapshots, no-refund policy, RLS/idempotency/audit и local pgTAP coverage.
+- [TASK-066](tasks/TASK-066.md) — добавлен Exchange UI с in-stock picker, explicit top-up/no-refund policy, native payment confirmation и workspace refresh; migration и atomic staging smoke подтверждены.
+- [TASK-067](tasks/TASK-067.md) — добавлены Owner/Seller sales-history filters, Wednesday–Tuesday business week, URL query state и role/direct-link tests.
+- [TASK-068](tasks/TASK-068.md) — добавлен store-scoped EUR reporting metrics RPC и typed adapter; cancellation/exchange reconciliation и RLS покрыты локальным pgTAP.
+- [TASK-069](tasks/TASK-069.md) — добавлен единый Istanbul business-date period contract и custom range validation; reporting RPC принимает inclusive range.
+- [TASK-070](tasks/TASK-070.md) — добавлены Seller/supplier/brand/model/category EUR breakdowns с total reconciliation, historical archived entities и RLS coverage.
+- [TASK-071](tasks/TASK-071.md) — добавлен ledger-derived inventory report по model/variant: balance, sell-through, turnover и configured low-stock.
+- [TASK-072](tasks/TASK-072.md) — добавлен Owner-only Reports UI на `/reports`: period, metrics, dimensions, low-stock и live-safe states.
+- [TASK-073](tasks/TASK-073.md) — добавлен Owner-only UTF-8 CSV export reports с filter parity, formula-injection protection и API authorization coverage.
+- [TASK-075](tasks/TASK-075.md) — добавлен Owner-only PDF export reports: compact landscape A4 metrics/breakdown, pagination, filter parity и API authorization coverage.
+- [TASK-076](tasks/TASK-076.md) — добавлен Owner-only reconciliation report для payment/movement/balance discrepancies и manual corrections с source IDs и RLS coverage.
+- [TASK-077](tasks/TASK-077.md) — добавлен local-only harness реальных concurrent inventory transactions для sale/adjustment/exchange с clean-run coverage.
 
 ## Список оставшихся задач
 
@@ -161,26 +178,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-041](tasks/TASK-041.md) — Добавить store-scoped audit log query
 - [TASK-042](tasks/TASK-042.md) — Добавить Owner Audit Log UI
 - [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
-- [TASK-134](tasks/TASK-134.md) — Развернуть demo HTTPS preview для PWA
-- [TASK-136](tasks/TASK-136.md) — Исправить PWA preview findings и закрыть gate
-- [TASK-060](tasks/TASK-060.md) — Провести accessibility pass
-- [TASK-061](tasks/TASK-061.md) — Провести desktop/tablet/mobile browser QA
-- [TASK-062](tasks/TASK-062.md) — Добавить Sales History view
-- [TASK-063](tasks/TASK-063.md) — Добавить атомарную cancellation RPC
-- [TASK-064](tasks/TASK-064.md) — Добавить Cancellation UI
-- [TASK-065](tasks/TASK-065.md) — Добавить атомарную exchange RPC
-- [TASK-066](tasks/TASK-066.md) — Добавить Exchange UI
-- [TASK-067](tasks/TASK-067.md) — Добавить Seller sales history filters
-- [TASK-068](tasks/TASK-068.md) — Добавить reporting metrics API
-- [TASK-069](tasks/TASK-069.md) — Добавить report period и custom range
-- [TASK-070](tasks/TASK-070.md) — Добавить report breakdown dimensions
-- [TASK-071](tasks/TASK-071.md) — Добавить inventory turnover и low-stock report
-- [TASK-072](tasks/TASK-072.md) — Добавить Owner Reports UI
-- [TASK-073](tasks/TASK-073.md) — Добавить CSV export reports
 - [TASK-074](tasks/TASK-074.md) — Добавить XLSX export reports
-- [TASK-075](tasks/TASK-075.md) — Добавить PDF export reports
-- [TASK-076](tasks/TASK-076.md) — Добавить reconciliation/discrepancy report
-- [TASK-077](tasks/TASK-077.md) — Добавить concurrent inventory integration tests
 - [TASK-078](tasks/TASK-078.md) — Добавить CI pipeline
 - [TASK-079](tasks/TASK-079.md) — Развернуть отдельный staging frontend
 - [TASK-080](tasks/TASK-080.md) — Добавить observability и error monitoring
@@ -227,10 +225,9 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - Receive Flow содержит загрязнённые staging color suggestions (`Boundary EUR/USD`, case/EN/TR duplicates); безопасный audit, normalization и cleanup вынесены в TASK-118.
 - SSR/первый client render `Home` теперь используют детерминированный demo shell, а live mode включается после hydration; browser console smoke и изоляция dev build outputs всё ещё остаются в TASK-123.
 - Turkish покрытие preview-critical Audit Log, Seller Goal и modal/access states завершено; owner-only Supplier/FX и часть inventory controls требуют отдельного полного i18n pass.
-- Explicit Android/iOS PNG install assets и local manifest validation завершены в TASK-131; remote HTTPS validation и physical-device install остаются в TASK-134—TASK-136.
-- Новые black-and-white zebra icons собраны и ожидают Vercel deployment + repeat Android/iOS smoke; до него PWA gate не закрыт.
+- PWA preview gate и desktop/tablet/mobile QA закрыты: Vercel HTTPS preview, Android/iOS physical-device smoke и local viewport matrix подтверждены.
 - Нет e2e/RLS/concurrency tests и CI.
 - `app/page.tsx` остаётся перегруженным; routing и demo persistence не завершены.
-- Cancellation, exchange, reports, audit UI и initial inventory не готовы; следующим шагом Seller deactivate/reactivate.
+- TASK-074 (XLSX export) остаётся следующим: нужный artifact runtime недоступен в текущем окружении; PDF export и reconciliation завершены в TASK-075—TASK-076.
 - В staging остаются legacy/test color values. UI скрывает и нормализует их; удаление/merge данных разрешается только после отдельного read-only audit и подтверждения владельца (TASK-118).
 - Production projects, SMTP, monitoring, backup/restore и pilot launch не настроены.

@@ -1,6 +1,6 @@
 # TASK-075 — Добавить PDF export reports
 
-Статус: pending
+Статус: COMPLETED
 
 ## Цель
 
@@ -29,3 +29,9 @@ TASK-072.
 - Visual QA long/empty reports.
 - API authorization test.
 
+## Выполнено
+
+- Owner-only `application/pdf` endpoint проверяет активное membership и вызывает server-side reporting RPC.
+- Ландшафтный A4 report содержит store, период, UTC timestamp, метрики и выбранный breakdown; длинная таблица переносится на continuation pages.
+- В UI Reports добавлена кнопка `Export PDF`; PDF не использует receipt/customer semantics.
+- Проверены long и empty fixtures: PDF page count, PNG-render и визуальная читаемость.

@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-08-13
+
+- Added local-only real concurrent inventory transaction harness for sale/sale, sale/adjustment and sale/exchange conflicts; each clean run proves one rejection and non-negative ledger balances.
+- Added Owner-only reconciliation report for payment mismatches, missing sale movements, negative balances and manual inventory corrections, including source IDs, RLS, clean-ledger coverage and Reports UI states.
+- Added Owner-only PDF report export with compact landscape metrics/breakdown layout, store/period/generated timestamp, long-table pagination, UI action and authorization coverage.
+- Added Owner/Seller sales-history filters for seller, status and Wednesday–Tuesday business period. Filters persist in URL query state; unit/component and direct-link browser coverage pass.
+- Added store-scoped EUR reporting metrics RPC and typed loader. Confirmed sales, cancelled reversals and exchange top-ups reconcile through local pgTAP RLS fixtures; staging and production were not changed.
+- Added Istanbul business-date reporting periods: Today, Wednesday–Tuesday week, month, year and validated custom ranges. The inclusive `{ from, to }` contract now reaches the reporting RPC and loader.
+- Added store-scoped Seller, supplier, brand, model and category report breakdowns. EUR totals reconcile with the primary report; archived entities remain visible in historical results.
+- Added ledger-derived inventory reporting by model/variant: historical balance, sold units, sell-through, turnover and configured low-stock status, with zero-safe calculations.
+- Added Owner Reports at `/reports`: responsive metrics, period filters, dimension drill-down and low-stock table with live loading/error states.
+- Added Owner-only UTF-8 CSV export for summary, breakdown and inventory reports, with filter parity, RFC 4180 escaping and formula-injection neutralization.
+
 ## 2026-08-11
 
 - Added staged-ready inventory count documents with atomic, idempotent adjustment reconciliation and an Owner count form.
@@ -8,6 +21,9 @@
 
 ## 2026-08-12
 
+- Added Exchange UI from confirmed per-item sale history: in-stock replacement picker, clear top-up/no-refund policy, native-currency payment confirmation and live/demo refresh. Applied exchange migration to staging; €10 top-up smoke confirmed paired movements, payment snapshot, audit and idempotent replay. Production was not changed.
+- Added atomic exchange ledger/RPC: source-sale-line traceability, locked `exchange_in`/`exchange_out` stock movements, native top-up payment snapshots and required audit/reason. Cheaper/equal exchanges never create refunds or credits; full local pgTAP (114 checks) passes. Staging and production were not changed.
+- Added reason-required Cancellation UI for confirmed sales, with focused mobile confirmation dialog, localized loading/error/success states, live workspace refresh and demo stock reversal. Applied the audited cancellation migration to staging; authenticated smoke confirmed sale status/reason/timestamp, exact stock reversal, reversed payments and audit record. Production was not changed.
 - Normalized Receive Flow colour chips across case and known English/Turkish synonyms, localized labels, and hid legacy boundary/currency test labels without modifying staging data.
 - Added a server-only Owner Seller invitation boundary with audited, idempotent membership activation; staging email delivery remains opt-in.
 - Applied Seller invitation migration and Owner safety guard to staging; live Owner form successfully delivered a test invitation email without exposing the server secret to the browser.
@@ -247,3 +263,8 @@
 - Localized the PWA preview-critical Audit Log, Seller Goal, modal close/access-loading and navigation labels; added Turkish component and browser smoke coverage.
 - Published an isolated Vercel HTTPS demo preview for physical PWA installation testing; it is pinned to demo mode with no Supabase or VPS connection.
 - Replaced the PWA Android/iOS icon set with the approved black-and-white zebra-striped `Z`; regenerated PNG and maskable assets.
+- Closed the PWA mobile gate after the Owner re-verified Android/iOS installation, the new icon, standalone launch and core demo flows on the Vercel HTTPS preview.
+- Completed the accessibility pass: dialogs and mobile navigation now manage keyboard focus correctly, status messages are announced, Light/Dark contrast tokens were strengthened, and axe/keyboard/reduced-motion browser coverage was added.
+- Completed desktop/tablet/iPhone/Android viewport QA with no new visual or interaction findings; local production browser console stayed clean and previous Owner physical-device evidence remains valid.
+- Added a store-scoped Sales History view with paginated localized details, seller/status/product information and original-currency payment snapshots without recalculating historical FX.
+- Added an atomic, auditable sale cancellation RPC: Seller store access and mandatory reason are enforced server-side, stock is restored through reversal movements, payment snapshots become reversed, and duplicate requests are idempotent.

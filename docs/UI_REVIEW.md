@@ -1,5 +1,20 @@
 # UI Review — Clothing MVP
 
+## TASK-061 — viewport QA, 2026-08-13
+
+Статус: завершено, новых findings нет.
+
+| Surface | Evidence | Result |
+|---|---|---|
+| Desktop 1440×900 | navigation, catalog/product card, New Sale, Receive, Light theme, EN/TR | passed |
+| Tablet 768×900 | drawer navigation, no horizontal overflow | passed |
+| iPhone portrait 390×844 | drawer navigation, New Sale, no horizontal overflow | passed |
+| Android portrait 360×800 | Receive, disabled empty submission, no horizontal overflow | passed |
+| Physical iPhone Safari / Android Chrome | TASK-135/TASK-136 Owner smoke: standalone, Overview, Workspace, New sale, Receive, EN/TR | passed |
+
+- Local production browser console: no warnings/errors.
+- Regression evidence: Playwright visual/interaction matrix, axe/keyboard/reduced-motion suite and production build all pass.
+
 Обновлено: 2026-08-08  
 Статус: второй раунд завершён; все замечания F-006–F-010 реализованы
 

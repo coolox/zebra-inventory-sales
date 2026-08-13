@@ -75,7 +75,8 @@ export function createDemoSale(
     allocatedRevenue += revenueEur;
 
     return {
-      id: stamp + index,
+      // A shared prefix gives history and cancellation one stable sale identity.
+      id: `${stamp}:${index}`,
       productId: product.id,
       sellerId: seller.id,
       seller: seller.name,
@@ -87,6 +88,8 @@ export function createDemoSale(
       revenueEur: Math.round(revenueEur),
       marginEur: Math.round(revenueEur - costEur),
       revenueIsAllocated: pricingMode === "sale_total",
+      paymentSnapshot: payments.length ? payments.map((payment) => `${payment.amount} ${payment.currency}`).join(" + ") : `${line.price ?? 0} ${line.currency ?? "EUR"}`,
+      status: "confirmed",
       dayOffset: 0,
       time,
     };

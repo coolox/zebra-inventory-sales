@@ -25,6 +25,7 @@ import {
   Store,
   Sun,
   Target,
+  BarChart3,
   TrendingUp,
   Users,
   WalletCards,
@@ -45,11 +46,17 @@ import { createDemoReceipt } from "@/features/receipts/model/create-demo-receipt
 import { receiptCopy } from "@/features/receipts/model/receipt-copy";
 import type { ReceiptDraft } from "@/features/receipts/model/types";
 import { confirmLiveSale } from "@/features/sales/data/confirm-live-sale";
+import { cancelSale } from "@/features/sales/data/cancel-sale";
+import { confirmExchange } from "@/features/exchanges/data/confirm-exchange";
 import { loadPaymentRates } from "@/features/sales/data/load-payment-rates";
 import { createDemoSale } from "@/features/sales/model/create-demo-sale";
+import { cancelDemoSale } from "@/features/sales/model/cancel-demo-sale";
 import { demoPaymentRates, type PaymentRateMap } from "@/features/sales/model/payments";
 import type { SaleDraftLine, SalePaymentDraft, SalePricingMode } from "@/features/sales/model/types";
 import { SaleFlow } from "@/features/sales/ui/sale-flow";
+import { SaleHistory } from "@/features/sales/ui/sale-history";
+import { toSaleHistory } from "@/features/sales/model/sale-history";
+import type { SaleHistoryRecord } from "@/features/sales/model/sale-history";
 import { SellerGoalCard } from "@/features/seller-goals/ui/seller-goal-card";
 import { FxRateManager } from "@/features/exchange-rates/ui/fx-rate-manager";
 import { loadMovementHistory } from "@/features/inventory/data/load-movement-history";
@@ -66,6 +73,11 @@ import { inviteSeller } from "@/features/sellers/data/invite-seller";
 import { updateSellerStatus } from "@/features/sellers/data/update-seller-status";
 import { SellerManager } from "@/features/sellers/ui/seller-manager";
 import { AuditLog } from "@/features/audit/ui/audit-log";
+import { ReportsDashboard } from "@/features/reports/ui/reports-dashboard";
+import { loadMetrics } from "@/features/reports/data/load-metrics";
+import { loadBreakdowns } from "@/features/reports/data/load-breakdowns";
+import { loadInventoryReport } from "@/features/reports/data/load-inventory-report";
+import { loadDiscrepancies } from "@/features/reports/data/load-discrepancies";
 import { loadAuditLog } from "@/features/audit/data/load-audit-log";
 import type { SellerMembershipStatus } from "@/features/sellers/model/types";
 import { selectChartData, selectMetrics, selectSellerRanking } from "@/features/overview/model/metrics";
@@ -134,7 +146,7 @@ function MetricCard({
   );
 }
 
-const dashboardPaths: Record<string, string> = { overview: "/", inventory: "/inventory", sales: "/sales", team: "/team", goal: "/team", settings: "/settings" };
+const dashboardPaths: Record<string, string> = { overview: "/", inventory: "/inventory", sales: "/sales", reports: "/reports", team: "/team", goal: "/team", settings: "/settings" };
 
 export default function Home() {
   // Runtime environment values can differ between the Next server and the
@@ -324,6 +336,7 @@ export default function Home() {
   const rankedSellers = useMemo(() => {
     return selectSellerRanking(sellers, sales, selectedStore === "all" ? roleStore : selectedStore, maxDays);
   }, [sellers, sales, selectedStore, maxDays]);
+  const saleHistory = useMemo(() => toSaleHistory(sales, roleStore, role === "seller" ? currentSeller.id : undefined), [currentSeller.id, role, roleStore, sales]);
 
   const notify = (message: string) => {
     setToast(message);
@@ -374,6 +387,31 @@ export default function Home() {
     notify(locale === "tr"
       ? `${seller.name} adına ${result.totalItems} ürünlük satış kaydedildi`
       : `Sale with ${result.totalItems} items recorded for ${seller.name}`);
+  };
+
+  const cancelRecordedSale = async (saleId: string, reason: string) => {
+    if (isLiveMode) {
+      await cancelSale({ storeId: activeStoreId ?? "", saleId, reason, locale });
+      await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
+      notify(locale === "tr" ? "Satış iptal edildi ve stok geri yüklendi" : "Sale cancelled and stock restored");
+      return;
+    }
+    const result = cancelDemoSale(saleId, sales, products);
+    setSales(result.sales);
+    setProducts(result.products);
+    notify(locale === "tr" ? "Satış iptal edildi ve stok geri yüklendi" : "Sale cancelled and stock restored");
+  };
+
+  const completeExchange = async (source: SaleHistoryRecord, input: { replacement: Product; price: number; currency: Product["currency"]; reason: string; method: "cash" | "card" | "bank_transfer"; topUpEur: number; paymentCurrency: Product["currency"]; paymentAmount: number }) => {
+    if (isLiveMode) {
+      if (!source.sourceSaleLineId) throw new Error("Source sale line is unavailable.");
+      await confirmExchange({ storeId: activeStoreId ?? "", sourceSaleLineId: source.sourceSaleLineId, replacementVariantId: String(input.replacement.id), quantity: source.quantity, replacementUnitPrice: input.price, replacementCurrency: input.currency, payments: input.topUpEur > 0 ? [{ method: input.method, amount: input.paymentAmount, currency: input.paymentCurrency }] : [], reason: input.reason, idempotencyKey: crypto.randomUUID(), locale });
+      await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
+    } else {
+      setProducts((current) => current.map((product) => product.id === source.productId ? { ...product, stock: product.stock + source.quantity, updated: "Just now" } : product.id === input.replacement.id ? { ...product, stock: product.stock - source.quantity, updated: "Just now" } : product));
+      setActivities((current) => [{ id: `exchange-${Date.now()}`, type: "stock" as const, title: "Exchange · 1 item", meta: `${input.reason} · just now` }, ...current].slice(0, 6));
+    }
+    notify(locale === "tr" ? "Değişim kaydedildi ve stok güncellendi" : "Exchange recorded and stock updated");
   };
 
   const saveReceipt = async (lines: ReceiptDraft[]) => {
@@ -512,7 +550,7 @@ export default function Home() {
     { id: "overview", label: text.overview, Icon: LayoutDashboard },
     { id: "inventory", label: text.inventory, Icon: Boxes },
     { id: "sales", label: text.sales, Icon: CircleDollarSign },
-    ...(role === "owner" ? [{ id: "team", label: text.team, Icon: Users }] : [{ id: "goal", label: text.myGoal, Icon: Target }]),
+    ...(role === "owner" ? [{ id: "reports", label: "Reports", Icon: BarChart3 }, { id: "team", label: text.team, Icon: Users }] : [{ id: "goal", label: text.myGoal, Icon: Target }]),
   ];
 
   const displayName = isLiveMode ? authenticatedName || "Zebra team member" : role === "owner" ? "Arslan Zengin" : currentSeller.name;
@@ -531,7 +569,7 @@ export default function Home() {
   }
 
   return (
-    <DashboardShell nav={nav} mobileOpen={mobileNav} onMobileClose={() => setMobileNav(false)}>
+    <DashboardShell nav={nav} mobileOpen={mobileNav} onMobileClose={() => setMobileNav(false)} mobileNavLabel={text.workspace}>
         <AppHeader navigation={<button type="button" onClick={() => setMobileNav(true)} className="mr-3 flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 lg:hidden" aria-label={text.workspace}><Menu size={19} /></button>} store={role === "owner" ? <div className="flex h-9 items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 text-xs font-medium text-zinc-200"><Store size={14} className="text-zinc-500" /> Zebra Boutique</div> : undefined} controls={<>
             {!isLiveMode && <div className="hidden rounded-lg border border-zinc-800 bg-zinc-900 p-0.5 sm:flex">
               <button type="button" onClick={() => switchRole("owner")} className={`rounded-md px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider transition ${role === "owner" ? "bg-violet-600 text-white" : "text-zinc-600 hover:text-zinc-300"}`}>{text.owner}</button>
@@ -581,6 +619,12 @@ export default function Home() {
             </div>
 
             <Overview role={role} period={period} metrics={metrics} chartData={chartData} rankedSellers={rankedSellers} products={visibleProducts} live={isLiveMode} locale={locale} onManageTeam={() => setModal("sellers")} labels={{ revenue: text.revenue, sales: text.salesMetric, grossMargin: text.grossMargin, myResult: text.myResult, unitsShort: text.unitsShort, todayDelta: text.todayDelta, periodDelta: text.periodDelta, itemsDelta: text.itemsDelta, ofRevenue: text.ofRevenue, salesTrend: text.salesTrend, lastSevenDays: text.lastSevenDays, sellerResults: text.sellerResults, revenueRanking: text.revenueRanking, manage: text.manage, liveData: text.liveData }} />
+            <ReportsDashboard role={role} locale={locale} exportStoreId={role === "owner" ? activeStoreId ?? undefined : undefined} load={async (reportPeriod, dimension) => {
+              if (!isLiveMode || !activeStoreId) return { metrics: { revenueEur: 0, costEur: 0, marginEur: 0, saleCount: 0, units: 0, averageTicketEur: 0 }, breakdowns: [], inventory: [] };
+              const [reportMetrics, breakdowns, inventory] = await Promise.all([loadMetrics(activeStoreId, reportPeriod), loadBreakdowns(activeStoreId, reportPeriod, dimension), loadInventoryReport(activeStoreId, reportPeriod)]);
+              return { metrics: reportMetrics, breakdowns, inventory };
+            }} loadDiscrepancies={async () => !isLiveMode || !activeStoreId ? [] : loadDiscrepancies(activeStoreId)} />
+            <SaleHistory locale={locale} records={saleHistory} sellerScope={role === "seller" ? String(currentSeller.id) : undefined} canCancel={role === "owner" || role === "seller"} onCancel={cancelRecordedSale} canExchange={role === "owner" || role === "seller"} products={products.filter((product) => product.store === roleStore && product.isActive !== false)} paymentRates={paymentRates} onExchange={completeExchange} />
           </section>
 
           <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,.75fr)]">
@@ -643,7 +687,7 @@ export default function Home() {
           </footer>
         </main>
 
-      {toast && <div className="fade-up fixed bottom-5 left-1/2 z-[70] flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-xl border border-emerald-500/25 bg-[#121713] px-4 py-3 text-xs font-medium text-emerald-300 shadow-2xl"><Check size={15} />{toast}</div>}
+      {toast && <div role="status" aria-live="polite" className="fade-up fixed bottom-5 left-1/2 z-[70] flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-xl border border-emerald-500/25 bg-[#121713] px-4 py-3 text-xs font-medium text-emerald-300 shadow-2xl"><Check size={15} />{toast}</div>}
 
       {modal === "sale" && (
         <Modal title={locale === "tr" ? "Yeni satış" : "New sale"} eyebrow={locale === "tr" ? "Satış işlemi" : "Sale operation"} onClose={() => setModal(null)} wide>

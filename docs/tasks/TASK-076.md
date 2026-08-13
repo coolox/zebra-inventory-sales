@@ -1,6 +1,6 @@
 # TASK-076 — Добавить reconciliation/discrepancy report
 
-Статус: pending
+Статус: COMPLETED
 
 ## Цель
 
@@ -28,3 +28,9 @@ TASK-063, TASK-065, TASK-068, TASK-071.
 - False-positive-free clean dataset test.
 - RLS and UI empty/error tests.
 
+## Выполнено
+
+- Добавлен read-only Owner-only reconciliation RPC для payment mismatch, отсутствующих sale movements, negative balance и manual corrections.
+- Каждая строка содержит JSON source IDs и ожидаемое/фактическое значение, не изменяя ledger.
+- В Owner Reports добавлены loading, empty, error/retry и tabular audit states.
+- pgTAP fixture покрывает каждый тип discrepancy, чистый dataset и Owner-only RLS.

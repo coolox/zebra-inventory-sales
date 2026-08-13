@@ -44,6 +44,11 @@ export type Sale = {
   revenueEur: number;
   marginEur: number;
   revenueIsAllocated?: boolean;
+  /** Original-currency payment snapshot captured when the sale was confirmed. */
+  paymentSnapshot?: string;
+  /** Persisted sale-line identity, required by the exchange ledger in live mode. */
+  sourceSaleLineId?: string;
+  status?: "confirmed" | "cancelled";
   dayOffset: number;
   time: string;
 };

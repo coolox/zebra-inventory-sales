@@ -11,6 +11,7 @@ const errors = {
     access: "You do not have access to save a sale in this store.",
     validation: "Check the sale items and payment amounts, then try again.",
     payment: "Payment total must exactly match the sale total.",
+    cancellation: "This sale cannot be cancelled. Refresh the history and try again.",
     generic: "Sale could not be saved. Please try again.",
   },
   tr: {
@@ -23,6 +24,7 @@ const errors = {
     access: "Bu mağazada satış kaydetme yetkiniz yok.",
     validation: "Satış ürünlerini ve ödeme tutarlarını kontrol edip tekrar deneyin.",
     payment: "Ödeme toplamı satış toplamıyla tam olarak eşleşmelidir.",
+    cancellation: "Bu satış iptal edilemez. Geçmişi yenileyip tekrar deneyin.",
     generic: "Satış kaydedilemedi. Lütfen tekrar deneyin.",
   },
 } as const;
@@ -36,6 +38,7 @@ export function saleErrorMessage(message: string | undefined, locale: Locale) {
   if (/no purchase cost/i.test(source)) return text.cost;
   if (/No access|Authentication is required/i.test(source)) return text.access;
   if (/Payment total|At least one payment|Payment amount|Invalid payment/i.test(source)) return text.payment;
+  if (/Sale is already cancelled|Sale cancellation reason|required|Sale not found/i.test(source)) return text.cancellation;
   if (/Invalid sale line|Sale quantity|Sale lines and idempotency|required/i.test(source)) return text.validation;
   return text.generic;
 }
@@ -43,4 +46,3 @@ export function saleErrorMessage(message: string | undefined, locale: Locale) {
 export function saleClientError(key: "membership" | "unavailable", locale: Locale) {
   return errors[locale][key];
 }
-

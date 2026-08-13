@@ -48,6 +48,39 @@ test("inventory deep link keeps the dashboard workspace available", async ({ pag
   await expect(page.getByRole("button", { name: "New sale" })).toBeVisible();
 });
 
+test("sales deep link opens store-scoped sales history and its detail", async ({ page }) => {
+  await page.goto("/sales");
+  await expect(page.getByRole("heading", { name: "Sales history" })).toBeVisible();
+  await page.getByRole("button", { name: /Silk Midi Dress/ }).first().click();
+  const dialog = page.getByRole("dialog", { name: "Sale details" });
+  await expect(dialog.getByText("Payment snapshot")).toBeVisible();
+  await page.getByRole("button", { name: "Close" }).click();
+});
+
+test("sales history direct link restores query filters", async ({ page }) => {
+  await page.goto("/sales?saleStatus=confirmed&salePeriod=today");
+  await expect(page.getByLabel("Status")).toHaveValue("confirmed");
+  await expect(page.getByLabel("Period")).toHaveValue("today");
+});
+
+test("reports deep link opens the Owner reports workspace", async ({ page }) => {
+  await page.goto("/reports");
+  await expect(page.getByRole("heading", { name: "Reports" })).toBeVisible();
+  await expect(page.getByLabel("Report period")).toBeVisible();
+});
+
+test("confirmed sale can be cancelled with a required reason", async ({ page }) => {
+  await page.goto("/sales");
+  await page.getByRole("button", { name: /Silk Midi Dress/ }).first().click();
+  await page.getByRole("button", { name: "Cancel sale" }).click();
+  const dialog = page.getByRole("dialog", { name: "Cancel sale" });
+  await dialog.getByRole("button", { name: "Cancel sale" }).click();
+  await expect(dialog.getByRole("alert")).toHaveText("Enter a cancellation reason.");
+  await dialog.getByLabel("Cancellation reason").fill("Customer returned the item");
+  await dialog.getByRole("button", { name: "Cancel sale" }).click();
+  await expect(page.getByRole("button", { name: /Silk Midi Dress/ }).first().getByText("Cancelled")).toBeVisible();
+});
+
 test("demo workspace restores saved inventory and resets to its baseline", async ({ page }) => {
   await page.goto("/");
   await page.evaluate(() => {
@@ -68,7 +101,7 @@ test("Turkish dashboard labels remain visible in each supported viewport", async
   await page.goto("/");
 
   if (testInfo.project.name === "desktop") {
-    await page.getByRole("button", { name: "TR" }).click();
+    await page.getByRole("button", { name: "TR", exact: true }).click();
   } else {
     await page.getByRole("button", { name: "Change language" }).click();
   }

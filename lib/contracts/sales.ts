@@ -23,6 +23,39 @@ export type SaleLifecycleDto = {
   occurredAt: string;
 };
 
+export type CancelSaleCommand = {
+  storeId: string;
+  saleId: string;
+  reason: string;
+};
+
+export type ExchangePaymentDto = Omit<SalePaymentDto, "id">;
+export type ExchangeSaleCommand = {
+  storeId: string;
+  sourceSaleLineId: string;
+  replacementVariantId: string;
+  quantity: number;
+  replacementUnitPrice: number;
+  replacementCurrency: SaleCurrency;
+  payments: ExchangePaymentDto[];
+  reason: string;
+  idempotencyKey: string;
+};
+
+export function toExchangeSaleCommand(input: ExchangeSaleCommand): ExchangeSaleCommand {
+  const reason = input.reason.trim();
+  if (!input.storeId || !input.sourceSaleLineId || !input.replacementVariantId || !reason || !input.idempotencyKey || !Number.isInteger(input.quantity) || input.quantity <= 0 || !Number.isFinite(input.replacementUnitPrice) || input.replacementUnitPrice <= 0) {
+    throw new Error("A source line, replacement, positive quantity/price, reason and idempotency key are required.");
+  }
+  return { ...input, reason, payments: input.payments.map((payment) => ({ ...payment })) };
+}
+
+export function toCancelSaleCommand(input: CancelSaleCommand): CancelSaleCommand {
+  const reason = input.reason.trim();
+  if (!input.storeId || !input.saleId || !reason) throw new Error("Sale and cancellation reason are required.");
+  return { ...input, reason };
+}
+
 /** Money uses decimal major units; EUR payment reconciliation tolerance is €0.01. */
 export const paymentToleranceEur = 0.01;
 

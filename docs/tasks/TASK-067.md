@@ -1,6 +1,6 @@
 # TASK-067 — Добавить Seller sales history filters
 
-Статус: pending
+Статус: COMPLETED
 
 ## Цель
 
@@ -27,3 +27,14 @@ TASK-062.
 - Role filter component tests.
 - Direct-link browser test.
 
+## Результат
+
+- В Sales History добавлены фильтры Owner по продавцу, статусу и периоду; Seller не видит выбор продавца и всегда ограничен собственной областью.
+- Неделя бизнеса рассчитывается с среды по вторник, а выбранные фильтры синхронизируются с query-параметрами `saleSeller`, `saleStatus` и `salePeriod`.
+- Добавлены unit/component/browser regression tests для периода, role scope и прямой ссылки.
+
+## Проверка
+
+- `npm test -- --run` — 125/125 passed.
+- `npx tsc --noEmit`, `npm run build`, `git diff --check` — passed.
+- Playwright desktop: direct-link filters и cancellation smoke — 2/2 passed.

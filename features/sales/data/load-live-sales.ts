@@ -16,6 +16,7 @@ type SalePaymentRow = { amount: number; amount_eur: number; currency: Product["c
 type SaleRow = {
   id: string;
   seller_id: string;
+  status: "confirmed" | "cancelled";
   sold_at: string;
   pricing_mode: "per_item" | "sale_total";
   total_amount_eur: number;
@@ -37,9 +38,8 @@ export async function loadLiveSales(storeId: string): Promise<{ sales: Sale[]; a
   const client = createClient();
   const { data, error } = await client
     .from("sales")
-    .select("id, seller_id, sold_at, pricing_mode, total_amount_eur, sale_lines(id, variant_id, quantity, unit_price, unit_price_eur, unit_cost_eur, currency), sale_payments(amount, amount_eur, currency)")
+    .select("id, seller_id, status, sold_at, pricing_mode, total_amount_eur, sale_lines(id, variant_id, quantity, unit_price, unit_price_eur, unit_cost_eur, currency), sale_payments(amount, amount_eur, currency)")
     .eq("store_id", storeId)
-    .eq("status", "confirmed")
     .order("sold_at", { ascending: false });
   if (error) throw error;
 
@@ -71,6 +71,9 @@ export async function loadLiveSales(storeId: string): Promise<{ sales: Sale[]; a
 
   const sales = saleRows.flatMap((sale) => {
     const lines = sale.sale_lines ?? [];
+    const paymentSnapshot = (sale.sale_payments ?? [])
+      .map((payment) => new Intl.NumberFormat("en", { style: "currency", currency: payment.currency, maximumFractionDigits: 2 }).format(Number(payment.amount)))
+      .join(" + ");
     const totalCostEur = lines.reduce((sum, line) => sum + Number(line.unit_cost_eur) * line.quantity, 0);
     let allocatedRevenueEur = 0;
     return lines.map((line, index): Sale => {
@@ -88,6 +91,7 @@ export async function loadLiveSales(storeId: string): Promise<{ sales: Sale[]; a
 
       return {
         id: `${sale.id}:${line.id}`,
+        sourceSaleLineId: line.id,
         productId: line.variant_id,
         sellerId: sale.seller_id,
         seller,
@@ -99,13 +103,15 @@ export async function loadLiveSales(storeId: string): Promise<{ sales: Sale[]; a
         revenueEur,
         marginEur,
         revenueIsAllocated: sale.pricing_mode === "sale_total",
+        paymentSnapshot: paymentSnapshot || new Intl.NumberFormat("en", { style: "currency", currency: "EUR", maximumFractionDigits: 2 }).format(Number(sale.total_amount_eur)),
+        status: sale.status,
         dayOffset: dayOffset(sale.sold_at),
         time: new Date(sale.sold_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }),
       };
     });
   });
 
-  const activities = saleRows.slice(0, 8).map((sale): Activity => {
+  const activities = saleRows.filter((sale) => sale.status === "confirmed").slice(0, 8).map((sale): Activity => {
     const lines = sale.sale_lines ?? [];
     const units = lines.reduce((sum, line) => sum + line.quantity, 0);
     const amount = Number(sale.total_amount_eur);

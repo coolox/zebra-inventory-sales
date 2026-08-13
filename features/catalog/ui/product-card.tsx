@@ -2,6 +2,7 @@
 
 import { ArchiveRestore, Check, ChevronLeft, ChevronRight, History, ImageOff, Maximize2, Minus, Package, Plus, Settings2, Shirt, ShoppingBag, Upload, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
+import { useDialogFocus } from "@/components/ui/use-dialog-focus";
 import type { Product } from "@/lib/types";
 import type { Locale } from "@/lib/i18n";
 import { catalogCopy, productArchiveErrorMessage, productCardErrorMessage } from "@/features/catalog/model/catalog-copy";
@@ -28,9 +29,11 @@ export function ProductCard({ locale, variants, onUploadPhotos, onSell, canManag
   const [thresholdSaving, setThresholdSaving] = useState(false);
   const [thresholdSaved, setThresholdSaved] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
+  const viewerRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const [color, setColor] = useState(model?.color ?? "");
   const [selectedVariantId, setSelectedVariantId] = useState(model?.id);
+  useDialogFocus(viewerOpen, viewerRef);
   const colors = useMemo(() => unique(variants.map((variant) => variant.color)), [variants]);
   const colorVariants = variants.filter((variant) => variant.color === color);
   const totalStock = variants.reduce((sum, variant) => sum + variant.stock, 0);
@@ -200,7 +203,7 @@ export function ProductCard({ locale, variants, onUploadPhotos, onSell, canManag
         </div>
       </div>
 
-      {viewerOpen && photos[photoIndex] && <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/95 p-3 sm:p-8" role="dialog" aria-modal="true" aria-label={text.photoViewer} onMouseDown={(event) => { event.stopPropagation(); if (event.target === event.currentTarget) setViewerOpen(false); }}>
+      {viewerOpen && photos[photoIndex] && <div ref={viewerRef} tabIndex={-1} className="fixed inset-0 z-[80] flex items-center justify-center bg-black/95 p-3 sm:p-8" role="dialog" aria-modal="true" aria-label={text.photoViewer} onMouseDown={(event) => { event.stopPropagation(); if (event.target === event.currentTarget) setViewerOpen(false); }}>
         <div className="absolute left-4 top-4 flex items-center gap-2 sm:left-7 sm:top-7"><span className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] text-white">{photoIndex + 1} / {photos.length}</span><span className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] text-white">{Math.round(zoom * 100)}%</span></div>
         <div className="absolute right-4 top-4 z-10 flex items-center gap-2 sm:right-7 sm:top-7"><button type="button" onMouseDown={(event) => event.stopPropagation()} onClick={() => changeZoom(-0.25)} disabled={zoom <= 1} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 disabled:opacity-35" aria-label={text.zoomOut}><Minus size={18} /></button><button type="button" onMouseDown={(event) => event.stopPropagation()} onClick={() => changeZoom(0.25)} disabled={zoom >= 3} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 disabled:opacity-35" aria-label={text.zoomIn}><Plus size={18} /></button><button type="button" onMouseDown={(event) => event.stopPropagation()} onClick={() => setViewerOpen(false)} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20" aria-label={text.closePhotoViewer}><X size={19} /></button></div>
         {photos.length > 1 && <button type="button" onMouseDown={(event) => event.stopPropagation()} onClick={(event) => { event.stopPropagation(); changeViewerPhoto(-1); }} className="absolute left-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 sm:left-7" aria-label={text.previousPhoto}><ChevronLeft size={22} /></button>}
