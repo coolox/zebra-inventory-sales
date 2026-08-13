@@ -1,6 +1,6 @@
 # TASK-078 — Добавить CI pipeline
 
-Статус: COMPLETED
+Статус: in_progress
 
 ## Цель
 
@@ -35,3 +35,7 @@ TASK-013, TASK-014, TASK-044, TASK-077.
 - Database job запускает pinned local Supabase CLI, применяет migrations на чистой базе, выполняет pgTAP/RLS suite и отдельный clean-run concurrency harness.
 - Stateful demo Playwright scenarios намеренно запускаются одним worker: это сохраняет проверку всех viewport'ов и исключает взаимное влияние localStorage сценариев.
 - Локально подтверждено, что failing smoke command возвращает non-zero; после стабилизации selectors/hydration ожидания полный suite проходит.
+
+## Ожидает внешнего действия
+
+- Текущий GitHub Personal Access Token не имеет scope `workflow`, поэтому GitHub отклонил push нового `.github/workflows/ci.yml`. После выдачи этого scope нужно pushнуть commit и подтвердить первый зелёный GitHub Actions run.
