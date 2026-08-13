@@ -36,3 +36,9 @@
 - Upload valid files and reload.
 - Reject unsupported type/oversize.
 - RLS cross-store access check.
+
+## Проверка учёта 2026-08-13
+
+- Migration, private bucket/RPC/RLS, существующие JPEG/PNG records, cross-store denial и carousel после reload подтверждены на staging.
+- Наличие ранее загруженных объектов не заменяет обязательный fresh valid upload smoke.
+- TASK остаётся `pending` до двух проверок: свежая допустимая загрузка с reload и отклонение unsupported MIME/oversize. Production не изменять.

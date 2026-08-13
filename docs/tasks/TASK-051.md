@@ -31,3 +31,4 @@ TASK-036, TASK-038, TASK-047.
 
 - Список, приглашение и status actions объединены в `SellerManager` с явными callback adapters для live/demo.
 - Seller получает пустой компонент и не видит administrative actions; role test, TypeScript и build проходят.
+- TASK-051 подтверждает наличие реализации status UI, но не закрывает TASK-038 автоматически: её отдельные staging visual и mobile layout smoke ещё не зафиксированы.

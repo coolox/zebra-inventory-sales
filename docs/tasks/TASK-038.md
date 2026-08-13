@@ -27,3 +27,9 @@ TASK-036, TASK-037.
 - Staging deactivate/reactivate smoke-test.
 - Mobile layout test.
 
+## Проверка учёта 2026-08-13
+
+- Реализация UI фактически появилась в рамках TASK-051: Owner видит `pending`/`active`/`blocked`, получает доступное действие deactivate/reactivate, а Seller не получает административный компонент.
+- `SellerList` оптимистично меняет status и возвращает предыдущее состояние при ошибке adapter; это покрыто component test.
+- Повторно выполнены `seller-list.test.tsx` и `seller-manager.test.tsx`: 4/4 tests проходят.
+- TASK остаётся `pending`, потому что в репозитории нет зафиксированного visual smoke через staging UI и отдельного mobile layout smoke. Backend staging smoke из TASK-037 не заменяет эти два UI-критерия.

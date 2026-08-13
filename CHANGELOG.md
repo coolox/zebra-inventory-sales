@@ -2,6 +2,7 @@
 
 ## 2026-08-13
 
+- Audited task accounting across all 138 TASK files: restored completed TASK-041/042 to `PROJECT_STATUS`, documented the remaining UI smoke boundary for TASK-038 and the fresh-upload/negative-smoke boundary for TASK-022.
 - Added a store-scoped Owner audit-log query with normalized event categories, safe actor-name mapping, stable filters/pagination and RLS cross-store coverage.
 - Added a GitHub Actions CI pipeline: production build, unit/component tests, deterministic desktop/tablet/mobile Playwright smoke, clean Supabase migrations/RLS checks and concurrent inventory harness run separately without production secrets.
 - Added the Owner Audit Log UI: filters for category/actor/entity/date, pagination and safe operation details; Seller remains limited to Activity rather than audit data.

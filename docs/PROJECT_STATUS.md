@@ -67,6 +67,12 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 
 Цена, напечатанная на этикетке, не становится actual sale price. AI не создаёт product, не добавляет ambiguous/out-of-stock item молча и не подтверждает sale без продавца. Barcode не обязателен.
 
+## Сводка учёта задач
+
+- Всего TASK-файлов: 138.
+- Завершено: 97; pending: 38; in progress: 3 (`TASK-040`, `TASK-078`, `TASK-118`).
+- Все 138 TASK представлены ровно один раз в списках ниже; сверка выполнена 2026-08-13.
+
 ## Список выполненных задач
 
 - До task-based workflow: product discovery и Clothing MVP decisions.
@@ -130,6 +136,8 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-036](tasks/TASK-036.md) — Owner invite Seller form подключена к live boundary, локализована и подтверждена staging smoke-test.
 - [TASK-037](tasks/TASK-037.md) — Owner-only Seller deactivate/reactivate RPC, server route и local RLS/idempotency coverage; migration применена на staging.
 - [TASK-039](tasks/TASK-039.md) — локализованы login/access-denied/callback, locale сохраняется и error redirects безопасны.
+- [TASK-041](tasks/TASK-041.md) — добавлен store-scoped Owner audit-log query с безопасным actor mapping, filters/pagination и RLS cross-store coverage.
+- [TASK-042](tasks/TASK-042.md) — добавлен Owner Audit Log UI с фильтрами, pagination, safe details и Owner/Seller boundary.
 - [TASK-044](tasks/TASK-044.md) — добавлен pgTAP RLS regression suite для Owner/Seller/cross-store/anonymous boundaries и прямых writes.
 - [TASK-045](tasks/TASK-045.md) — добавлены общие доступные form controls/error presenter; Invite Seller переведён на primitives.
 - [TASK-051](tasks/TASK-051.md) — Seller list, invite и status actions объединены в Owner-only SellerManager с явными source adapters.
@@ -175,8 +183,8 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 
 ## Список оставшихся задач
 
-- [TASK-022](tasks/TASK-022.md) — Применить product-images migration на staging
-- [TASK-038](tasks/TASK-038.md) — Добавить Seller status management UI
+- [TASK-022](tasks/TASK-022.md) — Завершить fresh upload и MIME/oversize smoke для staging product images
+- [TASK-038](tasks/TASK-038.md) — Подтвердить Seller status UI через staging visual и mobile smoke
 - [TASK-040](tasks/TASK-040.md) — Завершить staging Magic Link configuration
 - [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
 - [TASK-078](tasks/TASK-078.md) — Добавить CI pipeline
@@ -219,7 +227,8 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 
 ## Известные проблемы
 
-- Product-images migration применена и RLS/reload подтверждены, но fresh valid upload и MIME/oversize smoke заблокированы настройкой **Allow access to file URLs** в ChatGPT Chrome extension; TASK-022 остаётся pending.
+- Product-images migration применена, а private bucket/RPC/RLS, cross-store denial и carousel reload подтверждены. TASK-022 остаётся pending: ранее загруженные records не заменяют fresh valid upload; также не выполнены MIME/oversize rejection smoke. Текущий browser-путь заблокирован настройкой **Allow access to file URLs** в ChatGPT Chrome extension.
+- Seller status UI фактически реализован в TASK-051: Owner actions, Seller boundary и optimistic rollback подтверждены 4/4 component tests. TASK-038 остаётся pending только до зафиксированных staging visual и mobile layout smoke; backend staging smoke TASK-037 не закрывает UI-критерии.
 - Barcode migration подготовлена и прошла только local Supabase verification; до staging/production она должна быть пересмотрена в TASK-117 под code-first/optional-barcode policy.
 - Новая archive migration не применялась на staging/production. pgTAP-команды были запущены, но текущий local Supabase CLI не вернул итоговый вывод; повторить `npm run supabase:verify` в доступном Docker/local Supabase окружении перед staging apply.
 - Receive Flow содержит загрязнённые staging color suggestions (`Boundary EUR/USD`, case/EN/TR duplicates); безопасный audit, normalization и cleanup вынесены в TASK-118.
