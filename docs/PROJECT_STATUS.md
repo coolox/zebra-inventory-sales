@@ -31,7 +31,7 @@
 - Owner Seller invitation boundary применён и проверен на staging: server-only secret не попадает в browser, приглашение создаёт audit ledger и active Seller membership; повторный запрос идемпотентен, а Owner защищён от понижения роли.
 - Backend deactivate/reactivate Seller применён на staging: Owner-only RPC меняет только store membership, audit-логирует переход и лишает blocked Seller доступа через существующие RLS/session guards; production не изменялся.
 - Login, Access Denied и Magic Link callback локализованы на English/Turkish; locale сохраняется между страницами, а auth ошибки не раскрывают внутренние детали.
-- Supabase staging Auth временно направляет Magic Link на Vercel Preview `zebra-inventory-sales-mwq23cdh0-cooloxs-projects.vercel.app`; localhost callback сохранён. Перед каждым новым Preview этот URL нужно заменить.
+- Supabase staging Auth направляет Magic Link на работающий branch Preview `zebra-inventory-sales-git-review-task-060-077-cooloxs-projects.vercel.app`; localhost callback сохранён. На Vercel Preview заданы live Supabase variables и согласованы `npm run build:live` / `.next-live`; live login screen подтверждён. Перед сменой branch Preview этот URL нужно заменить.
 
 ## Следующая задача
 
