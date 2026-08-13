@@ -36,6 +36,12 @@ TASK-013, TASK-014, TASK-044, TASK-077.
 - Stateful demo Playwright scenarios намеренно запускаются одним worker: это сохраняет проверку всех viewport'ов и исключает взаимное влияние localStorage сценариев.
 - Локально подтверждено, что failing smoke command возвращает non-zero; после стабилизации selectors/hydration ожидания полный suite проходит.
 
+## Remote verification (2026-08-13)
+
+- Workflow успешно опубликован в ветке `review/task-060-077`; GitHub Actions создал run `31716168276` для commit `671f3e4`.
+- Run остановлен до запуска jobs (`Startup failure`): GitHub сообщает о failed recent account payments или недостаточном spending limit. Это billing block, а не ошибка workflow, migration или test.
+- Предыдущий PAT blocker устранён: созданный scoped token позволил обновить `.github/workflows/ci.yml`.
+
 ## Ожидает внешнего действия
 
-- Текущий GitHub Personal Access Token не имеет scope `workflow`, поэтому GitHub отклонил push нового `.github/workflows/ci.yml`. После выдачи этого scope нужно pushнуть commit и подтвердить первый зелёный GitHub Actions run.
+- Владелец GitHub account должен исправить Billing & plans / spending limit. Затем повторно запустить CI или сделать новый push и подтвердить первый зелёный run. До этого TASK остаётся `in_progress`.

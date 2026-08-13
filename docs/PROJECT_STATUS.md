@@ -36,7 +36,7 @@
 ## Следующая задача
 
 - PWA gate закрыт: Owner повторно подтвердил Android/iOS install, новую чёрно-белую zebra `Z`, standalone launch, основные flows и EN/TR на Vercel HTTPS preview. TASK-131—TASK-136 завершены.
-- Текущая задача: TASK-078 — CI pipeline. Реализация и local checks готовы, но GitHub отклонил push `.github/workflows/ci.yml`: текущему Personal Access Token нужен scope `workflow`. После первого зелёного remote run следующая доступная задача — TASK-043. TASK-040 временно отложена; TASK-079 заблокирована TASK-040 и TASK-078.
+- Текущая задача: TASK-078 — CI pipeline. Workflow опубликован и первый GitHub Actions run создан, но GitHub остановил его до jobs из-за locked billing account (failed recent payment или insufficient spending limit). После исправления Billing & plans нужен первый зелёный remote run; затем следующая доступная задача — TASK-043. TASK-040 временно отложена; TASK-079 заблокирована TASK-040 и TASK-078.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
 
@@ -235,7 +235,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - SSR/первый client render `Home` теперь используют детерминированный demo shell, а live mode включается после hydration; browser console smoke и изоляция dev build outputs всё ещё остаются в TASK-123.
 - Turkish покрытие preview-critical Audit Log, Seller Goal и modal/access states завершено; owner-only Supplier/FX и часть inventory controls требуют отдельного полного i18n pass.
 - PWA preview gate и desktop/tablet/mobile QA закрыты: Vercel HTTPS preview, Android/iOS physical-device smoke и local viewport matrix подтверждены.
-- CI workflow добавлен локально, но не запушен: текущему GitHub Personal Access Token нужен scope `workflow`, иначе GitHub запрещает обновлять `.github/workflows/ci.yml`. E2E, RLS и concurrency suites включены без production secrets.
+- CI workflow опубликован; run `31716168276` не стартовал из-за GitHub billing lock, поэтому frontend/database jobs ещё не получили remote evidence. E2E, RLS и concurrency suites включены без production secrets. После исправления Billing & plans повторно запустить run.
 - `app/page.tsx` остаётся перегруженным; routing и demo persistence не завершены.
 - XLSX export завершён без новой production-зависимости: server-side structural checks подтверждают workbook/sheet XML. В текущем окружении нет LibreOffice, поэтому его visual open smoke выполняется в Owner live browser после скачивания.
 - TASK-040 ожидает установки Vercel Preview environment variables (`NEXT_PUBLIC_APP_MODE=live`, Supabase URL и publishable key) и controlled Owner/Seller/unknown-email/expired-link/mobile auth matrix. Не добавлять временный Preview wildcard в Supabase redirects.
