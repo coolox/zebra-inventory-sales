@@ -35,7 +35,7 @@
 ## Следующая задача
 
 - PWA gate закрыт: Owner повторно подтвердил Android/iOS install, новую чёрно-белую zebra `Z`, standalone launch, основные flows и EN/TR на Vercel HTTPS preview. TASK-131—TASK-136 завершены.
-- Следующая задача: TASK-074 — добавить XLSX export reports.
+- Следующая задача: TASK-040 — завершить staging Magic Link configuration.
 - TASK-040 — завершить staging Magic Link configuration.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
@@ -166,6 +166,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-071](tasks/TASK-071.md) — добавлен ledger-derived inventory report по model/variant: balance, sell-through, turnover и configured low-stock.
 - [TASK-072](tasks/TASK-072.md) — добавлен Owner-only Reports UI на `/reports`: period, metrics, dimensions, low-stock и live-safe states.
 - [TASK-073](tasks/TASK-073.md) — добавлен Owner-only UTF-8 CSV export reports с filter parity, formula-injection protection и API authorization coverage.
+- [TASK-074](tasks/TASK-074.md) — добавлен Owner-only XLSX export: typed Summary/Breakdown workbook, period/filter parity, formula-prefix neutralization и authorization coverage.
 - [TASK-075](tasks/TASK-075.md) — добавлен Owner-only PDF export reports: compact landscape A4 metrics/breakdown, pagination, filter parity и API authorization coverage.
 - [TASK-076](tasks/TASK-076.md) — добавлен Owner-only reconciliation report для payment/movement/balance discrepancies и manual corrections с source IDs и RLS coverage.
 - [TASK-077](tasks/TASK-077.md) — добавлен local-only harness реальных concurrent inventory transactions для sale/adjustment/exchange с clean-run coverage.
@@ -180,7 +181,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-041](tasks/TASK-041.md) — Добавить store-scoped audit log query
 - [TASK-042](tasks/TASK-042.md) — Добавить Owner Audit Log UI
 - [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
-- [TASK-074](tasks/TASK-074.md) — Добавить XLSX export reports
 - [TASK-078](tasks/TASK-078.md) — Добавить CI pipeline
 - [TASK-079](tasks/TASK-079.md) — Развернуть отдельный staging frontend
 - [TASK-080](tasks/TASK-080.md) — Добавить observability и error monitoring
@@ -230,6 +230,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - PWA preview gate и desktop/tablet/mobile QA закрыты: Vercel HTTPS preview, Android/iOS physical-device smoke и local viewport matrix подтверждены.
 - Нет e2e/RLS/concurrency tests и CI.
 - `app/page.tsx` остаётся перегруженным; routing и demo persistence не завершены.
-- TASK-074 (XLSX export) остаётся следующим: нужный artifact runtime недоступен в текущем окружении; PDF export и reconciliation завершены в TASK-075—TASK-076.
+- XLSX export завершён с server-side workbook structural checks. В текущем окружении нет LibreOffice, поэтому его visual open smoke выполняется в Owner live browser после скачивания.
 - В staging остаются legacy/test color values. UI скрывает и нормализует их; удаление/merge данных разрешается только после отдельного read-only audit и подтверждения владельца (TASK-118).
 - Production projects, SMTP, monitoring, backup/restore и pilot launch не настроены.
