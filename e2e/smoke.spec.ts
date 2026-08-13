@@ -69,6 +69,20 @@ test("reports deep link opens the Owner reports workspace", async ({ page }) => 
   await expect(page.getByLabel("Report period")).toBeVisible();
 });
 
+test("Owner can open the audit log while Seller only sees activity", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "All activity" }).click();
+  const ownerDialog = page.getByRole("dialog", { name: "Audit log" });
+  await expect(ownerDialog.getByLabel("Actor")).toBeVisible();
+  await expect(ownerDialog.getByText("No audit events match this filter.")).toBeVisible();
+  await ownerDialog.getByRole("button", { name: "Close" }).click();
+
+  await page.getByRole("button", { name: "Seller", exact: true }).click();
+  await page.getByRole("button", { name: "All activity" }).click();
+  await expect(page.getByRole("dialog", { name: "Activity" })).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Audit log" })).toHaveCount(0);
+});
+
 test("confirmed sale can be cancelled with a required reason", async ({ page }) => {
   await page.goto("/sales");
   await page.getByRole("button", { name: /Silk Midi Dress/ }).first().click();

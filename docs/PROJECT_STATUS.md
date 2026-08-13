@@ -36,7 +36,7 @@
 ## Следующая задача
 
 - PWA gate закрыт: Owner повторно подтвердил Android/iOS install, новую чёрно-белую zebra `Z`, standalone launch, основные flows и EN/TR на Vercel HTTPS preview. TASK-131—TASK-136 завершены.
-- Текущая задача: TASK-078 — CI pipeline. Реализация и local checks готовы, но GitHub отклонил push `.github/workflows/ci.yml`: текущему Personal Access Token нужен scope `workflow`. После первого зелёного remote run следующая доступная задача — TASK-042. TASK-040 временно отложена; TASK-079 заблокирована TASK-040 и TASK-078.
+- Текущая задача: TASK-078 — CI pipeline. Реализация и local checks готовы, но GitHub отклонил push `.github/workflows/ci.yml`: текущему Personal Access Token нужен scope `workflow`. После первого зелёного remote run следующая доступная задача — TASK-043. TASK-040 временно отложена; TASK-079 заблокирована TASK-040 и TASK-078.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
 
@@ -178,7 +178,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-022](tasks/TASK-022.md) — Применить product-images migration на staging
 - [TASK-038](tasks/TASK-038.md) — Добавить Seller status management UI
 - [TASK-040](tasks/TASK-040.md) — Завершить staging Magic Link configuration
-- [TASK-042](tasks/TASK-042.md) — Добавить Owner Audit Log UI
 - [TASK-043](tasks/TASK-043.md) — Добавить server validation и rate limiting
 - [TASK-078](tasks/TASK-078.md) — Добавить CI pipeline
 - [TASK-079](tasks/TASK-079.md) — Развернуть отдельный staging frontend

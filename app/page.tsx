@@ -724,10 +724,10 @@ export default function Home() {
         </Modal>
       )}
 
-      {modal === "activity" && role === "owner" && isLiveMode && (
+      {modal === "activity" && role === "owner" && (
         <Modal title={text.auditLog} eyebrow={text.auditHistory} onClose={() => setModal(null)} wide closeLabel={text.close}><AuditLog locale={locale} load={(page, category) => activeStoreId ? loadAuditLog(activeStoreId, { page, categories: category ? [category] : undefined }) : Promise.resolve({ items: [], page, pageSize: 25, hasMore: false })} /></Modal>
       )}
-      {modal === "activity" && (!isLiveMode || role !== "owner") && (
+      {modal === "activity" && role !== "owner" && (
         <Modal title={text.allActivity} eyebrow={text.recentOperations} onClose={() => setModal(null)} closeLabel={text.close}>
           <ActivityFeed items={activities} locale={locale} formatMoney={money} />
         </Modal>

@@ -1,6 +1,6 @@
 # TASK-042 — Добавить Owner Audit Log UI
 
-Статус: pending
+Статус: COMPLETED
 
 ## Цель
 
@@ -27,3 +27,9 @@ TASK-041.
 - Role visibility test.
 - Desktop/mobile browser smoke-test.
 
+## Выполнено
+
+- Owner получает audit dialog с category, actor, entity и date filters, pagination и loading/empty/error states.
+- Карточка события показывает action, entity, actor, time и только допустимые scalar details; email, phone, token, password и secret keys скрываются.
+- Seller открывает обычную Activity feed вместо Audit Log.
+- Component tests покрывают category/actor filtering, pagination и suppression sensitive metadata; desktop browser smoke покрывает Owner/Seller boundary и пустой state.
