@@ -1,5 +1,22 @@
 import { expect, test } from "@playwright/test";
 
+function captureHydrationDiagnostics(page: import("@playwright/test").Page) {
+  const diagnostics: string[] = [];
+  const capture = (message: string) => {
+    if (/recoverable hydration|hydration failed|text content does not match/i.test(message)) diagnostics.push(message);
+  };
+  page.on("console", (message) => capture(message.text()));
+  page.on("pageerror", (error) => capture(error.message));
+  return diagnostics;
+}
+
+test("demo production shell has no hydration diagnostics", async ({ page }) => {
+  const diagnostics = captureHydrationDiagnostics(page);
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "Business pulse" })).toBeVisible();
+  expect(diagnostics).toEqual([]);
+});
+
 test("demo dashboard opens in each supported viewport", async ({ page }, testInfo) => {
   await page.goto("/");
 

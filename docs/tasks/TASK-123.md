@@ -1,6 +1,6 @@
 # TASK-123 — Устранить hydration mismatch при локальной отладке
 
-Статус: pending
+Статус: COMPLETED
 
 > Частично устранено 2026-08-11: `Home` больше не выбирает live tree до hydration, поэтому server/browser runtime mode не дают разные первые HTML trees. Для полного закрытия всё ещё нужны clean demo/live browser smoke, console assertion и документированные раздельные dev-команды.
 
@@ -31,3 +31,11 @@
 - Чистый single-server demo/live smoke без hydration warnings.
 - Последовательный mode-switch smoke.
 - Browser console assertion на отсутствие hydration mismatch.
+
+## Результат — 2026-08-14
+
+- Режим теперь включается только явным `NEXT_PUBLIC_APP_MODE`; credentials не могут неявно переключить SSR/client tree в live.
+- Demo и live используют раздельные `.next-demo`/`.next-live`; добавлены безопасные `dev:demo`, `dev:live`, `build:*` и `start:*` команды.
+- Добавлен production Playwright assertion на hydration diagnostics и исправлен runner, чтобы он поднимал demo server с явным mode/port.
+- Clean Chrome smoke последовательно подтвердил demo `/` и live `/login`: console не содержит Recoverable Hydration Error, Hydration failed или text-content mismatch. Browser tooling banner исключён из этого критерия.
+- Проверены `npm test` (166/166), `npm run build`, `npm run build:live`, целевой Playwright hydration smoke (3/3) и `git diff --check`.

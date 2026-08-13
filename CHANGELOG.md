@@ -2,6 +2,7 @@
 
 ## 2026-08-14
 
+- Isolated local demo/live Next.js modes with explicit mode selection and separate `.next-demo`/`.next-live` output directories. Added safe mode-specific commands, a production hydration console assertion and clean sequential Chrome smoke; demo and live both load without hydration diagnostics.
 - Added a server-side validation and rate-limit boundary for Seller invitation, Seller access changes and session reads. Malformed/oversized external payloads are rejected before privileged actions; API errors use safe domain codes without exposing provider/RPC messages or client PII. Full Vitest suite passes 165/165 and production build passes.
 
 ## 2026-08-13

@@ -25,7 +25,7 @@ export default defineConfig({
   webServer: {
     // Use the production server so the smoke suite validates the same client
     // chunk boundary users receive and is not affected by dev-origin checks.
-    command: "npm run build && npm run start -- --port 3002",
+    command: "npm run build:demo && NEXT_PUBLIC_APP_MODE=demo next start --port 3002",
     url: "http://127.0.0.1:3002",
     reuseExistingServer: !process.env.CI,
     env: {

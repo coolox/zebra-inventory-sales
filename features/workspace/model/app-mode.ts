@@ -1,16 +1,13 @@
 export type AppMode = "demo" | "live";
 
-const configuredMode = process.env.NEXT_PUBLIC_APP_MODE;
-const hasSupabaseCredentials = Boolean(
-  process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-);
+/**
+ * The mode must be explicit. Inferring it from credentials can make a local
+ * Next server and its browser bundle choose different first-render trees.
+ */
+export function resolveAppMode(configuredMode: string | undefined): AppMode {
+  return configuredMode === "live" ? "live" : "demo";
+}
 
-export const appMode: AppMode = configuredMode === "demo"
-  ? "demo"
-  : configuredMode === "live"
-    ? "live"
-    : hasSupabaseCredentials
-      ? "live"
-      : "demo";
+export const appMode = resolveAppMode(process.env.NEXT_PUBLIC_APP_MODE);
 
 export const isLiveMode = appMode === "live";

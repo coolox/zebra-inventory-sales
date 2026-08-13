@@ -1,6 +1,22 @@
 # Порядок ведения проекта
 
-Обновлено: 2026-08-08
+Обновлено: 2026-08-14
+
+## Локальные режимы demo/live
+
+Режим задаётся только явной переменной `NEXT_PUBLIC_APP_MODE`; наличие Supabase variables само по себе не включает live. Это сохраняет один и тот же первый HTML tree для SSR и client hydration.
+
+```bash
+# Demo: http://localhost:3000, artifacts в .next-demo
+npm run dev:demo
+
+# Live: http://localhost:3001, artifacts в .next-live
+npm run dev:live
+```
+
+Не запускать оба режима командой `npm run dev`: она намеренно является alias для безопасного demo. Для production-like проверки использовать `npm run build:demo`/`npm run start:demo` или соответствующую пару `:live` — build и start всегда должны быть одного режима.
+
+Chrome debugging banner и extension UI не являются hydration error. Проверять нужно console messages приложения: Recoverable Hydration Error, `Hydration failed` или `Text content does not match`.
 
 ## 1. Начало любой сессии
 

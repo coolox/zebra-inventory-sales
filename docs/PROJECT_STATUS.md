@@ -37,8 +37,9 @@
 
 - PWA gate закрыт: Owner повторно подтвердил Android/iOS install, новую чёрно-белую zebra `Z`, standalone launch, основные flows и EN/TR на Vercel HTTPS preview. TASK-131—TASK-136 завершены.
 - TASK-043 завершена локально: Seller invite/status и session получили единый runtime validation boundary, safe domain errors и scoped rate limits; 165/165 tests и production build проходят. Staging/production не изменялись.
+- TASK-123 завершена локально: demo/live mode теперь explicit и изолированы по `.next-demo`/`.next-live`; Chrome smoke и production hydration assertion не нашли hydration diagnostics. Staging/production не изменялись.
 - Текущая незавершённая задача: TASK-078 — CI pipeline. Репозиторий сделан public для бесплатных standard GitHub runners, но GitHub account billing lock всё ещё останавливает jobs (`CI #1`, run `31717664237`) до их запуска. Нужен первый green remote run после снятия account lock. TASK-040 временно отложена; TASK-079 заблокирована TASK-040 и TASK-078.
-- Следующая локально независимая задача по новой команде владельца: TASK-123. Не начинать автоматически.
+- Следующую локально независимую задачу не начинать без новой команды владельца.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
 
@@ -55,7 +56,7 @@
 9. TASK-122 — явное атомарное подтверждение receipt.
 10. TASK-093 — retry/concurrency/idempotency suite.
 
-TASK-123 отдельно устраняет hydration mismatch локальных demo/live sessions. Barcode не обязателен ни на одном шаге AI-приёмки.
+TASK-123 завершена: локальные demo/live sessions изолированы и не дают hydration mismatch. Barcode не обязателен ни на одном шаге AI-приёмки.
 
 ## Будущая AI-продажа по фото этикеток — порядок реализации
 
@@ -72,8 +73,8 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 ## Сводка учёта задач
 
 - Всего TASK-файлов: 138.
-- Завершено: 98; pending: 37; in progress: 3 (`TASK-040`, `TASK-078`, `TASK-118`).
-- Все 138 TASK представлены ровно один раз в списках ниже; сверка выполнена 2026-08-13.
+- Завершено: 99; pending: 36; in progress: 3 (`TASK-040`, `TASK-078`, `TASK-118`).
+- Все 138 TASK представлены ровно один раз в списках ниже; сверка выполнена 2026-08-14.
 
 ## Список выполненных задач
 
@@ -125,6 +126,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-114](tasks/TASK-114.md) — исправлены контраст Light theme, валидация Receive Flow и сортировка нулевых остатков; полный suite 49/49.
 - [TASK-115](tasks/TASK-115.md) — восстановлен автоматический расчёт EUR-цены одной позиции из Mixed Payment; полный suite 49/49.
 - [TASK-116](tasks/TASK-116.md) — устранено устаревание FX rates перед New Sale; добавлены rate loader tests, полный suite 51/51.
+- [TASK-123](tasks/TASK-123.md) — устранён hydration mismatch при локальной отладке: явные demo/live modes, отдельные build outputs и browser console assertion.
 - [TASK-026](tasks/TASK-026.md) — добавлена store-scoped barcode uniqueness migration, indexes и pgTAP coverage; local Supabase suite 32 checks.
 - [TASK-027](tasks/TASK-027.md) — optional barcode lookup добавлен и оставлен неактивной возможностью; staging smoke снят с блокирующих критериев по решению владельца.
 - [TASK-028](tasks/TASK-028.md) — добавлено обратимое Owner-only archive/restore модели с audit, защитой от sale archived model и Owner archive list; frontend suite 57/57 и production build проходят.
@@ -218,7 +220,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-120](tasks/TASK-120.md) — Сопоставлять строки накладной с catalog по Product code
 - [TASK-121](tasks/TASK-121.md) — Распределить invoice quantity по color/size variants
 - [TASK-122](tasks/TASK-122.md) — Атомарно подтвердить AI receipt draft
-- [TASK-123](tasks/TASK-123.md) — Устранить hydration mismatch при локальной отладке
 - [TASK-124](tasks/TASK-124.md) — Добавить private sale-label image drafts
 - [TASK-125](tasks/TASK-125.md) — Извлекать данные с товарной этикетки
 - [TASK-126](tasks/TASK-126.md) — Сопоставлять этикетку с in-stock catalog variant
@@ -234,7 +235,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - Barcode migration подготовлена и прошла только local Supabase verification; до staging/production она должна быть пересмотрена в TASK-117 под code-first/optional-barcode policy.
 - Новая archive migration не применялась на staging/production. pgTAP-команды были запущены, но текущий local Supabase CLI не вернул итоговый вывод; повторить `npm run supabase:verify` в доступном Docker/local Supabase окружении перед staging apply.
 - Receive Flow содержит загрязнённые staging color suggestions (`Boundary EUR/USD`, case/EN/TR duplicates); безопасный audit, normalization и cleanup вынесены в TASK-118.
-- SSR/первый client render `Home` теперь используют детерминированный demo shell, а live mode включается после hydration; browser console smoke и изоляция dev build outputs всё ещё остаются в TASK-123.
 - Turkish покрытие preview-critical Audit Log, Seller Goal и modal/access states завершено; owner-only Supplier/FX и часть inventory controls требуют отдельного полного i18n pass.
 - PWA preview gate и desktop/tablet/mobile QA закрыты: Vercel HTTPS preview, Android/iOS physical-device smoke и local viewport matrix подтверждены.
 - Repository visibility изменена на public для бесплатных standard GitHub runners. CI workflow опубликован и распознан, но run `31717664237` также остановлен до jobs из-за GitHub account billing lock. Frontend/database jobs ещё не получили remote evidence; E2E, RLS и concurrency suites включены без production secrets. После снятия account lock повторно запустить run.
