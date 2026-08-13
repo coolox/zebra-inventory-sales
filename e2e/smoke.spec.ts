@@ -86,7 +86,7 @@ test("reports deep link opens the Owner reports workspace", async ({ page }) => 
   await expect(page.getByLabel("Report period")).toBeVisible();
 });
 
-test("Owner can open the audit log while Seller only sees activity", async ({ page }) => {
+test("Owner can open the audit log while Seller only sees activity", async ({ page }, testInfo) => {
   await page.goto("/");
   await page.getByRole("button", { name: "All activity" }).click();
   const ownerDialog = page.getByRole("dialog", { name: "Audit log" });
@@ -94,7 +94,11 @@ test("Owner can open the audit log while Seller only sees activity", async ({ pa
   await expect(ownerDialog.getByText("No audit events match this filter.")).toBeVisible();
   await ownerDialog.getByRole("button", { name: "Close" }).click();
 
-  await page.getByRole("button", { name: "Seller", exact: true }).click();
+  if (testInfo.project.name === "mobile") {
+    await page.getByRole("button", { name: "Switch to Seller preview" }).click();
+  } else {
+    await page.getByRole("button", { name: "Seller", exact: true }).click();
+  }
   await page.getByRole("button", { name: "All activity" }).click();
   await expect(page.getByRole("dialog", { name: "Activity" })).toBeVisible();
   await expect(page.getByRole("dialog", { name: "Audit log" })).toHaveCount(0);
@@ -132,10 +136,10 @@ test("demo workspace restores saved inventory and resets to its baseline", async
 test("Turkish dashboard labels remain visible in each supported viewport", async ({ page }, testInfo) => {
   await page.goto("/");
 
-  if (testInfo.project.name === "desktop") {
-    await page.getByRole("button", { name: "TR", exact: true }).click();
-  } else {
+  if (testInfo.project.name === "mobile") {
     await page.getByRole("button", { name: "Change language" }).click();
+  } else {
+    await page.getByRole("button", { name: "TR", exact: true }).click();
   }
 
   await expect(page.getByRole("heading", { name: "İşletme özeti" })).toBeVisible();
