@@ -31,12 +31,12 @@
 - Owner Seller invitation boundary применён и проверен на staging: server-only secret не попадает в browser, приглашение создаёт audit ledger и active Seller membership; повторный запрос идемпотентен, а Owner защищён от понижения роли.
 - Backend deactivate/reactivate Seller применён на staging: Owner-only RPC меняет только store membership, audit-логирует переход и лишает blocked Seller доступа через существующие RLS/session guards; production не изменялся.
 - Login, Access Denied и Magic Link callback локализованы на English/Turkish; locale сохраняется между страницами, а auth ошибки не раскрывают внутренние детали.
+- Supabase staging Auth временно направляет Magic Link на Vercel Preview `zebra-inventory-sales-mwq23cdh0-cooloxs-projects.vercel.app`; localhost callback сохранён. Перед каждым новым Preview этот URL нужно заменить.
 
 ## Следующая задача
 
 - PWA gate закрыт: Owner повторно подтвердил Android/iOS install, новую чёрно-белую zebra `Z`, standalone launch, основные flows и EN/TR на Vercel HTTPS preview. TASK-131—TASK-136 завершены.
-- Следующая задача: TASK-040 — завершить staging Magic Link configuration.
-- TASK-040 — завершить staging Magic Link configuration.
+- Текущая задача: TASK-040 — staging Magic Link configuration. Supabase temporary Preview redirect настроен; ожидаются Vercel live environment variables и manual auth matrix.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
 
@@ -231,5 +231,6 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - Нет e2e/RLS/concurrency tests и CI.
 - `app/page.tsx` остаётся перегруженным; routing и demo persistence не завершены.
 - XLSX export завершён без новой production-зависимости: server-side structural checks подтверждают workbook/sheet XML. В текущем окружении нет LibreOffice, поэтому его visual open smoke выполняется в Owner live browser после скачивания.
+- TASK-040 ожидает установки Vercel Preview environment variables (`NEXT_PUBLIC_APP_MODE=live`, Supabase URL и publishable key) и controlled Owner/Seller/unknown-email/expired-link/mobile auth matrix. Не добавлять временный Preview wildcard в Supabase redirects.
 - В staging остаются legacy/test color values. UI скрывает и нормализует их; удаление/merge данных разрешается только после отдельного read-only audit и подтверждения владельца (TASK-118).
 - Production projects, SMTP, monitoring, backup/restore и pilot launch не настроены.

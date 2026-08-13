@@ -5,6 +5,12 @@
 3. Create a private `.env.local` from `.env.example` and add only the project URL and publishable/anon key. Never commit it.
 4. Configure Magic Link redirect URLs before enabling login. The next migration will add authenticated write RPCs for receipts, sales, exchange and cancellation.
 
+## Temporary staging Magic Link Preview
+
+For the current staging test cycle, Supabase Auth Site URL is `https://zebra-inventory-sales-mwq23cdh0-cooloxs-projects.vercel.app`. Its exact callback URL and `http://localhost:3000/auth/callback` are in the redirect allow-list. This is intentionally temporary: before a new Vercel Preview is tested, replace the Preview Site URL and its `/auth/callback` allow-list entry; do not use a broad `*.vercel.app` wildcard.
+
+The selected Preview must also be deployed with `NEXT_PUBLIC_APP_MODE=live`, `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Keep the values in Vercel environment settings only — never commit them. Use `shouldCreateUser: false`: an unknown email must not create an Auth user.
+
 The foundation migration deliberately grants read access through RLS but no direct inventory mutations. Financial and stock-changing operations must be atomic audited RPCs.
 
 ## Local SQL integration harness
