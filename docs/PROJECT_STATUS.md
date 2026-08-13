@@ -169,6 +169,7 @@ TASK-123 отдельно устраняет hydration mismatch локальны
 - [TASK-075](tasks/TASK-075.md) — добавлен Owner-only PDF export reports: compact landscape A4 metrics/breakdown, pagination, filter parity и API authorization coverage.
 - [TASK-076](tasks/TASK-076.md) — добавлен Owner-only reconciliation report для payment/movement/balance discrepancies и manual corrections с source IDs и RLS coverage.
 - [TASK-077](tasks/TASK-077.md) — добавлен local-only harness реальных concurrent inventory transactions для sale/adjustment/exchange с clean-run coverage.
+- [TASK-137](tasks/TASK-137.md) — исправлены preview QA: эквиваленты валют в exchange top-up, живые demo Reports и скрытие Reports для Seller.
 
 ## Список оставшихся задач
 

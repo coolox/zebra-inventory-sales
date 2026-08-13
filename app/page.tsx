@@ -78,6 +78,7 @@ import { loadMetrics } from "@/features/reports/data/load-metrics";
 import { loadBreakdowns } from "@/features/reports/data/load-breakdowns";
 import { loadInventoryReport } from "@/features/reports/data/load-inventory-report";
 import { loadDiscrepancies } from "@/features/reports/data/load-discrepancies";
+import { demoReportData } from "@/features/reports/model/demo-report";
 import { loadAuditLog } from "@/features/audit/data/load-audit-log";
 import type { SellerMembershipStatus } from "@/features/sellers/model/types";
 import { selectChartData, selectMetrics, selectSellerRanking } from "@/features/overview/model/metrics";
@@ -409,7 +410,7 @@ export default function Home() {
       await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
     } else {
       setProducts((current) => current.map((product) => product.id === source.productId ? { ...product, stock: product.stock + source.quantity, updated: "Just now" } : product.id === input.replacement.id ? { ...product, stock: product.stock - source.quantity, updated: "Just now" } : product));
-      setActivities((current) => [{ id: `exchange-${Date.now()}`, type: "stock" as const, title: "Exchange · 1 item", meta: `${input.reason} · just now` }, ...current].slice(0, 6));
+      setActivities((current) => [{ id: `exchange-${Date.now()}`, type: "stock" as const, title: "Exchange · 1 item", meta: `${input.reason} · just now`, amount: input.topUpEur, dayOffset: 0 }, ...current].slice(0, 6));
     }
     notify(locale === "tr" ? "Değişim kaydedildi ve stok güncellendi" : "Exchange recorded and stock updated");
   };
@@ -619,11 +620,12 @@ export default function Home() {
             </div>
 
             <Overview role={role} period={period} metrics={metrics} chartData={chartData} rankedSellers={rankedSellers} products={visibleProducts} live={isLiveMode} locale={locale} onManageTeam={() => setModal("sellers")} labels={{ revenue: text.revenue, sales: text.salesMetric, grossMargin: text.grossMargin, myResult: text.myResult, unitsShort: text.unitsShort, todayDelta: text.todayDelta, periodDelta: text.periodDelta, itemsDelta: text.itemsDelta, ofRevenue: text.ofRevenue, salesTrend: text.salesTrend, lastSevenDays: text.lastSevenDays, sellerResults: text.sellerResults, revenueRanking: text.revenueRanking, manage: text.manage, liveData: text.liveData }} />
-            <ReportsDashboard role={role} locale={locale} exportStoreId={role === "owner" ? activeStoreId ?? undefined : undefined} load={async (reportPeriod, dimension) => {
-              if (!isLiveMode || !activeStoreId) return { metrics: { revenueEur: 0, costEur: 0, marginEur: 0, saleCount: 0, units: 0, averageTicketEur: 0 }, breakdowns: [], inventory: [] };
+            {role === "owner" && <ReportsDashboard role={role} locale={locale} exportStoreId={activeStoreId ?? undefined} refreshKey={`${sales.map((sale) => `${sale.id}:${sale.status}:${sale.revenueEur}`).join("|")}:${products.map((product) => `${product.id}:${product.stock}`).join("|")}:${activities.map((activity) => `${activity.id}:${activity.amount ?? 0}`).join("|")}`} load={async (reportPeriod, dimension) => {
+              if (!isLiveMode) return demoReportData({ sales, products, activities, period: reportPeriod, dimension });
+              if (!activeStoreId) throw new Error("Store is unavailable.");
               const [reportMetrics, breakdowns, inventory] = await Promise.all([loadMetrics(activeStoreId, reportPeriod), loadBreakdowns(activeStoreId, reportPeriod, dimension), loadInventoryReport(activeStoreId, reportPeriod)]);
               return { metrics: reportMetrics, breakdowns, inventory };
-            }} loadDiscrepancies={async () => !isLiveMode || !activeStoreId ? [] : loadDiscrepancies(activeStoreId)} />
+            }} loadDiscrepancies={async () => !isLiveMode || !activeStoreId ? [] : loadDiscrepancies(activeStoreId)} />}
             <SaleHistory locale={locale} records={saleHistory} sellerScope={role === "seller" ? String(currentSeller.id) : undefined} canCancel={role === "owner" || role === "seller"} onCancel={cancelRecordedSale} canExchange={role === "owner" || role === "seller"} products={products.filter((product) => product.store === roleStore && product.isActive !== false)} paymentRates={paymentRates} onExchange={completeExchange} />
           </section>
 

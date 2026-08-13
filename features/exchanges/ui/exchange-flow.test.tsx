@@ -23,6 +23,14 @@ describe("ExchangeFlow", () => {
     expect(onComplete).toHaveBeenCalledWith(expect.objectContaining({ topUpEur: 30 }));
   });
 
+  it("shows a currency-specific payment amount for each FX rate", async () => {
+    const user = userEvent.setup();
+    render(<ExchangeFlow locale="en" source={source} products={[product]} rates={rates} onComplete={async () => undefined} />);
+    await fillBase(user, "130");
+    const options = Array.from(screen.getByLabelText("Payment amount").querySelectorAll("option")).map((option) => option.textContent);
+    expect(options).toEqual(["30.00 EUR", "30.00 USD", "1000.00 TRY", "3000.00 RUB", "25.00 GBP"]);
+  });
+
   it("explains that equal price creates no refund", async () => {
     const user = userEvent.setup();
     render(<ExchangeFlow locale="en" source={source} products={[product]} rates={rates} onComplete={async () => undefined} />);

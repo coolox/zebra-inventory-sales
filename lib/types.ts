@@ -73,4 +73,6 @@ export type Activity = {
   amount?: number;
   currency?: Product["currency"];
   converted?: boolean;
+  /** Demo-only relative business day, used to keep local reports reproducible. */
+  dayOffset?: number;
 };

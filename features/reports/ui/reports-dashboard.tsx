@@ -11,12 +11,12 @@ import type { ReconciliationDiscrepancy } from "../data/load-discrepancies";
 const money = (value: number) => new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
 const dimensions: ReportingDimension[] = ["seller", "supplier", "brand", "model", "category"];
 
-export function ReportsDashboard({ role, locale, load, loadDiscrepancies, exportStoreId }: { role: "owner" | "seller"; locale: Locale; load: (period: ReportPeriod, dimension: ReportingDimension) => Promise<{ metrics: ReportingMetrics; breakdowns: ReportingBreakdown[]; inventory: InventoryReportRow[] }>; loadDiscrepancies?: () => Promise<ReconciliationDiscrepancy[]>; exportStoreId?: string }) {
+export function ReportsDashboard({ role, locale, load, loadDiscrepancies, exportStoreId, refreshKey = "" }: { role: "owner" | "seller"; locale: Locale; load: (period: ReportPeriod, dimension: ReportingDimension) => Promise<{ metrics: ReportingMetrics; breakdowns: ReportingBreakdown[]; inventory: InventoryReportRow[] }>; loadDiscrepancies?: () => Promise<ReconciliationDiscrepancy[]>; exportStoreId?: string; refreshKey?: string }) {
   const [period, setPeriod] = useState(() => reportPeriod("week")); const [dimension, setDimension] = useState<ReportingDimension>("seller");
   const [state, setState] = useState<"loading" | "ready" | "error">("loading"); const [data, setData] = useState<Awaited<ReturnType<typeof load>> | null>(null);
   const refresh = () => { setState("loading"); void load(period, dimension).then((next) => { setData(next); setState("ready"); }).catch(() => { setData(null); setState("error"); }); };
-  useEffect(refresh, [period, dimension]);
-  if (role !== "owner") return <section id="reports" className="panel mt-4 rounded-2xl p-5" aria-label="Reports"><h2 className="text-sm font-semibold">Reports</h2><p className="mt-2 text-xs text-zinc-500">Reports are available to the Owner only.</p></section>;
+  useEffect(() => { if (role === "owner") refresh(); }, [period, dimension, role, refreshKey]);
+  if (role !== "owner") return null;
   const labels = locale === "tr" ? { today: "Bugün", week: "Hafta", month: "Ay", year: "Yıl", custom: "Özel", from: "Başlangıç", to: "Bitiş", apply: "Uygula", invalid: "Geçerli tarih aralığı seçin" } : { today: "Today", week: "Week", month: "Month", year: "Year", custom: "Custom", from: "From", to: "To", apply: "Apply", invalid: "Choose a valid date range" };
   const exportHref = exportStoreId ? `/api/reports/export/csv?storeId=${encodeURIComponent(exportStoreId)}&from=${period.from}&to=${period.to}&report=breakdown&dimension=${dimension}` : undefined;
   const pdfExportHref = exportStoreId ? `/api/reports/export/pdf?storeId=${encodeURIComponent(exportStoreId)}&from=${period.from}&to=${period.to}&dimension=${dimension}` : undefined;
