@@ -2,11 +2,11 @@
 
 Обновлено: 2026-08-15
 
-Текущий этап: staging manual acceptance
+Текущий этап: staging product-image acceptance
 
-Текущий шаг: 9 из 24 — TASK-022 (`NEXT`)
+Текущий шаг: 9 из 24 — TASK-022 (`IN PROGRESS`)
 
-Команда для продолжения: `Выполни TASK-022`
+Команда для продолжения: Owner входит в staging и пишет `продолжи TASK-022`
 
 Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
@@ -102,7 +102,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 6 | DONE | TASK-079 | RC Preview `zebra-inventory-sales-51z34xyje-cooloxs-projects.vercel.app` готов; live-only env, callback и desktop/mobile smoke подтверждены |
 | 7 | DONE | TASK-146 | 28 RC migrations совпадают local/staging; schema checkpoint, Owner/Seller RPC/RLS и live no-mock smoke зелёные |
 | 8 | DONE | TASK-080 | Redacted client/server observability, critical-operation policy и Preview runtime-log synthetic evidence готовы; production provider choice остаётся до production gate |
-| 9 | **NEXT** | TASK-022 | Fresh image upload/reload и MIME/oversize rejection подтверждены в staging |
+| 9 | **IN PROGRESS** | TASK-022 | Supabase callback направлен на актуальный Preview; ожидается Owner sign-in для fresh image upload/reload и MIME/oversize rejection |
 | 10 | WAITING | TASK-038 | Seller deactivate/reactivate UI подтверждён через staging desktop/mobile |
 | 11 | PARTIAL | TASK-118 | Local UI normalization готова; staging audit/cleanup ждёт Owner approval и reconciliation |
 | 12 | WAITING | TASK-147 | Полная Owner/Seller staging acceptance matrix зелёная, defects triaged |

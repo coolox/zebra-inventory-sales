@@ -1,6 +1,6 @@
 # TASK-022 — Применить product-images migration на staging
 
-Статус: pending
+Статус: IN PROGRESS
 
 ## Частично подтверждено на staging (2026-08-10)
 
@@ -42,3 +42,14 @@
 - Migration, private bucket/RPC/RLS, существующие JPEG/PNG records, cross-store denial и carousel после reload подтверждены на staging.
 - Наличие ранее загруженных объектов не заменяет обязательный fresh valid upload smoke.
 - TASK остаётся `pending` до двух проверок: свежая допустимая загрузка с reload и отклонение unsupported MIME/oversize. Production не изменять.
+
+## Текущее продолжение (2026-08-15)
+
+- Staging Supabase Site URL и callback allow-list переключены на актуальный Preview
+  `https://zebra-inventory-sales-fkn819bfk-cooloxs-projects.vercel.app`.
+- Для обязательного fresh UI upload требуется уже авторизованная Owner-сессия этого
+  staging приложения. Агент не отправлял Magic Link и не открывал почтовые ящики:
+  для продолжения Owner должен войти в открытый staging tab и сообщить, когда готов.
+- После входа остаются: загрузить допустимые JPEG/PNG/WebP, reload и подтвердить
+  carousel; затем проверить unsupported MIME и файл больше 8 MiB. Production не
+  менять.
