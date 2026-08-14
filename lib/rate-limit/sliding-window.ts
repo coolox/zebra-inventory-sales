@@ -5,6 +5,7 @@ export const rateLimitPolicies = {
   sellerInvite: { limit: 5, windowMs: 60_000 },
   sellerStatus: { limit: 20, windowMs: 60_000 },
   session: { limit: 60, windowMs: 60_000 },
+  observability: { limit: 30, windowMs: 60_000 },
 } as const;
 
 export function checkRateLimit(key: string, limit: number, windowMs: number, now = Date.now()) {

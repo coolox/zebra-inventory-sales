@@ -1,6 +1,6 @@
 # TASK-080 — Добавить observability и error monitoring
 
-Статус: pending
+Статус: IN PROGRESS
 
 ## Цель
 
@@ -28,4 +28,3 @@ TASK-079.
 - Synthetic client/server error capture.
 - Redaction test.
 - Monitoring disabled safely without config.
-

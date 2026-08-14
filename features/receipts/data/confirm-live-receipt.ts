@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/client";
 import { receiptClientError, receiptErrorMessage } from "../model/receipt-errors";
 import type { ReceiptDraft } from "../model/types";
 import { toConfirmReceiptCommand } from "@/lib/contracts/receipts";
+import { reportClientFailure } from "@/lib/observability/client";
 
 type ConfirmLiveReceiptInput = {
   storeId: string;
@@ -26,5 +27,6 @@ export async function confirmLiveReceipt({ storeId, lines, locale }: ConfirmLive
   });
 
   if (!error) return;
+  reportClientFailure({ operation: "receipt.confirm", error, correlationId: command.idempotencyKey, context: { lineCount: command.lines.length } });
   throw new Error(receiptErrorMessage(error.message, locale));
 }

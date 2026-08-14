@@ -5,6 +5,7 @@ import { ArrowRight, CheckCircle2, Mail, ShieldCheck } from "lucide-react";
 import { isLiveMode } from "@/features/workspace/model/app-mode";
 import { createClient } from "@/lib/supabase/client";
 import { authCopy, persistLocale, readStoredLocale, type Locale } from "@/lib/i18n";
+import { reportClientFailure } from "@/lib/observability/client";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -50,6 +51,7 @@ export default function LoginPage() {
     });
 
     if (error) {
+      reportClientFailure({ operation: "auth.magic_link", error, context: { locale } });
       setState("error");
       if (error.status === 429 || error.code === "over_email_send_rate_limit" || error.code === "over_request_rate_limit") {
         setCooldown(60);

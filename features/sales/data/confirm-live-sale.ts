@@ -4,6 +4,7 @@ import type { Product } from "@/lib/types";
 import { saleClientError, saleErrorMessage } from "../model/sale-errors";
 import type { SaleDraftLine, SalePaymentDraft, SalePricingMode } from "../model/types";
 import { toConfirmSaleCommand } from "@/lib/contracts/sales";
+import { reportClientFailure } from "@/lib/observability/client";
 
 type ConfirmLiveSaleInput = {
   storeId: string;
@@ -20,7 +21,10 @@ export async function confirmLiveSale({ storeId, lines, payments, products, loca
 
   let command;
   try { command = toConfirmSaleCommand({ storeId, lines, payments, products, pricingMode, idempotencyKey: crypto.randomUUID() }); }
-  catch { throw new Error(saleClientError("unavailable", locale)); }
+  catch (error) {
+    reportClientFailure({ operation: "sale.command", error, context: { lineCount: lines.length, pricingMode } });
+    throw new Error(saleClientError("unavailable", locale));
+  }
 
   const { error } = await createClient().rpc("confirm_sale_with_payments", {
     p_store_id: command.storeId,
@@ -31,5 +35,6 @@ export async function confirmLiveSale({ storeId, lines, payments, products, loca
   });
 
   if (!error) return;
+  reportClientFailure({ operation: "sale.confirm", error, correlationId: command.idempotencyKey, context: { lineCount: command.lines.length, paymentCount: command.payments.length, pricingMode: command.pricingMode } });
   throw new Error(saleErrorMessage(error.message, locale));
 }

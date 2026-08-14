@@ -2,7 +2,14 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { isLiveMode } from "@/features/workspace/model/app-mode";
 
-const publicPaths = ["/login", "/auth/callback", "/access-denied"];
+// Observability accepts only bounded, redacted telemetry and is rate-limited at
+// the route. It must remain available before authentication so client failures
+// during sign-in can be recorded.
+const publicPaths = ["/login", "/auth/callback", "/access-denied", "/api/observability"];
+
+export function isPublicPath(pathname: string) {
+  return publicPaths.includes(pathname);
+}
 
 export async function updateSession(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -28,16 +35,16 @@ export async function updateSession(request: NextRequest) {
 
   // getUser validates the token with Supabase Auth. Do not trust getSession here.
   const { data: { user } } = await supabase.auth.getUser();
-  const isPublicPath = publicPaths.includes(request.nextUrl.pathname);
+  const requestIsPublic = isPublicPath(request.nextUrl.pathname);
 
-  if (!user && !isPublicPath) {
+  if (!user && !requestIsPublic) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
     redirectUrl.search = "";
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (user && !isPublicPath) {
+  if (user && !requestIsPublic) {
     const { data: membership, error } = await supabase
       .from("store_memberships")
       .select("id")
