@@ -1,6 +1,6 @@
 # TASK-139 — Показать мини-фото в строках Inventory
 
-Статус: pending
+Статус: COMPLETED
 
 ## Цель
 
@@ -35,3 +35,16 @@ TASK-025.
 ## Pricing rule
 
 `Sell price` на Product Card остаётся только отображаемым ориентиром, вычисляемым существующим UI как `purchase cost × 3`. Эта цена не сохраняется в товаре, не становится обязательной для Seller и не меняет фактическую цену: её Seller по-прежнему вводит при подтверждении Sale.
+
+## Выполнено
+
+- Каждая строка Inventory показывает первую product photo как компактный thumbnail; для товара без фото добавлен локализованный доступный placeholder.
+- В строках Seller и Owner показана purchase cost в исходной валюте.
+- Existing Product Card не менялась: purchase cost там не появляется, а `Sell price` остаётся только ориентиром.
+- Search, pagination и открытие Product Card по клику на строку сохранены.
+
+## Проверка
+
+- `npm test` — 71 files / 166 tests passed.
+- `npm run build` — успешно.
+- `npm run test:e2e` — 54/54 desktop/tablet/mobile smoke checks passed, включая thumbnail и purchase cost в Inventory.

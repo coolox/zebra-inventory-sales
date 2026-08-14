@@ -2,6 +2,7 @@
 
 ## 2026-08-14
 
+- Added compact private-model photo thumbnails and purchase cost to Inventory rows for Seller and Owner. Items without photos now have an accessible localized placeholder; Product Card continues to show only the non-persisted sell-price reference. Full unit/build and desktop-tablet-mobile smoke coverage passes.
 - Recorded the Owner decision to add private-model thumbnails and purchase cost in Inventory while keeping purchase cost out of Product Card, plus a server-authorized Seller sales summary: store today/week and personal today/week/month/year/all-time totals. Work is split into TASK-139—TASK-141.
 - Confirmed that Product Card sell price remains a non-persisted `purchase cost × 3` reference; Seller may still enter the actual sale price for each transaction.
 - Configured the staging Magic Link Preview: Vercel Preview now uses live mode with the matching build command/output directory, and Supabase Site URL plus callback allow-list target the working branch Preview while retaining localhost development callback.

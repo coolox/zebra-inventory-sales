@@ -40,7 +40,8 @@
 - TASK-123 завершена локально: demo/live mode теперь explicit и изолированы по `.next-demo`/`.next-live`; Chrome smoke и production hydration assertion не нашли hydration diagnostics. Staging/production не изменялись.
 - TASK-078 завершена: GitHub account billing block снят, а `CI #3` (run `31751839301`, commit `b75d1d0`) зелёный для frontend и clean local Supabase jobs. CI не использует production/staging secrets.
 - TASK-040 завершена на staging: Owner/Seller/unknown-email/used-link/logout/refresh/mobile matrix подтверждена владельцем; Vercel Authentication отключена для Preview.
-- По новому решению владельца следующая задача — TASK-139 (мини-фото в Inventory); затем TASK-140 и TASK-141 для Seller sales summary. Не начинать без новой команды владельца.
+- TASK-139 завершена: Inventory показывает first-photo thumbnail, доступный placeholder и purchase cost для Seller/Owner; Product Card сохраняет только reference sell price. Полный test/build/desktop-tablet-mobile smoke прошёл.
+- Следующая задача — TASK-140 для server-side Seller sales summary. Не начинать без новой команды владельца.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
 
@@ -74,7 +75,7 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 ## Сводка учёта задач
 
 - Всего TASK-файлов: 141.
-- Завершено: 101; pending: 39; in progress: 1 (`TASK-118`).
+- Завершено: 102; pending: 38; in progress: 1 (`TASK-118`).
 - Все 141 TASK представлены ровно один раз в списках ниже; сверка выполнена 2026-08-14.
 
 ## Список выполненных задач
@@ -142,6 +143,7 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 - [TASK-037](tasks/TASK-037.md) — Owner-only Seller deactivate/reactivate RPC, server route и local RLS/idempotency coverage; migration применена на staging.
 - [TASK-039](tasks/TASK-039.md) — локализованы login/access-denied/callback, locale сохраняется и error redirects безопасны.
 - [TASK-040](tasks/TASK-040.md) — staging Magic Link configuration завершена: Preview public, redirects согласованы; Owner/Seller/unknown/used-link/logout/mobile matrix подтверждена владельцем.
+- [TASK-139](tasks/TASK-139.md) — Inventory показывает private-model thumbnails, доступный no-photo placeholder и purchase cost; Product Card сохраняет reference sell price без фиксации actual Sale price.
 - [TASK-041](tasks/TASK-041.md) — добавлен store-scoped Owner audit-log query с безопасным actor mapping, filters/pagination и RLS cross-store coverage.
 - [TASK-042](tasks/TASK-042.md) — добавлен Owner Audit Log UI с фильтрами, pagination, safe details и Owner/Seller boundary.
 - [TASK-043](tasks/TASK-043.md) — добавлены единые runtime validation и rate-limit boundaries для Seller invite/status и session; API errors безопасны, 165/165 tests и build проходят.
@@ -193,7 +195,6 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 
 - [TASK-022](tasks/TASK-022.md) — Завершить fresh upload и MIME/oversize smoke для staging product images
 - [TASK-038](tasks/TASK-038.md) — Подтвердить Seller status UI через staging visual и mobile smoke
-- [TASK-139](tasks/TASK-139.md) — Показать мини-фото в строках Inventory
 - [TASK-140](tasks/TASK-140.md) — Добавить безопасный Seller sales summary API
 - [TASK-141](tasks/TASK-141.md) — Показать Seller store и personal sales summary
 - [TASK-079](tasks/TASK-079.md) — Развернуть отдельный staging frontend

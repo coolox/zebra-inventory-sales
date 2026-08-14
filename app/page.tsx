@@ -645,7 +645,7 @@ export default function Home() {
           </section>
 
           <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,.75fr)]">
-            <InventoryList products={products} store={roleStore} onSelect={setSelectedProductCode} labels={{ title: text.stock, search: text.search, empty: text.noResults, units: text.units }} />
+            <InventoryList products={products} store={roleStore} onSelect={setSelectedProductCode} labels={{ title: text.stock, search: text.search, empty: text.noResults, units: text.units, purchase: text.purchase, noPhoto: text.noPhoto }} />
             {false && <article id="inventory" className="panel min-w-0 scroll-mt-24 overflow-hidden rounded-2xl">
               <div className="flex flex-col gap-4 border-b border-zinc-800/80 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
                 <div>

@@ -65,6 +65,14 @@ test("inventory deep link keeps the dashboard workspace available", async ({ pag
   await expect(page.getByRole("button", { name: "New sale" })).toBeVisible();
 });
 
+test("inventory rows show product thumbnails and purchase cost", async ({ page }) => {
+  await page.goto("/inventory");
+
+  const productRow = page.locator("#inventory").getByRole("button").filter({ hasText: "KM-9902" }).first();
+  await expect(productRow.locator('img[src*="km-9902/front.png"]')).toBeVisible();
+  await expect(productRow).toContainText("Purchase: 75 USD");
+});
+
 test("sales deep link opens store-scoped sales history and its detail", async ({ page }) => {
   await page.goto("/sales");
   await expect(page.getByRole("heading", { name: "Sales history" })).toBeVisible();
