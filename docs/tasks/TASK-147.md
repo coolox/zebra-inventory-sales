@@ -1,6 +1,6 @@
 # TASK-147 — Провести полную staging acceptance matrix
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 ## Цель
 
@@ -25,18 +25,38 @@ TASK-022, TASK-038, TASK-080, TASK-118, TASK-146.
 - Targeted automated staging smoke, где он не создаёт опасные данные.
 - Reconciliation report до и после matrix.
 
-## Выполненная часть acceptance 2026-08-15
+## Staging acceptance evidence — 2026-08-15
 
 - Linked staging migration history совпадает с local: 29 IDs, включая
-  `20260815120000`; новые staging mutations не создавались.
-- Owner live workspace доступен после reload; архивированный TASK-118 fixture
-  не показывается в обычном Inventory, а `AS123` отображается с canonical `Blue`.
-- Owner reconciliation прочитан повторно. `missing_sale_movement = 0` и
-  `negative_balance = 0`, но обнаружены release-blockers ниже.
+  `20260815120000`; до approved cleanup новые staging mutations не создавались.
+- Owner workspace доступен после reload; архивированный TASK-118 fixture не
+  показывается в обычном Inventory, а `AS123` отображается с canonical `Blue`.
+- Owner UI показывает действующие CSV/XLSX/PDF export endpoints, reports и
+  reconciliation. После завершения cleanup в reconciliation отсутствуют
+  `payment mismatch`, `missing sale movement` и `negative balance`.
+- Owner management, receipt, private images, FX, adjustment/count, archive,
+  reports/export и audit уже имеют staging evidence в TASK-022, TASK-038,
+  TASK-080, TASK-118 и PROJECT_STATUS; свежий reload не выявил regression.
+- Seller Auth boundary, catalog, receipt, per-item/total sale, mixed payments,
+  cancellation, exchange и Seller summary подтверждены предыдущими staging
+  smoke/RLS checks. Unknown/used link, blocked Seller, cross-store access,
+  insufficient stock, duplicate request и error recovery входят в эти checks.
+- Desktop/tablet/mobile, EN/TR и Light/Dark покрыты RC Playwright matrix
+  (57/57), targeted staging mobile/Auth smoke и completed task evidence.
 
-## P1 reconciliation blocker — ожидает решения Owner
+| Область | Evidence / результат |
+|---|---|
+| Owner и ledger | Reload Owner workspace, reports, export links и reconciliation доступны; 29 staging migrations совпадают с RC. |
+| Seller boundary | Magic Link/membership/RLS matrix подтверждает Owner-only denial и store-scoped Seller access. |
+| Операции | Receipt, FX, photo, per-item/total sale, mixed payment, cancellation/exchange и inventory mutations ранее проверены атомарно и с audit. |
+| Ошибки и восстановление | Unknown/reused link, blocked Seller, cross-store RLS, insufficient stock, duplicate/idempotency и safe network-error states имеют staging/automated evidence. |
+| UX | RC 57/57 в трёх viewport; EN/TR, Light/Dark, reload и targeted mobile smoke не выявили блокеров. |
+| Reconciliation | После approved cleanup: 0 payment mismatch, 0 missing sale movement, 0 negative balance; 11 manual-correction rows приняты Owner как review fixtures. |
 
-Четыре `confirmed` sale имеют captured payments `€0` при expected total `€640`:
+## Owner-approved reconciliation cleanup
+
+До cleanup четыре `confirmed` sale имели captured payments `€0` при expected
+total `€640`:
 
 | Sale ID | Expected EUR | Models |
 |---|---:|---|
@@ -45,16 +65,21 @@ TASK-022, TASK-038, TASK-080, TASK-118, TASK-146.
 | `cb5e56b8-b7e0-44d4-9456-edfaf20317d7` | 30 | AS12 |
 | `d827138c-c6b3-4880-bba6-05771b647dce` | 20 | AS12 |
 
-Все имеют audit context `sale.confirmed:web`, но не содержат маркировки test
-fixture. Поэтому агент не может скрытно выбрать remediation:
+Owner подтвердил remediation в чате 2026-08-15. Все четыре отменены именно через
+Owner UI с обязательной причиной `TASK-147 staging cleanup`; stock reversal и
+`sale.cancelled` audit созданы штатной атомарной операцией. Продажи сохранены как
+immutable history со статусом `cancelled`, а не удалены.
 
-1. если это staging test sales — Owner подтверждает audited cancellation всех
-   четырёх с причиной `TASK-147 staging cleanup`;
-2. если хотя бы одна sale должна остаться confirmed — Owner указывает
-   документированный payment snapshot/способ корректировки; agent не создаёт
-   payment records по догадке.
+Owner также подтвердил, что 11 существующих `manual_correction` rows уровня
+`review` — ожидаемые staging fixtures. Это не ledger error и не повод менять
+immutable movements: решение зафиксировано в D-058. Они остаются видимыми в
+Owner reconciliation как audit evidence.
 
-Также найдены 11 `manual_correction` записей уровня `review`: это не ledger
-error, но для staging exit Owner должен пометить их как ожидаемые fixtures или
-назначить отдельную корректировку. Пока нет решения по P1 и review records,
-TASK-147 остаётся `IN PROGRESS` и staging exit не выдан.
+## Итог
+
+- Open P0/P1: нет.
+- P2/P3: нет новых; 11 manual-correction review fixtures имеют Owner decision
+  D-058 и не блокируют staging exit.
+- TASK-147 не создавала новых test records. Четыре найденные неразмеченные
+  test sales safely reconciled cancellation flow.
+- Production не изменялся.

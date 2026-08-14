@@ -2,11 +2,11 @@
 
 Обновлено: 2026-08-15
 
-Текущий этап: full staging acceptance — reconciliation decision pending
+Текущий этап: operational readiness — backups
 
-Текущий шаг: 12 из 24 — TASK-147 (`IN PROGRESS`)
+Текущий шаг: 13 из 24 — TASK-081 (`NEXT`)
 
-Команда для продолжения: `Подтверждаю TASK-147: отменить 4 test sales`
+Команда для продолжения: `Выполни TASK-081`
 
 Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
@@ -105,8 +105,8 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 9 | DONE | TASK-022 | Owner fresh JPEG/PNG/WebP upload, carousel reload, MIME/oversize rejection и prior private Storage/RLS denial evidence подтверждены на staging |
 | 10 | DONE | TASK-038 | Owner staging UI подтвердил Active → Blocked → Active с восстановлением доступа; mobile Seller dialog без horizontal overflow |
 | 11 | DONE | TASK-118 | Fixture archived через Owner flow, 13 variants canonicalized и audited; staging reconciliation зелёная |
-| 12 | **IN PROGRESS — OWNER DECISION** | TASK-147 | 4 payment mismatch errors (€640 total) и 11 manual-correction reviews требуют remediation/triage до staging exit |
-| 13 | WAITING | TASK-081 | Database/Storage backups и retention включены и проверены |
+| 12 | DONE | TASK-147 | Full Owner/Seller staging evidence consolidated; four approved test sales cancelled through Owner audit flow, reconciliation has no P0/P1 error |
+| 13 | **NEXT** | TASK-081 | Database/Storage backups и retention включены и проверены |
 | 14 | WAITING | TASK-082 | Изолированный restore rehearsal и rollback plan доказаны |
 | 15 | WAITING | TASK-148 | Security, authorization, rate-limit и pilot-capacity smoke не находят release blockers |
 | 16 | WAITING | TASK-083 | Изолированные production Supabase и Vercel созданы без реальных данных |
@@ -122,15 +122,15 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 ### Как работать с планом в любом новом чате
 
 1. Owner копирует из `PROJECT_STATUS.md` строку `Команда для продолжения` и пишет,
-   например: `Выполни TASK-147`.
-2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-147.md`.
-3. TASK-147 — единственная следующая задача; агент не начинает другой шаг.
-4. После выполнения агент записывает проверки в TASK-147 и меняет статус на `COMPLETED`.
-5. В этой таблице TASK-147 становится `DONE`, следующая задача — единственным `NEXT`.
+   например: `Выполни TASK-081`.
+2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-081.md`.
+3. TASK-081 — единственная следующая задача; агент не начинает другой шаг.
+4. После выполнения агент записывает проверки в TASK-081 и меняет статус на `COMPLETED`.
+5. В этой таблице TASK-081 становится `DONE`, следующая задача — единственным `NEXT`.
 6. В `PROJECT_STATUS.md` меняются последняя завершённая TASK, текущий шаг и команда
-   `Выполни TASK-147`.
-7. Финальный ответ заканчивается результатом TASK-147 и приглашением дать точную
-   следующую команду. Агент не начинает TASK-147 самостоятельно.
+   `Выполни TASK-081`.
+7. Финальный ответ заканчивается результатом TASK-081 и приглашением дать точную
+   следующую команду. Агент не начинает TASK-081 самостоятельно.
 
 Если задача заблокирована, она остаётся текущей, получает статус `BLOCKED` с причиной,
 а указатель не переходит дальше без решения Owner.

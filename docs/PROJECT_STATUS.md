@@ -2,16 +2,14 @@
 
 Обновлено: 2026-08-15
 
-Текущая фаза: Clothing Pilot full staging acceptance
+Текущая фаза: Clothing Pilot operational readiness
 
 ## Где мы остановились
 
-- Последняя завершённая задача: [TASK-118](tasks/TASK-118.md).
-- Текущий шаг launch plan: **12 из 24**.
-- Текущая задача: [TASK-147](tasks/TASK-147.md) — `IN PROGRESS`, ожидает
-  решения Owner по staging reconciliation P1.
-- Команда для продолжения: **`Подтверждаю TASK-147: отменить 4 test sales`**
-  (или Owner задаёт payment remediation для точных sale IDs в TASK-147).
+- Последняя завершённая задача: [TASK-147](tasks/TASK-147.md).
+- Текущий шаг launch plan: **13 из 24**.
+- Следующая задача: [TASK-081](tasks/TASK-081.md) — `pending`.
+- Команда для продолжения: **`Выполни TASK-081`**.
 
 TASK-145 зафиксировала и проверила кодовый RC
 `f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
@@ -20,7 +18,7 @@ TASK-145 зафиксировала и проверила кодовый RC
 Для актуального staging Preview Supabase Site URL и callback направлены на
 `https://zebra-inventory-sales-fkn819bfk-cooloxs-projects.vercel.app`; production
 resources не настраивались и не изменялись. TASK-146 синхронизировала staging history/schema
-с полным 28-migration RC set; remote dry-run теперь `upToDate`.
+с полным 29-migration RC set; remote dry-run теперь `upToDate`.
 
 TASK-080 добавила opt-in provider-neutral observability: redacted structured
 client/server errors, global fallback и безопасный rate-limited endpoint.
@@ -43,6 +41,14 @@ Migration `20260815120000` canonicalizes server-side receipt colours и
 нормализовала 13 проверенных legacy variants с audit records. Staging
 reconciliation зелёная: 13/13 colours совпали, active temporary markers = 0;
 Production не изменялся.
+
+TASK-147 завершила full staging acceptance. Owner-approved cancellation
+безопасно перевела четыре test sales (€640, ранее без captured payments) в
+`cancelled` с причиной `TASK-147 staging cleanup`; UI reconciliation теперь
+содержит 0 payment mismatch, 0 missing sale movement и 0 negative balance.
+Owner также принял 11 historical `manual_correction` review rows как ожидаемые
+staging fixtures (D-058); immutable ledger не переписывался. Production не
+изменялся.
 
 ## Главное решение по порядку работ
 
@@ -92,18 +98,17 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 - Current RC Preview: `/` → `/login`, live no-mock boundary, protected session
   middleware и 390 px mobile login smoke подтверждены на
   `https://zebra-inventory-sales-51z34xyje-cooloxs-projects.vercel.app`.
-- Staging migration chain совпадает с RC: 28 local/remote IDs, code-first/barcode,
+- Staging migration chain совпадает с RC: 29 local/remote IDs, code-first/barcode,
   archive, reporting/reconciliation и Seller summary RPC/RLS проверены; Owner/Seller
   smoke прошёл, а Seller Owner-only reconciliation отклонён.
 
-Это evidence не заменяет новый полный RC staging pass после синхронизации всех migrations.
+TASK-147 объединила это evidence с fresh Owner reload и финальной reconciliation;
+статус full staging acceptance закрыт.
 
 ## Текущие release blockers
 
-1. TASK-147: четыре confirmed staging sales имеют payment mismatch (€640 expected,
-   €0 captured); нужна Owner remediation decision до полного acceptance.
-2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
-3. До production Owner должен выбрать monitoring provider, retention и recipients;
+1. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
+2. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
 
 ## Последовательность до запуска
@@ -119,8 +124,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 9. TASK-022 — fresh product-image smoke (completed).
 10. TASK-038 — Seller status UI staging smoke (completed).
 11. TASK-118 — staging color audit/approved cleanup (completed).
-12. TASK-147 — full staging acceptance (next).
-13. TASK-081 — backups.
+12. TASK-147 — full staging acceptance (completed).
+13. TASK-081 — backups (next).
 14. TASK-082 — restore/rollback rehearsal.
 15. TASK-148 — security/pilot-capacity smoke.
 16. TASK-083 — production projects.
@@ -136,16 +141,16 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 ## Task accounting
 
 - Всего task-файлов: 151.
-- `COMPLETED`: 115.
+- `COMPLETED`: 116.
 - `IN PROGRESS`: 0.
-- `pending`: 36.
+- `pending`: 35.
 
 Завершённые ID:
 
 - TASK-001—TASK-080;
 - TASK-101—TASK-116;
 - TASK-123;
-- TASK-131—TASK-146; TASK-117.
+- TASK-131—TASK-147; TASK-117.
 
 Незавершённые launch-path tasks перечислены в разделе выше. Post-launch pending tasks:
 
@@ -166,10 +171,10 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
   colour variants канонизированы migration `20260815120000` и reconciled.
   Rollback archive остаётся Owner-only restore; 13 audit records сохраняют
   исходные цвета для обратной транзакции, если потребуется до новых receipts.
-- TASK-147 повторно прочитала Owner reconciliation: нет missing sale movements и
-  negative balances, но четыре sale без captured payment и 11 manual-correction
-  review records блокируют staging exit до Owner decision. Exact sale IDs и
-  варианты remediation записаны в TASK-147.
+- TASK-147 завершена: четыре test sales отменены через Owner audited flow;
+  reconciliation не содержит payment mismatch, missing sale movement или
+  negative balance. 11 `manual_correction` review records приняты Owner как
+  ожидаемые staging fixtures (D-058) и остаются audit evidence.
 - TASK-022 завершена; три non-production image fixtures остаются на staging test
   product `YY22` как evidence свежей проверки. Production data не затронуты.
 - TASK-038 завершена; staging Seller status восстановлен в `Active` после smoke.
@@ -181,9 +186,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Следующий шаг
 
-В новом или текущем чате Owner выбирает: **`Подтверждаю TASK-147: отменить 4 test
-sales`** либо задаёт документированный payment remediation для четырёх IDs из
-TASK-147 и статус 11 manual-correction review records.
+В новом или текущем чате Owner пишет: **`Выполни TASK-081`**.
 
-Агент продолжает только TASK-147, фиксирует её evidence и статус, переводит указатель
-на следующую задачу и останавливается. Он не начинает TASK-081 автоматически.
+Агент начинает только TASK-081, фиксирует backup/retention evidence и обновляет
+указатель после её завершения. Он не начинает TASK-082 автоматически.
