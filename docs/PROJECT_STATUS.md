@@ -2,18 +2,18 @@
 
 Обновлено: 2026-08-14
 
-Текущая фаза: подготовка Clothing Pilot Release Candidate
+Текущая фаза: Clothing Pilot staging preparation
 
 ## Где мы остановились
 
-- Последняя завершённая задача: [TASK-144](tasks/TASK-144.md).
-- Текущий шаг launch plan: **5 из 24**.
-- Текущая задача: [TASK-145](tasks/TASK-145.md) — `pending`, работа ещё не начата.
-- Следующая после неё: [TASK-079](tasks/TASK-079.md), но её нельзя начинать автоматически.
-- Команда для продолжения: **`Выполни TASK-145`**.
+- Последняя завершённая задача: [TASK-145](tasks/TASK-145.md).
+- Текущий шаг launch plan: **6 из 24**.
+- Следующая задача: [TASK-079](tasks/TASK-079.md) — `pending`; её нельзя начинать автоматически.
+- Команда для продолжения: **`Выполни TASK-079`**.
 
-TASK-144 закрыла локальный EN/TR release blocker. Агент не начинает TASK-145 до
-отдельной команды `Выполни TASK-145`.
+TASK-145 зафиксировала и проверила кодовый RC
+`f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
+зелёный для Frontend и Local Supabase. Staging и production не изменялись.
 
 ## Главное решение по порядку работ
 
@@ -48,7 +48,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 | Lint | Non-interactive ESLint CLI проходит с 0 errors; 24 существующих warnings остаются видимыми; lint включён в frontend CI job |
 | Database | 28 migrations, 13 pgTAP files, 169 SQL assertions |
 | Concurrency | Harness существует для sale/sale, sale/adjustment, sale/exchange |
-| Current GitHub CI | Run `31816406792` на `8c5c81f`: Frontend checks и Local Supabase checks зелёные; database job применил clean migrations, прошёл 13 pgTAP files/162 assertions и concurrency |
+| Current GitHub CI | Run `31822493717` на RC `f838f78680b4fb5a18fd5600f194ec5defd335a6`: Frontend checks и Local Supabase checks зелёные; database job прошёл clean 28 migrations, 13 pgTAP files/169 assertions и concurrency |
 | Последний SQL evidence | TASK-143: clean local `supabase:verify` и concurrency прошли; повторены и подтверждены отдельным зелёным GitHub CI run |
 
 ## Что проверено на staging ранее
@@ -76,7 +76,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 2. TASK-143 — database CI/RLS/concurrency gate.
 3. TASK-117 — code-first/optional barcode (completed locally; staging application is TASK-146).
 4. TASK-144 — remaining EN/TR pass (completed locally).
-5. TASK-145 — Release Candidate и merge в `main`.
+5. TASK-145 — Release Candidate и merge в `main` (completed).
 6. TASK-079 — отдельный staging frontend.
 7. TASK-146 — staging migration synchronization.
 8. TASK-080 — observability.
@@ -100,9 +100,9 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 ## Task accounting
 
 - Всего task-файлов: 151.
-- `COMPLETED`: 108.
+- `COMPLETED`: 109.
 - `IN PROGRESS`: 1 — TASK-118.
-- `pending`: 42.
+- `pending`: 41.
 
 Завершённые ID:
 
@@ -111,7 +111,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 - TASK-039—TASK-078;
 - TASK-101—TASK-116;
 - TASK-123;
-- TASK-131—TASK-144; TASK-117.
+- TASK-131—TASK-145; TASK-117.
 
 Незавершённые launch-path tasks перечислены в разделе выше. Post-launch pending tasks:
 
@@ -125,15 +125,16 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 - Staging содержит legacy/test colors; cleanup разрешён только после TASK-118 audit и Owner approval.
 - TASK-022 требует fresh upload плюс unsupported MIME/oversize rejection.
 - TASK-038 требует staging desktop/mobile visual smoke; component/backend tests уже существуют.
-- Current-head CI зелёный на review branch; merge в `main` остаётся отдельным gate TASK-145.
+- Кодовый RC `f838f78680b4fb5a18fd5600f194ec5defd335a6` прошёл два GitHub CI jobs;
+  merge в `main` зафиксирован в TASK-145.
 - `app/page.tsx` остаётся большим, но broad refactor отложен после pilot во избежание регрессий.
 - XLSX structural tests существуют; visual open smoke выполняется в live Owner browser.
 - Генерируемые test/visual-QA PDF в `tmp/` остаются локальными, игнорируются git и не удаляются автоматически.
 
 ## Следующий шаг
 
-В новом или текущем чате владелец пишет: **`Выполни TASK-145`**.
+В новом или текущем чате владелец пишет: **`Выполни TASK-079`**.
 
-Агент выполняет только TASK-145, фиксирует её evidence и статус, переводит указатель
-на TASK-079 и останавливается. TASK-079 начинается только после отдельной команды
+Агент выполняет только TASK-079, фиксирует её evidence и статус, переводит указатель
+на TASK-146 и останавливается. TASK-079 начинается только после отдельной команды
 **`Выполни TASK-079`**.

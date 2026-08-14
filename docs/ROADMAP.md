@@ -2,11 +2,14 @@
 
 Обновлено: 2026-08-14
 
-Текущий этап: подготовка Release Candidate
+Текущий этап: подготовка staging
 
-Текущий шаг: 5 из 24 — TASK-145 (`NEXT`)
+Текущий шаг: 6 из 24 — TASK-079 (`NEXT`)
 
-Команда для продолжения: `Выполни TASK-145`
+Команда для продолжения: `Выполни TASK-079`
+
+Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
+GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
 
 Этот файл полностью заменяет старый поэтапный roadmap. История выполненной работы
 сохранена в `docs/tasks/TASK-NNN.md`, git и `CHANGELOG.md`; завершённые функции не
@@ -55,7 +58,7 @@
 
 ### Уже реализовано и имеет evidence
 
-- 108 task-файлов имеют статус `COMPLETED`.
+- 109 task-файлов имеют статус `COMPLETED`.
 - На текущем commit локально проходят 75 Vitest files / 177 unit и component tests.
 - Demo и live production builds проходят TypeScript/build validation.
 - Есть 19 Playwright сценариев, запускаемых в desktop/tablet/mobile: два
@@ -95,8 +98,8 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 2 | DONE | TASK-143 | Точная причина CI failure исправлена; 27 migrations, 162 SQL assertions и concurrency зелёные локально и в GitHub CI |
 | 3 | DONE | TASK-117 | Code-first UUID identity, optional model/variant barcode, QR payload guard и clean local migration evidence готовы; staging application остаётся TASK-146 |
 | 4 | DONE | TASK-144 | Owner Supplier/Count controls снова доступны, FX/Inventory EN/TR gaps закрыты; desktop/mobile Owner/Seller smoke зелёный локально |
-| 5 | **NEXT** | TASK-145 | Feature freeze зафиксирован; Release Candidate влит в `main`, CI зелёный на точном commit |
-| 6 | WAITING | TASK-079 | Отдельный live staging frontend связан только со staging Supabase |
+| 5 | DONE | TASK-145 | Code RC `f838f78680b4fb5a18fd5600f194ec5defd335a6` влит в `main`; GitHub CI run `31822493717` зелёный |
+| 6 | **NEXT** | TASK-079 | Отдельный live staging frontend связан только со staging Supabase |
 | 7 | WAITING | TASK-146 | Полный RC migration chain применён и сверён в staging, включая локально завершённые migrations |
 | 8 | WAITING | TASK-080 | Safe observability, redaction и alerts проверены на staging |
 | 9 | WAITING | TASK-022 | Fresh image upload/reload и MIME/oversize rejection подтверждены в staging |
@@ -119,15 +122,15 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 ### Как работать с планом в любом новом чате
 
 1. Owner копирует из `PROJECT_STATUS.md` строку `Команда для продолжения` и пишет,
-   например: `Выполни TASK-145`.
-2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-145.md`.
-3. Перед кодом агент ставит TASK-145 в `IN PROGRESS`. Если чат прервётся, следующий
-   агент продолжит TASK-145, а не начнёт другой шаг.
-4. После выполнения агент записывает проверки в TASK-145 и меняет статус на `COMPLETED`.
-5. В этой таблице TASK-145 становится `DONE`, TASK-079 — единственным `NEXT`.
+   например: `Выполни TASK-079`.
+2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-079.md`.
+3. Перед кодом агент ставит TASK-079 в `IN PROGRESS`. Если чат прервётся, следующий
+   агент продолжит TASK-079, а не начнёт другой шаг.
+4. После выполнения агент записывает проверки в TASK-079 и меняет статус на `COMPLETED`.
+5. В этой таблице TASK-079 становится `DONE`, TASK-146 — единственным `NEXT`.
 6. В `PROJECT_STATUS.md` меняются последняя завершённая TASK, текущий шаг и команда
-   `Выполни TASK-079`.
-7. Финальный ответ заканчивается результатом TASK-145 и приглашением дать точную
+   `Выполни TASK-146`.
+7. Финальный ответ заканчивается результатом TASK-079 и приглашением дать точную
    следующую команду. Агент не начинает TASK-079 самостоятельно.
 
 Если задача заблокирована, она остаётся текущей, получает статус `BLOCKED` с причиной,
