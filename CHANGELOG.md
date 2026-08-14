@@ -3,6 +3,7 @@
 ## 2026-08-14
 
 - Recorded the Owner decision to add private-model thumbnails and purchase cost in Inventory while keeping purchase cost out of Product Card, plus a server-authorized Seller sales summary: store today/week and personal today/week/month/year/all-time totals. Work is split into TASK-139—TASK-141.
+- Confirmed that Product Card sell price remains a non-persisted `purchase cost × 3` reference; Seller may still enter the actual sale price for each transaction.
 - Configured the staging Magic Link Preview: Vercel Preview now uses live mode with the matching build command/output directory, and Supabase Site URL plus callback allow-list target the working branch Preview while retaining localhost development callback.
 - Disabled Vercel Authentication for the staging Preview so mobile Magic Links reach Zebra rather than the Vercel sign-in page; unauthenticated HTTP check of the staging login returns 200.
 - Completed staging Magic Link verification: Owner and invited Seller sign in through separate accounts, unknown email is denied, used links do not authenticate again, and logout/refresh retains the membership boundary; Owner confirmed the mobile flow.
