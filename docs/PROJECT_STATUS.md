@@ -40,7 +40,7 @@
 - TASK-123 завершена локально: demo/live mode теперь explicit и изолированы по `.next-demo`/`.next-live`; Chrome smoke и production hydration assertion не нашли hydration diagnostics. Staging/production не изменялись.
 - TASK-078 завершена: GitHub account billing block снят, а `CI #3` (run `31751839301`, commit `b75d1d0`) зелёный для frontend и clean local Supabase jobs. CI не использует production/staging secrets.
 - TASK-040 завершена на staging: Owner/Seller/unknown-email/used-link/logout/refresh/mobile matrix подтверждена владельцем; Vercel Authentication отключена для Preview.
-- Следующая задача — TASK-079; не начинать её без новой команды владельца.
+- По новому решению владельца следующая задача — TASK-139 (мини-фото в Inventory); затем TASK-140 и TASK-141 для Seller sales summary. Не начинать без новой команды владельца.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
 
@@ -73,9 +73,9 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 
 ## Сводка учёта задач
 
-- Всего TASK-файлов: 138.
-- Завершено: 101; pending: 34; in progress: 1 (`TASK-118`).
-- Все 138 TASK представлены ровно один раз в списках ниже; сверка выполнена 2026-08-14.
+- Всего TASK-файлов: 141.
+- Завершено: 101; pending: 39; in progress: 1 (`TASK-118`).
+- Все 141 TASK представлены ровно один раз в списках ниже; сверка выполнена 2026-08-14.
 
 ## Список выполненных задач
 
@@ -193,6 +193,9 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 
 - [TASK-022](tasks/TASK-022.md) — Завершить fresh upload и MIME/oversize smoke для staging product images
 - [TASK-038](tasks/TASK-038.md) — Подтвердить Seller status UI через staging visual и mobile smoke
+- [TASK-139](tasks/TASK-139.md) — Показать мини-фото в строках Inventory
+- [TASK-140](tasks/TASK-140.md) — Добавить безопасный Seller sales summary API
+- [TASK-141](tasks/TASK-141.md) — Показать Seller store и personal sales summary
 - [TASK-079](tasks/TASK-079.md) — Развернуть отдельный staging frontend
 - [TASK-080](tasks/TASK-080.md) — Добавить observability и error monitoring
 - [TASK-081](tasks/TASK-081.md) — Настроить автоматические backups
@@ -232,6 +235,7 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 ## Известные проблемы
 
 - Product-images migration применена, а private bucket/RPC/RLS, cross-store denial и carousel reload подтверждены. TASK-022 остаётся pending: ранее загруженные records не заменяют fresh valid upload; также не выполнены MIME/oversize rejection smoke. Текущий browser-путь заблокирован настройкой **Allow access to file URLs** в ChatGPT Chrome extension.
+- Фотографии из private catalog уже доступны Product Card и не отображаются в списке Inventory только из-за отсутствия thumbnail UI. Исправление изолировано в TASK-139; Storage/RLS не менять.
 - Seller status UI фактически реализован в TASK-051: Owner actions, Seller boundary и optimistic rollback подтверждены 4/4 component tests. TASK-038 остаётся pending только до зафиксированных staging visual и mobile layout smoke; backend staging smoke TASK-037 не закрывает UI-критерии.
 - Barcode migration подготовлена и прошла только local Supabase verification; до staging/production она должна быть пересмотрена в TASK-117 под code-first/optional-barcode policy.
 - Новая archive migration не применялась на staging/production. pgTAP-команды были запущены, но текущий local Supabase CLI не вернул итоговый вывод; повторить `npm run supabase:verify` в доступном Docker/local Supabase окружении перед staging apply.
