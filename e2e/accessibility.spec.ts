@@ -6,6 +6,9 @@ test("dashboard and receive dialog have no automated axe violations", async ({ p
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.addScriptTag({ content: axe.source });
   await page.getByRole("button", { name: "Receive products" }).click();
+  const receiveDialog = page.getByRole("dialog", { name: "Receive products" });
+  await expect(receiveDialog).toBeVisible();
+  await expect(receiveDialog).toHaveCSS("opacity", "1");
   const violations = await page.evaluate(async () => {
     const result = await (window as typeof window & { axe: { run: (context: Document, options: object) => Promise<{ violations: Array<{ id: string; nodes: Array<{ target: string[]; failureSummary: string }> }> }> } }).axe.run(document, {});
     return result.violations.map(({ id, nodes }) => ({ id, nodes: nodes.map((node) => ({ targets: node.target, summary: node.failureSummary })) }));

@@ -8,6 +8,8 @@ out
 *.tsbuildinfo
 test-results/
 playwright-report/
+# Generated test and visual-QA artifacts. Files remain local and are never deleted automatically.
+tmp/
 .env*
 !.env.example
 .vercel

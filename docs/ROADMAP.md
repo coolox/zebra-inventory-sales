@@ -1,162 +1,196 @@
-# Roadmap Zebra Retail
+# План запуска Zebra Retail — Clothing Pilot
 
-Обновлено: 2026-08-11
-Текущий этап: Этап 2  
-Правило: следующий этап начинается только после выполнения exit criteria текущего
+Обновлено: 2026-08-14
 
-## Этап 0 — Исследование и demo
+Текущий этап: подготовка Release Candidate
 
-Статус: завершён
+Текущий шаг: 2 из 24 — TASK-143 (`IN PROGRESS`)
 
-- [x] Провести read-only аудит существующего Telegram-бота.
-- [x] Зафиксировать текущие поля товара и продажи.
-- [x] Создать Next.js + Tailwind demo.
-- [x] Реализовать preview двух ролей и трёх магазинов.
-- [x] Реализовать клиентские mock-продажу, приёмку и управление продавцами.
-- [x] Проверить production build.
-- [x] Создать постоянную документацию проекта.
+Команда для продолжения: `Выполни TASK-143`
 
-Exit criteria: demo собирается, текущее состояние и ограничения зафиксированы.
+Этот файл полностью заменяет старый поэтапный roadmap. История выполненной работы
+сохранена в `docs/tasks/TASK-NNN.md`, git и `CHANGELOG.md`; завершённые функции не
+реализуются повторно.
 
-## Этап 1 — Product discovery и решения
+## 1. Цель этого плана
 
-Статус: завершён
+Довести существующий Clothing MVP до работающего production-пилота Zebra Boutique:
 
-- [x] Получить ответы на обязательные вопросы из `QUESTIONS.md`.
-- [x] Утвердить базовую матрицу прав владельца и продавца.
-- [x] Утвердить состав Clothing MVP и список отложенных функций.
-- [x] Утвердить основной канал: web/PWA.
-- [x] Утвердить English/Turkish и business week Wednesday–Tuesday с будущей настройкой.
-- [x] Утвердить EUR основной валютой; определить дополнительные валюты и FX provider позже.
-- [x] Определить судьбу Telegram-бота: приложение сначала, постепенная адаптация бота позже.
-- [x] Выбрать Supabase Auth + Magic Link.
-- [x] Подтвердить Vercel для frontend и managed Supabase для Postgres/Auth/Storage.
-- [x] Утвердить чистый старт без миграции текущих товаров и продаж.
-- [x] Утвердить clothing-only первый пилот; shoes и bags добавить позже.
-- [x] Утвердить currencies EUR/USD/TRY/RUB/GBP и Cash/Card/Bank transfer.
-- [x] Зафиксировать ответы первого раунда в `DECISIONS.md`.
+1. стабилизировать текущий код и проверки;
+2. получить воспроизводимый Release Candidate;
+3. проверить его в отдельном staging;
+4. подготовить monitoring, backup и rollback;
+5. развернуть production;
+6. загрузить начальный clothing inventory;
+7. провести контролируемый пилот и зафиксировать его успешное завершение.
 
-Exit criteria: нет открытых вопросов, блокирующих архитектуру и MVP.
+До завершения пилота действует feature freeze. Новая функциональность не добавляется,
+кроме исправлений release-blockers и уже согласованных launch tasks.
 
-## Этап 2 — Frontend foundation
+## 2. Scope первого запуска
 
-Статус: в работе
+В Clothing Pilot входят:
 
-- [ ] Разделить `app/page.tsx` на feature-модули и переиспользуемые компоненты. Начато: добавлены `features/workspace`, `features/catalog`, `features/exchange-rates`, `features/seller-goals` и `features/sales`; demo/live sources больше не смешиваются. Следующий slice — `features/receipts`.
-- [ ] Зафиксировать design tokens, состояния компонентов и адаптивные правила. Начато: добавлены Light/Dark theme tokens и responsive Product/Receive flows.
-- [ ] Реализовать i18n для English и Turkish. Начато: добавлены en/tr dictionary, persistent language switcher и локализация основных dashboard/nav/stock labels; Sale Flow покрыт полностью, Receive/Product/login ещё требуют полного покрытия.
-- [ ] Ввести routing будущих разделов без потери цельности продукта.
-- [ ] Добавить form validation и единый слой доменных ошибок. Начато: `features/sales` централизует проверку остатков/доступности и локализует ошибки live mutation.
-- [ ] Добавить test runner, component tests и e2e smoke tests.
-- [ ] Добавить локальный persistence adapter для development/demo.
-- [ ] Описать API contracts независимо от выбранного transport.
-- [ ] Проверить desktop, tablet и mobile в браузере.
+- один магазин Zebra Boutique;
+- роли Owner и Seller с server-side store boundary;
+- Magic Link authentication;
+- catalog, private product photos, receipts и inventory ledger;
+- per-item/total sales, mixed payments и Owner FX rates;
+- cancellation, exchange, inventory adjustment и count;
+- Seller management, audit log и Seller sales summary;
+- Owner reports, reconciliation и CSV/XLSX/PDF exports;
+- English/Turkish, Light/Dark, desktop/mobile и installable PWA.
 
-Exit criteria: frontend модульный, тестируемый и готов заменить mocks реальным API.
+Не блокируют первый запуск и остаются post-launch backlog:
 
-## Этап 3 — Backend и безопасность
+- TASK-089—TASK-093 и TASK-119—TASK-122 — AI receipt;
+- TASK-094—TASK-096 — общий API и Telegram;
+- TASK-097—TASK-100 — дополнительные магазины и transfers;
+- TASK-124—TASK-130 — AI sale-label flow.
 
-Статус: в работе — staging foundation применён, Magic Link flow готов к настройке и проверке
+`app/page.tsx` остаётся большим, но его дополнительный рефакторинг до пилота запрещён,
+если он не нужен для исправления конкретного дефекта. Это снижает риск регрессий.
 
-- [ ] Создать backend-проект и конфигурацию окружений. Начато: staging project создан, добавлены Supabase browser/server clients, `.env.example` и SDK; локальный `.env.local` ещё не заполнен.
-- [ ] Настроить staging/production database и миграции. Начато: первая RLS migration применена к чистому staging; production не создан.
-- [ ] Реализовать пользователей, сессии и восстановление доступа. Начато: первичный Owner создан, добавлены login/callback/session middleware и active-membership guard; требуется ручная проверка обновлённого Magic Link flow.
-- [ ] Настроить Magic Link callback URLs, email templates и production SMTP. Начато: callback route есть; требуется добавить staging redirect URL. SMTP относится к production.
-- [ ] Реализовать server-side RBAC и доступ к магазинам. Начато: middleware требует активный `store_memberships`; следующий шаг — Owner invite и write policies/RPC.
-- [ ] Реализовать audit log. Начато: audit log table и Owner-only read RLS применены в staging для receipt/FX operations; UI owner audit view ещё впереди.
-- [ ] Настроить валидацию, rate limiting и безопасное хранение секретов. Начато: authenticated RPC validates receipt input and Owner-only FX mutation; UI/server validation и production secrets ещё впереди.
-- [ ] Добавить backup/restore и проверку восстановления.
-- [ ] Добавить CI для типов, тестов, миграций и сборки.
+## 3. Повторный аудит перед новым планом
 
-Exit criteria: безопасный пользователь может войти и получить только разрешённые данные.
+### Уже реализовано и имеет evidence
 
-## Этап 4 — Складское ядро
+- 105 task-файлов имеют статус `COMPLETED`.
+- На текущем commit локально проходят 73 Vitest files / 172 unit и component tests.
+- Demo и live production builds проходят TypeScript/build validation.
+- Есть 19 Playwright сценариев, запускаемых в desktop/tablet/mobile: два
+  последовательных полных прогона проходят 57/57 без retry.
+- Non-interactive ESLint CLI проходит с 0 errors и включён в frontend CI job;
+  24 существующих warnings остаются видимыми.
+- Есть 27 migrations и 13 pgTAP файлов с 162 SQL assertions.
+- Есть concurrency harness для sale/sale, sale/adjustment и sale/exchange conflicts.
+- Основные sale, receipt, image, auth, Seller status, cancellation и exchange flows уже
+  имеют staging evidence; PWA подтверждена на Android/iOS.
+- GitHub Actions выполняет frontend и database jobs без staging/production secrets.
 
-Статус: ожидает
+### Что перепроверено и ещё не является зелёным release gate
 
-- [ ] Магазины и доступы пользователей.
-- [ ] Фабрики/поставщики.
-- [ ] Модели товара и варианты размер/цвет.
-- [ ] Фотографии и product identity. Inventory является code-first: обязательный `Product code / Ürün Kodu` и internal UUID; barcode nullable, не блокирует операции и до TASK-117 не применяется на staging. Private Storage/RLS и product-card upload подготовлены.
-- [ ] Документы приёмки и строки приёмки. Начато: idempotent RPC applied to staging, live Receive Flow invokes it, and live catalog refreshes after a receipt; follow-up migration исправляет business-date FX lookup, затем остаётся manual integration test.
-- [ ] Журнал складских движений. Начато: receipt RPC атомарно создаёт приходные movements, а live catalog суммирует их для остатка; sale/exchange/cancellation ещё не реализованы.
-- [ ] Дневные курсы валют. Начато: Owner-only upsert RPC applied to staging and Owner FX settings UI invokes it; manual integration test remains.
-- [ ] Перемещения между магазинами.
-- [ ] Инвентаризация и корректировки.
-- [ ] Низкий остаток и история изменения товара.
+- Последний GitHub CI run `31785382973` на commit `b9d2fc6` имеет зелёный Frontend job,
+  но database job падает на `Run RLS and database integration tests`; concurrency step
+  после него не выполняется.
+- Последний документированный локальный SQL pass относится к TASK-140. На текущем
+  commit локальный повтор не выполнен, потому что Docker daemon не отвечает.
+- TASK-022 и TASK-038 реализованы частично, но требуют конкретных staging smoke checks.
+- TASK-118 имеет готовую UI normalization, но staging cleanup требует read-only audit,
+  rollback plan и явного разрешения Owner.
+- Production Supabase/Vercel, SMTP, monitoring, backup/restore и pilot ещё не созданы.
 
-Exit criteria: остаток каждого варианта воспроизводится из движений и сходится после конкурентных операций.
+## 4. Единая последовательность задач до запуска
 
-## Этап 5 — Продажи
+Порядок ниже обязателен. Следующая задача не начинается автоматически: после каждого
+task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.md`.
 
-Статус: ожидает
+Статусы launch plan:
 
-- [ ] Корзина и продажа нескольких позиций.
-- [ ] Camera / multi-photo label intake: AI извлекает brand, Product code, color и size, находит только in-stock variant и формирует review draft; barcode optional, фактическая цена с бирки не переносится.
-- [ ] Seller явно проверяет каждый label match и добавляет его в обычную cart; manual и AI-derived items используют один pricing/payment/atomic sale flow.
-- [ ] Свободная фактическая цена без discount entity; mixed payment lines. UI и unit/component tests готовы: Per-item/Total sale pricing и opt-in Mixed payment работают; остаётся staging smoke-test.
-- [ ] Атомарное списание остатков.
-- [ ] Снимок себестоимости и валютного курса.
-- [ ] Обмен товара согласно утверждённой политике; денежные возвраты не входят в Clothing MVP.
-- [ ] Резервы, если входят в MVP.
-- [ ] Внутренняя запись sale; customer receipt не требуется.
-- [ ] История смены продавца.
+- `DONE` — задача завершена и evidence записано;
+- `NEXT` — единственная задача, которую можно начать по команде Owner;
+- `IN PROGRESS` — текущая задача уже выполняется; новый чат продолжает её;
+- `WAITING` — ожидает предыдущие шаги;
+- `PARTIAL` — часть уже сделана, но launch criteria ещё не закрыты;
+- `BLOCKED` — продолжение невозможно без решения или внешнего изменения.
 
-Exit criteria: продажи и обмены не создают отрицательный или несогласованный остаток.
+| Шаг | Статус | Task | Результат / gate |
+|---:|---|---|---|
+| 1 | DONE | TASK-142 | Рабочий non-interactive lint, стабильный Playwright animation boundary, чистый frontend release gate |
+| 2 | **IN PROGRESS** | TASK-143 | Точная причина CI failure найдена и fixture исправлен; local migrations, 162 SQL assertions и concurrency зелёные, ожидается CI на новом commit |
+| 3 | WAITING | TASK-117 | Code-first identity и optional barcode окончательно безопасны до staging/production migration |
+| 4 | WAITING | TASK-144 | Оставшиеся launch-critical Owner/Seller controls полностью локализованы EN/TR |
+| 5 | WAITING | TASK-145 | Feature freeze зафиксирован; Release Candidate влит в `main`, CI зелёный на точном commit |
+| 6 | WAITING | TASK-079 | Отдельный live staging frontend связан только со staging Supabase |
+| 7 | WAITING | TASK-146 | Полный RC migration chain применён и сверён в staging, включая локально завершённые migrations |
+| 8 | WAITING | TASK-080 | Safe observability, redaction и alerts проверены на staging |
+| 9 | WAITING | TASK-022 | Fresh image upload/reload и MIME/oversize rejection подтверждены в staging |
+| 10 | WAITING | TASK-038 | Seller deactivate/reactivate UI подтверждён через staging desktop/mobile |
+| 11 | PARTIAL | TASK-118 | Local UI normalization готова; staging audit/cleanup ждёт Owner approval и reconciliation |
+| 12 | WAITING | TASK-147 | Полная Owner/Seller staging acceptance matrix зелёная, defects triaged |
+| 13 | WAITING | TASK-081 | Database/Storage backups и retention включены и проверены |
+| 14 | WAITING | TASK-082 | Изолированный restore rehearsal и rollback plan доказаны |
+| 15 | WAITING | TASK-148 | Security, authorization, rate-limit и pilot-capacity smoke не находят release blockers |
+| 16 | WAITING | TASK-083 | Изолированные production Supabase и Vercel созданы без реальных данных |
+| 17 | WAITING | TASK-084 | Production SMTP, redirects и Magic Link matrix проверены |
+| 18 | WAITING | TASK-085 | Production-like migration rehearsal, bootstrap и recovery проходят с нуля |
+| 19 | WAITING | TASK-086 | Owner/Seller runbooks и обучение пяти pilot devices завершены |
+| 20 | WAITING | TASK-149 | Формальный Go/No-Go: release tag, approvals, rollback owner и launch window зафиксированы |
+| 21 | WAITING | TASK-150 | Тот же Release Candidate развёрнут в production; auth/data/transaction smoke зелёный |
+| 22 | WAITING | TASK-087 | Реальный clothing catalog/stock загружен и физически reconciled |
+| 23 | WAITING | TASK-088 | Zebra Boutique работает в контролируемом pilot с ежедневной сверкой |
+| 24 | WAITING | TASK-151 | Pilot exit подписан; production передан в обычную эксплуатацию |
 
-## Этап 6 — Отчёты владельца
+### Как работать с планом в любом новом чате
 
-Статус: ожидает
+1. Owner копирует из `PROJECT_STATUS.md` строку `Команда для продолжения` и пишет,
+   например: `Выполни TASK-143`.
+2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-143.md`.
+3. Перед кодом агент ставит TASK-143 в `IN PROGRESS`. Если чат прервётся, следующий
+   агент продолжит TASK-143, а не начнёт другой шаг.
+4. После выполнения агент записывает проверки в TASK-143 и меняет статус на `COMPLETED`.
+5. В этой таблице TASK-143 становится `DONE`, TASK-117 — единственным `NEXT`.
+6. В `PROJECT_STATUS.md` меняются последняя завершённая TASK, текущий шаг и команда
+   `Выполни TASK-117`.
+7. Финальный ответ заканчивается результатом TASK-143 и приглашением дать точную
+   следующую команду. Агент не начинает TASK-117 самостоятельно.
 
-- [ ] Оборот, себестоимость, маржа, количество и средний чек.
-- [ ] Сеть / магазин / продавец / товар / фабрика.
-- [ ] День / неделя / месяц / год / произвольный период.
-- [ ] Валютные снимки и единая базовая валюта.
-- [ ] Остатки, оборачиваемость и низкий остаток.
-- [ ] Экспорт CSV/XLSX/PDF согласно потребности.
-- [ ] Контроль расхождений и корректировок.
+Если задача заблокирована, она остаётся текущей, получает статус `BLOCKED` с причиной,
+а указатель не переходит дальше без решения Owner.
 
-Exit criteria: отчёты согласованы с журналом продаж и складских движений.
+## 5. Exit criteria по фазам
 
-## Этап 7 — AI-приёмка и Telegram
+### Phase A — Release Candidate: TASK-142—TASK-145
 
-Статус: ожидает
+- lint, 172+ frontend tests, demo/live builds и 57 browser checks стабильны;
+- clean database migration, pgTAP/RLS и concurrency проходят;
+- текущий GitHub commit имеет два зелёных CI jobs;
+- в RC нет незакоммиченных файлов, secrets или неутверждённых функций.
 
-- [ ] Загрузка фото/PDF накладной в private store-scoped draft без изменения stock.
-- [ ] OCR/AI extraction header и строк: supplier, invoice number/date/currency, `Ürün Kodu`, description, quantity, unit cost и totals с confidence/source references.
-- [ ] Exact catalog matching по Product code; unknown/ambiguous строки требуют явного review, fuzzy auto-merge запрещён.
-- [ ] Распределение invoice quantity по color/size variants; barcode optional и относится к variant только когда это подтверждено биркой.
-- [ ] Проверка expected/distributed totals и явное подтверждение пользователем.
-- [ ] Атомарное создание receipt, variants, FX/cost snapshots, movements и audit; повторная обработка документа идемпотентна.
-- [ ] Общий backend для web и Telegram-бота либо утверждённая замена бота.
-- [ ] Идемпотентность повторной обработки сообщений и документов.
-- [ ] Миграция существующих фото и SQLite-данных.
+### Phase B — Staging acceptance: TASK-079, TASK-146, TASK-080, TASK-022,
+TASK-038, TASK-118, TASK-147
 
-Exit criteria: web и Telegram не расходятся по остаткам и продажам.
+- staging использует только live adapters и staging resources;
+- миграции staging совпадают с RC;
+- Owner/Seller/auth/receipt/sale/cancellation/exchange/reports/images проходят;
+- нет P0/P1 defects и необъяснимых reconciliation discrepancies.
 
-## Этап 8 — Production launch
+### Phase C — Operational readiness: TASK-081, TASK-082, TASK-148
 
-Статус: ожидает
+- свежий backup существует и доступ ограничен;
+- восстановление database и images реально выполнено в изолированное окружение;
+- rollback приложения и данных проверен;
+- security/rate-limit/pilot-capacity smoke не выявляет launch blocker.
 
-- [ ] Staging с обезличенными данными.
-- [ ] Миграционная репетиция и rollback plan.
-- [ ] Обучение владельца и продавцов.
-- [ ] Мониторинг, журнал ошибок и алерты.
-- [ ] Нагрузочные и security smoke tests.
-- [ ] Запуск одного пилотного магазина.
-- [ ] Сверка остатков и продаж.
-- [ ] Подключение остальных магазинов.
-- [ ] Post-launch support и список улучшений.
+### Phase D — Production readiness: TASK-083—TASK-086, TASK-149
 
-Exit criteria: система ежедневно используется, резервные копии восстанавливаются, критических расхождений нет.
+- production изолирован от staging;
+- SMTP/Auth работают на production domain;
+- migration rehearsal и recovery доказаны;
+- люди, инструкции, release tag, launch window и ответственные определены.
 
-## После MVP
+### Phase E — Launch: TASK-150, TASK-087, TASK-088, TASK-151
 
-Предварительный backlog, не обещание:
+- production smoke не изменяет реальные данные неконтролируемо;
+- начальный остаток подписан Owner и воспроизводится из movements;
+- пять pilot accounts работают на своих устройствах;
+- пилот проходит согласованный период с ежедневной сверкой;
+- нет открытых P0/P1, backups свежие, monitoring и reconciliation зелёные.
 
-- мобильное приложение;
-- программа лояльности и клиенты;
-- интеграция с кассой и бухгалтерией;
-- закупочные заказы и прогнозирование;
-- мультикомпания и франшиза;
-- advanced analytics и рекомендации.
+## 6. Decision gates
+
+Эти решения не блокируют TASK-142 и принимаются только перед соответствующей задачей:
+
+1. TASK-080: monitoring provider, retention и получатели alerts.
+2. TASK-081/082: backup retention, RPO/RTO и место восстановления.
+3. TASK-118: явное Owner approval точного списка staging records на cleanup.
+4. TASK-084: production domain, SMTP provider и язык email template.
+5. TASK-087: способ первичного ввода inventory и человек, подписывающий сверку.
+6. TASK-088: продолжительность pilot; рекомендация — минимум 7 рабочих дней.
+
+## 7. Definition of launched
+
+Проект считается запущенным не после deploy, а после TASK-151, когда Zebra Boutique
+ежедневно выполняет реальные receipts/sales, остатки и payments сходятся, Owner/Seller
+работают только в разрешённых границах, monitoring/backups/restore подтверждены и нет
+открытых критических инцидентов.

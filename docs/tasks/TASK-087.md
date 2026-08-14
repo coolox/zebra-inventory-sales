@@ -13,7 +13,7 @@
 
 ## Зависимости
 
-TASK-032, TASK-083, TASK-085, TASK-086.
+TASK-032, TASK-083, TASK-085, TASK-086, TASK-150.
 
 ## Критерии готовности
 
@@ -26,4 +26,3 @@ TASK-032, TASK-083, TASK-085, TASK-086.
 - Physical count vs system reconciliation.
 - Random variant trace to source document.
 - No negative/duplicate variant audit.
-
