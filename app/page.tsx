@@ -55,6 +55,7 @@ import { demoPaymentRates, type PaymentRateMap } from "@/features/sales/model/pa
 import type { SaleDraftLine, SalePaymentDraft, SalePricingMode } from "@/features/sales/model/types";
 import { SaleFlow } from "@/features/sales/ui/sale-flow";
 import { SaleHistory } from "@/features/sales/ui/sale-history";
+import { SellerSalesSummary } from "@/features/sales/ui/seller-sales-summary";
 import { toSaleHistory } from "@/features/sales/model/sale-history";
 import type { SaleHistoryRecord } from "@/features/sales/model/sale-history";
 import { SellerGoalCard } from "@/features/seller-goals/ui/seller-goal-card";
@@ -635,6 +636,7 @@ export default function Home() {
             </div>
 
             <Overview role={role} period={period} metrics={metrics} chartData={chartData} rankedSellers={rankedSellers} products={visibleProducts} live={isLiveMode} locale={locale} onManageTeam={() => setModal("sellers")} labels={{ revenue: text.revenue, sales: text.salesMetric, grossMargin: text.grossMargin, myResult: text.myResult, unitsShort: text.unitsShort, todayDelta: text.todayDelta, periodDelta: text.periodDelta, itemsDelta: text.itemsDelta, ofRevenue: text.ofRevenue, salesTrend: text.salesTrend, lastSevenDays: text.lastSevenDays, sellerResults: text.sellerResults, revenueRanking: text.revenueRanking, manage: text.manage, liveData: text.liveData }} />
+            <SellerSalesSummary role={role} live={isLiveMode} storeId={activeStoreId} locale={locale} refreshKey={`${sales.map((sale) => `${sale.id}:${sale.status}:${sale.revenueEur}`).join("|")}:${exchanges.map((exchange) => `${exchange.id}:${exchange.topUpEur}`).join("|")}`} />
             {role === "owner" && <ReportsDashboard role={role} locale={locale} exportStoreId={activeStoreId ?? undefined} refreshKey={`${sales.map((sale) => `${sale.id}:${sale.status}:${sale.revenueEur}`).join("|")}:${products.map((product) => `${product.id}:${product.stock}`).join("|")}:${exchanges.map((exchange) => `${exchange.id}:${exchange.topUpEur}`).join("|")}`} load={async (reportPeriod, dimension) => {
               if (!isLiveMode) return demoReportData({ sales, products, exchanges, period: reportPeriod, dimension });
               if (!activeStoreId) throw new Error("Store is unavailable.");

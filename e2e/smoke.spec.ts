@@ -112,6 +112,19 @@ test("Owner can open the audit log while Seller only sees activity", async ({ pa
   await expect(page.getByRole("dialog", { name: "Audit log" })).toHaveCount(0);
 });
 
+test("Seller sales-summary boundary remains compact in each supported viewport", async ({ page }, testInfo) => {
+  await page.goto("/");
+  if (testInfo.project.name === "mobile") {
+    await page.getByRole("button", { name: "Switch to Seller preview" }).click();
+  } else {
+    await page.getByRole("button", { name: "Seller", exact: true }).click();
+  }
+  const summary = page.getByRole("region", { name: "Sales summary" });
+  await expect(summary).toBeVisible();
+  await expect(summary.getByText("Your live sales summary will appear after secure sign-in.")).toBeVisible();
+  await expect(summary.getByText("Store sales")).toHaveCount(0);
+});
+
 test("confirmed sale can be cancelled with a required reason", async ({ page }) => {
   await page.goto("/sales");
   await page.getByRole("button", { name: /Silk Midi Dress/ }).first().click();

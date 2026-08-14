@@ -1,6 +1,6 @@
 # TASK-141 — Показать Seller store и personal sales summary
 
-Статус: pending
+Статус: COMPLETED
 
 ## Цель
 
@@ -28,3 +28,11 @@ TASK-140.
 - Component tests role/loading/empty/error/refresh.
 - Browser smoke Seller desktop/mobile.
 - `npm test` и `npm run build`.
+
+## Результат
+
+- Добавлен Seller-only блок `Sales summary`: store today/week и personal today/week/month/year/all time, каждый с EUR revenue и units.
+- Блок использует только `get_seller_sales_summary` через typed adapter из TASK-140; в demo нет расчёта или подстановки данных.
+- Есть локализованные English/Turkish loading, empty, error/retry и live-unavailable состояния. В live-режиме сводка обновляется после обновления sales/exchanges workspace, в том числе после Sale, Cancellation и Exchange.
+- Owner не получает этот Seller UI и не меняются Owner-only Reports.
+- Пройдены `npm test` (73 files / 172 tests), `npm run build` и Seller smoke в production-like demo shell: desktop/tablet/mobile 3/3. Staging и production не изменялись.

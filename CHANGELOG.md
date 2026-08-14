@@ -2,6 +2,7 @@
 
 ## 2026-08-14
 
+- Added a compact Seller-only sales summary to the dashboard: live store today/week plus personal today/week/month/year/all-time EUR revenue and units. It uses the protected TASK-140 RPC only, never substitutes demo sales data, refreshes after sale/cancellation/exchange workspace updates, and includes EN/TR loading, empty and retry states. Owner reports remain separate. 172 frontend tests, build and Seller desktop/tablet/mobile smoke pass; staging/production were not changed.
 - Added a secure Seller sales-summary RPC: active-store today/week aggregates and personal today/week/month/year/all-time EUR revenue and units. It derives personal attribution from `auth.uid()`, excludes cancelled sales, reconciles exchange top-ups to the source sale and uses Istanbul/Wed–Tue business periods. Local Supabase/RLS, 168 frontend tests and production build pass; staging/production were not changed.
 - Added compact private-model photo thumbnails and purchase cost to Inventory rows for Seller and Owner. Items without photos now have an accessible localized placeholder; Product Card continues to show only the non-persisted sell-price reference. Full unit/build and desktop-tablet-mobile smoke coverage passes.
 - Recorded the Owner decision to add private-model thumbnails and purchase cost in Inventory while keeping purchase cost out of Product Card, plus a server-authorized Seller sales summary: store today/week and personal today/week/month/year/all-time totals. Work is split into TASK-139—TASK-141.
