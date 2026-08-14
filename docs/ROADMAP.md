@@ -2,11 +2,11 @@
 
 Обновлено: 2026-08-14
 
-Текущий этап: синхронизация staging migrations
+Текущий этап: подготовка staging observability
 
-Текущий шаг: 7 из 24 — TASK-146 (`NEXT`)
+Текущий шаг: 8 из 24 — TASK-080 (`NEXT`)
 
-Команда для продолжения: `Выполни TASK-146`
+Команда для продолжения: `Выполни TASK-080`
 
 Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
@@ -58,7 +58,7 @@ GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
 
 ### Уже реализовано и имеет evidence
 
-- 110 task-файлов имеют статус `COMPLETED`.
+- 111 task-файлов имеют статус `COMPLETED`.
 - На текущем commit локально проходят 75 Vitest files / 177 unit и component tests.
 - Demo и live production builds проходят TypeScript/build validation.
 - Есть 19 Playwright сценариев, запускаемых в desktop/tablet/mobile: два
@@ -96,12 +96,12 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 |---:|---|---|---|
 | 1 | DONE | TASK-142 | Рабочий non-interactive lint, стабильный Playwright animation boundary, чистый frontend release gate |
 | 2 | DONE | TASK-143 | Точная причина CI failure исправлена; 27 migrations, 162 SQL assertions и concurrency зелёные локально и в GitHub CI |
-| 3 | DONE | TASK-117 | Code-first UUID identity, optional model/variant barcode, QR payload guard и clean local migration evidence готовы; staging application остаётся TASK-146 |
+| 3 | DONE | TASK-117 | Code-first UUID identity, optional model/variant barcode и QR payload guard готовы; staging application подтверждено завершённой TASK-146 |
 | 4 | DONE | TASK-144 | Owner Supplier/Count controls снова доступны, FX/Inventory EN/TR gaps закрыты; desktop/mobile Owner/Seller smoke зелёный локально |
 | 5 | DONE | TASK-145 | Code RC `f838f78680b4fb5a18fd5600f194ec5defd335a6` влит в `main`; GitHub CI run `31822493717` зелёный |
 | 6 | DONE | TASK-079 | RC Preview `zebra-inventory-sales-51z34xyje-cooloxs-projects.vercel.app` готов; live-only env, callback и desktop/mobile smoke подтверждены |
-| 7 | **NEXT** | TASK-146 | Полный RC migration chain применён и сверён в staging, включая локально завершённые migrations |
-| 8 | WAITING | TASK-080 | Safe observability, redaction и alerts проверены на staging |
+| 7 | DONE | TASK-146 | 28 RC migrations совпадают local/staging; schema checkpoint, Owner/Seller RPC/RLS и live no-mock smoke зелёные |
+| 8 | **NEXT** | TASK-080 | Safe observability, redaction и alerts проверены на staging |
 | 9 | WAITING | TASK-022 | Fresh image upload/reload и MIME/oversize rejection подтверждены в staging |
 | 10 | WAITING | TASK-038 | Seller deactivate/reactivate UI подтверждён через staging desktop/mobile |
 | 11 | PARTIAL | TASK-118 | Local UI normalization готова; staging audit/cleanup ждёт Owner approval и reconciliation |
@@ -122,16 +122,16 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 ### Как работать с планом в любом новом чате
 
 1. Owner копирует из `PROJECT_STATUS.md` строку `Команда для продолжения` и пишет,
-   например: `Выполни TASK-146`.
-2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-146.md`.
-3. Перед кодом агент ставит TASK-146 в `IN PROGRESS`. Если чат прервётся, следующий
-   агент продолжит TASK-146, а не начнёт другой шаг.
-4. После выполнения агент записывает проверки в TASK-146 и меняет статус на `COMPLETED`.
-5. В этой таблице TASK-146 становится `DONE`, TASK-080 — единственным `NEXT`.
+   например: `Выполни TASK-080`.
+2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-080.md`.
+3. Перед кодом агент ставит TASK-080 в `IN PROGRESS`. Если чат прервётся, следующий
+   агент продолжит TASK-080, а не начнёт другой шаг.
+4. После выполнения агент записывает проверки в TASK-080 и меняет статус на `COMPLETED`.
+5. В этой таблице TASK-080 становится `DONE`, TASK-022 — единственным `NEXT`.
 6. В `PROJECT_STATUS.md` меняются последняя завершённая TASK, текущий шаг и команда
-   `Выполни TASK-080`.
-7. Финальный ответ заканчивается результатом TASK-146 и приглашением дать точную
-   следующую команду. Агент не начинает TASK-146 самостоятельно.
+   `Выполни TASK-022`.
+7. Финальный ответ заканчивается результатом TASK-080 и приглашением дать точную
+   следующую команду. Агент не начинает TASK-080 самостоятельно.
 
 Если задача заблокирована, она остаётся текущей, получает статус `BLOCKED` с причиной,
 а указатель не переходит дальше без решения Owner.

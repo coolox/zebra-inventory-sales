@@ -2,21 +2,22 @@
 
 Обновлено: 2026-08-14
 
-Текущая фаза: Clothing Pilot staging migration synchronization
+Текущая фаза: Clothing Pilot staging observability preparation
 
 ## Где мы остановились
 
-- Последняя завершённая задача: [TASK-079](tasks/TASK-079.md).
-- Текущий шаг launch plan: **7 из 24**.
-- Следующая задача: [TASK-146](tasks/TASK-146.md) — `pending`; её нельзя начинать автоматически.
-- Команда для продолжения: **`Выполни TASK-146`**.
+- Последняя завершённая задача: [TASK-146](tasks/TASK-146.md).
+- Текущий шаг launch plan: **8 из 24**.
+- Следующая задача: [TASK-080](tasks/TASK-080.md) — `pending`; её нельзя начинать автоматически.
+- Команда для продолжения: **`Выполни TASK-080`**.
 
 TASK-145 зафиксировала и проверила кодовый RC
 `f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
 зелёный для Frontend и Local Supabase. TASK-079 опубликовала staging Preview из
 `main`: `https://zebra-inventory-sales-51z34xyje-cooloxs-projects.vercel.app`.
 Staging Supabase callback указывает только на этот Preview; production resources
-не настраивались и не изменялись.
+не настраивались и не изменялись. TASK-146 синхронизировала staging history/schema
+с полным 28-migration RC set; remote dry-run теперь `upToDate`.
 
 ## Главное решение по порядку работ
 
@@ -66,16 +67,18 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 - Current RC Preview: `/` → `/login`, live no-mock boundary, protected session
   middleware и 390 px mobile login smoke подтверждены на
   `https://zebra-inventory-sales-51z34xyje-cooloxs-projects.vercel.app`.
+- Staging migration chain совпадает с RC: 28 local/remote IDs, code-first/barcode,
+  archive, reporting/reconciliation и Seller summary RPC/RLS проверены; Owner/Seller
+  smoke прошёл, а Seller Owner-only reconciliation отклонён.
 
 Это evidence не заменяет новый полный RC staging pass после синхронизации всех migrations.
 
 ## Текущие release blockers
 
-1. Staging frontend готов, но staging ещё не доказан как точная копия итогового
-   RC migration set — TASK-146.
+1. Monitoring/redaction/alert policy ещё не настроены — TASK-080.
 2. TASK-022 и TASK-038 ожидают manual staging evidence.
 3. TASK-118 ожидает staging audit и Owner approval на cleanup.
-4. Monitoring, backup/restore, production resources/SMTP и pilot ещё отсутствуют.
+4. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 
 ## Последовательность до запуска
 
@@ -85,7 +88,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 4. TASK-144 — remaining EN/TR pass (completed locally).
 5. TASK-145 — Release Candidate и merge в `main` (completed).
 6. TASK-079 — отдельный staging frontend (completed).
-7. TASK-146 — staging migration synchronization.
+7. TASK-146 — staging migration synchronization (completed).
 8. TASK-080 — observability.
 9. TASK-022 — fresh product-image smoke.
 10. TASK-038 — Seller status UI staging smoke.
@@ -107,9 +110,9 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 ## Task accounting
 
 - Всего task-файлов: 151.
-- `COMPLETED`: 110.
+- `COMPLETED`: 111.
 - `IN PROGRESS`: 1 — TASK-118.
-- `pending`: 40.
+- `pending`: 39.
 
 Завершённые ID:
 
@@ -118,7 +121,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 - TASK-039—TASK-079;
 - TASK-101—TASK-116;
 - TASK-123;
-- TASK-131—TASK-145; TASK-117.
+- TASK-131—TASK-146; TASK-117.
 
 Незавершённые launch-path tasks перечислены в разделе выше. Post-launch pending tasks:
 
@@ -129,6 +132,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 ## Границы и известные риски
 
 - Production не изменялся и реальные данные ещё не загружались.
+- TASK-146 оставила schema-only rollback checkpoint; полноценные managed backup и
+  restore rehearsal ещё обязательны в TASK-081/TASK-082.
 - Staging содержит legacy/test colors; cleanup разрешён только после TASK-118 audit и Owner approval.
 - TASK-022 требует fresh upload плюс unsupported MIME/oversize rejection.
 - TASK-038 требует staging desktop/mobile visual smoke; component/backend tests уже существуют.
@@ -140,8 +145,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Следующий шаг
 
-В новом или текущем чате владелец пишет: **`Выполни TASK-146`**.
+В новом или текущем чате владелец пишет: **`Выполни TASK-080`**.
 
-Агент выполняет только TASK-146, фиксирует её evidence и статус, переводит указатель
-на TASK-080 и останавливается. TASK-146 начинается только после отдельной команды
-**`Выполни TASK-146`**.
+Агент выполняет только TASK-080, фиксирует её evidence и статус, переводит указатель
+на TASK-022 и останавливается. TASK-080 начинается только после отдельной команды
+**`Выполни TASK-080`**.
