@@ -1,12 +1,12 @@
 # План запуска Zebra Retail — Clothing Pilot
 
-Обновлено: 2026-08-14
+Обновлено: 2026-08-15
 
-Текущий этап: подготовка staging observability
+Текущий этап: staging manual acceptance
 
-Текущий шаг: 8 из 24 — TASK-080 (`NEXT`)
+Текущий шаг: 9 из 24 — TASK-022 (`NEXT`)
 
-Команда для продолжения: `Выполни TASK-080`
+Команда для продолжения: `Выполни TASK-022`
 
 Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
@@ -58,8 +58,8 @@ GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
 
 ### Уже реализовано и имеет evidence
 
-- 111 task-файлов имеют статус `COMPLETED`.
-- На текущем commit локально проходят 75 Vitest files / 177 unit и component tests.
+- 112 task-файлов имеют статус `COMPLETED`.
+- На текущем commit локально проходят 80 Vitest files / 187 unit и component tests.
 - Demo и live production builds проходят TypeScript/build validation.
 - Есть 19 Playwright сценариев, запускаемых в desktop/tablet/mobile: два
   последовательных полных прогона проходят 57/57 без retry.
@@ -101,8 +101,8 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 5 | DONE | TASK-145 | Code RC `f838f78680b4fb5a18fd5600f194ec5defd335a6` влит в `main`; GitHub CI run `31822493717` зелёный |
 | 6 | DONE | TASK-079 | RC Preview `zebra-inventory-sales-51z34xyje-cooloxs-projects.vercel.app` готов; live-only env, callback и desktop/mobile smoke подтверждены |
 | 7 | DONE | TASK-146 | 28 RC migrations совпадают local/staging; schema checkpoint, Owner/Seller RPC/RLS и live no-mock smoke зелёные |
-| 8 | **NEXT** | TASK-080 | Safe observability, redaction и alerts проверены на staging |
-| 9 | WAITING | TASK-022 | Fresh image upload/reload и MIME/oversize rejection подтверждены в staging |
+| 8 | DONE | TASK-080 | Redacted client/server observability, critical-operation policy и Preview runtime-log synthetic evidence готовы; production provider choice остаётся до production gate |
+| 9 | **NEXT** | TASK-022 | Fresh image upload/reload и MIME/oversize rejection подтверждены в staging |
 | 10 | WAITING | TASK-038 | Seller deactivate/reactivate UI подтверждён через staging desktop/mobile |
 | 11 | PARTIAL | TASK-118 | Local UI normalization готова; staging audit/cleanup ждёт Owner approval и reconciliation |
 | 12 | WAITING | TASK-147 | Полная Owner/Seller staging acceptance matrix зелёная, defects triaged |
@@ -122,16 +122,16 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 ### Как работать с планом в любом новом чате
 
 1. Owner копирует из `PROJECT_STATUS.md` строку `Команда для продолжения` и пишет,
-   например: `Выполни TASK-080`.
-2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-080.md`.
-3. Перед кодом агент ставит TASK-080 в `IN PROGRESS`. Если чат прервётся, следующий
-   агент продолжит TASK-080, а не начнёт другой шаг.
-4. После выполнения агент записывает проверки в TASK-080 и меняет статус на `COMPLETED`.
-5. В этой таблице TASK-080 становится `DONE`, TASK-022 — единственным `NEXT`.
+   например: `Выполни TASK-022`.
+2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-022.md`.
+3. Перед кодом агент ставит TASK-022 в `IN PROGRESS`. Если чат прервётся, следующий
+   агент продолжит TASK-022, а не начнёт другой шаг.
+4. После выполнения агент записывает проверки в TASK-022 и меняет статус на `COMPLETED`.
+5. В этой таблице TASK-022 становится `DONE`, следующая задача — единственным `NEXT`.
 6. В `PROJECT_STATUS.md` меняются последняя завершённая TASK, текущий шаг и команда
    `Выполни TASK-022`.
-7. Финальный ответ заканчивается результатом TASK-080 и приглашением дать точную
-   следующую команду. Агент не начинает TASK-080 самостоятельно.
+7. Финальный ответ заканчивается результатом TASK-022 и приглашением дать точную
+   следующую команду. Агент не начинает TASK-022 самостоятельно.
 
 Если задача заблокирована, она остаётся текущей, получает статус `BLOCKED` с причиной,
 а указатель не переходит дальше без решения Owner.
@@ -179,7 +179,7 @@ TASK-038, TASK-118, TASK-147
 
 Эти решения не блокируют TASK-142 и принимаются только перед соответствующей задачей:
 
-1. TASK-080: monitoring provider, retention и получатели alerts.
+1. До TASK-083/TASK-149: monitoring provider, retention и получатели production alerts.
 2. TASK-081/082: backup retention, RPO/RTO и место восстановления.
 3. TASK-118: явное Owner approval точного списка staging records на cleanup.
 4. TASK-084: production domain, SMTP provider и язык email template.

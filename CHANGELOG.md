@@ -1,5 +1,9 @@
 # Changelog
 
+## 2026-08-15
+
+- Completed TASK-080 safe observability. Added opt-in, provider-neutral structured client/server error capture, a redacting global error boundary, Node instrumentation and a bounded rate-limited endpoint available before sign-in. Sale, receipt and Magic Link failures now carry only safe operation/correlation context. Full local suite passes 80 files/187 tests; demo/live builds and lint (0 errors) pass. A Vercel Preview synthetic event returned 204 and runtime logs retained environment/operation/path while redacting the synthetic email and Bearer value. Preview-only observability was enabled; no production resources, real transactions or Magic Link emails were changed.
+
 ## 2026-08-14
 
 - Completed TASK-146 staging RC migration synchronization. A schema-only public checkpoint was created before change; 17 verified historical migrations missing only from remote history were repaired as applied, then exactly eight RC migrations (barcode/archive, reporting/reconciliation, Seller summary and code-first identity) were applied. Staging now has all 28 local/remote migration IDs and a zero-change dry-run. Owner/Seller RPC/RLS smoke, Seller denial of Owner-only reconciliation, sale/receipt RPC sanity and live no-mock health pass. Production was not changed; managed backup/restore remains TASK-081/TASK-082.

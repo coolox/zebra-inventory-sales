@@ -1,15 +1,15 @@
 # Статус проекта
 
-Обновлено: 2026-08-14
+Обновлено: 2026-08-15
 
-Текущая фаза: Clothing Pilot staging observability preparation
+Текущая фаза: Clothing Pilot staging manual acceptance
 
 ## Где мы остановились
 
-- Последняя завершённая задача: [TASK-146](tasks/TASK-146.md).
-- Текущий шаг launch plan: **8 из 24**.
-- Следующая задача: [TASK-080](tasks/TASK-080.md) — `pending`; её нельзя начинать автоматически.
-- Команда для продолжения: **`Выполни TASK-080`**.
+- Последняя завершённая задача: [TASK-080](tasks/TASK-080.md).
+- Текущий шаг launch plan: **9 из 24**.
+- Следующая задача: [TASK-022](tasks/TASK-022.md) — `pending`; её нельзя начинать автоматически.
+- Команда для продолжения: **`Выполни TASK-022`**.
 
 TASK-145 зафиксировала и проверила кодовый RC
 `f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
@@ -18,6 +18,13 @@ TASK-145 зафиксировала и проверила кодовый RC
 Staging Supabase callback указывает только на этот Preview; production resources
 не настраивались и не изменялись. TASK-146 синхронизировала staging history/schema
 с полным 28-migration RC set; remote dry-run теперь `upToDate`.
+
+TASK-080 добавила opt-in provider-neutral observability: redacted structured
+client/server errors, global fallback и безопасный rate-limited endpoint.
+Vercel Preview `https://zebra-inventory-sales-fkn819bfk-cooloxs-projects.vercel.app`
+собран Ready в live mode; synthetic event вернул `204` и подтвердил, что raw email
+и Bearer value редактируются в runtime log. Preview-only observability включён,
+Production не изменялся.
 
 ## Главное решение по порядку работ
 
@@ -44,7 +51,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 | Проверка | Фактическое состояние |
 |---|---|
-| Vitest | 75 files / 177 tests проходят локально на текущем commit |
+| Vitest | 80 files / 187 tests проходят локально на текущем commit |
 | Demo build | Проходит |
 | Live build | Проходит |
 | TypeScript | Проходит как часть production builds |
@@ -75,10 +82,11 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Текущие release blockers
 
-1. Monitoring/redaction/alert policy ещё не настроены — TASK-080.
-2. TASK-022 и TASK-038 ожидают manual staging evidence.
-3. TASK-118 ожидает staging audit и Owner approval на cleanup.
-4. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
+1. TASK-022 и TASK-038 ожидают manual staging evidence.
+2. TASK-118 ожидает staging audit и Owner approval на cleanup.
+3. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
+4. До production Owner должен выбрать monitoring provider, retention и recipients;
+   до этого текущая policy использует Vercel Preview logs.
 
 ## Последовательность до запуска
 
@@ -89,7 +97,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 5. TASK-145 — Release Candidate и merge в `main` (completed).
 6. TASK-079 — отдельный staging frontend (completed).
 7. TASK-146 — staging migration synchronization (completed).
-8. TASK-080 — observability.
+8. TASK-080 — observability (completed).
 9. TASK-022 — fresh product-image smoke.
 10. TASK-038 — Seller status UI staging smoke.
 11. TASK-118 — staging color audit/approved cleanup.
@@ -110,15 +118,15 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 ## Task accounting
 
 - Всего task-файлов: 151.
-- `COMPLETED`: 111.
+- `COMPLETED`: 112.
 - `IN PROGRESS`: 1 — TASK-118.
-- `pending`: 39.
+- `pending`: 38.
 
 Завершённые ID:
 
 - TASK-001—TASK-021;
 - TASK-023—TASK-037;
-- TASK-039—TASK-079;
+- TASK-039—TASK-080;
 - TASK-101—TASK-116;
 - TASK-123;
 - TASK-131—TASK-146; TASK-117.
@@ -132,6 +140,9 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 ## Границы и известные риски
 
 - Production не изменялся и реальные данные ещё не загружались.
+- Каждый новый Vercel Preview получает уникальный URL. Supabase staging Site URL и
+  callback сейчас остаются на предыдущем проверенном Preview; перед следующим
+  authenticated manual smoke их нужно переключить на выбранный актуальный Preview.
 - TASK-146 оставила schema-only rollback checkpoint; полноценные managed backup и
   restore rehearsal ещё обязательны в TASK-081/TASK-082.
 - Staging содержит legacy/test colors; cleanup разрешён только после TASK-118 audit и Owner approval.
@@ -145,8 +156,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Следующий шаг
 
-В новом или текущем чате владелец пишет: **`Выполни TASK-080`**.
+В новом или текущем чате владелец пишет: **`Выполни TASK-022`**.
 
-Агент выполняет только TASK-080, фиксирует её evidence и статус, переводит указатель
-на TASK-022 и останавливается. TASK-080 начинается только после отдельной команды
-**`Выполни TASK-080`**.
+Агент выполняет только TASK-022, фиксирует её evidence и статус, переводит указатель
+на следующую задачу и останавливается. TASK-022 начинается только после отдельной
+команды **`Выполни TASK-022`**.
