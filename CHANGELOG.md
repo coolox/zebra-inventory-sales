@@ -2,6 +2,7 @@
 
 ## 2026-08-14
 
+- Added a secure Seller sales-summary RPC: active-store today/week aggregates and personal today/week/month/year/all-time EUR revenue and units. It derives personal attribution from `auth.uid()`, excludes cancelled sales, reconciles exchange top-ups to the source sale and uses Istanbul/Wed–Tue business periods. Local Supabase/RLS, 168 frontend tests and production build pass; staging/production were not changed.
 - Added compact private-model photo thumbnails and purchase cost to Inventory rows for Seller and Owner. Items without photos now have an accessible localized placeholder; Product Card continues to show only the non-persisted sell-price reference. Full unit/build and desktop-tablet-mobile smoke coverage passes.
 - Recorded the Owner decision to add private-model thumbnails and purchase cost in Inventory while keeping purchase cost out of Product Card, plus a server-authorized Seller sales summary: store today/week and personal today/week/month/year/all-time totals. Work is split into TASK-139—TASK-141.
 - Confirmed that Product Card sell price remains a non-persisted `purchase cost × 3` reference; Seller may still enter the actual sale price for each transaction.
