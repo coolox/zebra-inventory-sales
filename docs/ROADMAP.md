@@ -2,11 +2,11 @@
 
 Обновлено: 2026-08-15
 
-Текущий этап: operational readiness — backups
+Текущий этап: operational readiness — backups owner decision pending
 
-Текущий шаг: 13 из 24 — TASK-081 (`NEXT`)
+Текущий шаг: 13 из 24 — TASK-081 (`BLOCKED`)
 
-Команда для продолжения: `Выполни TASK-081`
+Команда для продолжения: выбрать вариант A/B и private archive в `docs/operations/BACKUP.md`
 
 Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
@@ -106,7 +106,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 10 | DONE | TASK-038 | Owner staging UI подтвердил Active → Blocked → Active с восстановлением доступа; mobile Seller dialog без horizontal overflow |
 | 11 | DONE | TASK-118 | Fixture archived через Owner flow, 13 variants canonicalized и audited; staging reconciliation зелёная |
 | 12 | DONE | TASK-147 | Full Owner/Seller staging evidence consolidated; four approved test sales cancelled through Owner audit flow, reconciliation has no P0/P1 error |
-| 13 | **NEXT** | TASK-081 | Database/Storage backups и retention включены и проверены |
+| 13 | **BLOCKED — OWNER DECISION** | TASK-081 | Staging Free Plan не даёт scheduled DB backup; выбрать Pro+private Storage mirror или secret-backed off-site automation |
 | 14 | WAITING | TASK-082 | Изолированный restore rehearsal и rollback plan доказаны |
 | 15 | WAITING | TASK-148 | Security, authorization, rate-limit и pilot-capacity smoke не находят release blockers |
 | 16 | WAITING | TASK-083 | Изолированные production Supabase и Vercel созданы без реальных данных |

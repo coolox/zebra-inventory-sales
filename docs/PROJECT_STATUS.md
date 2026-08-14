@@ -8,8 +8,9 @@
 
 - Последняя завершённая задача: [TASK-147](tasks/TASK-147.md).
 - Текущий шаг launch plan: **13 из 24**.
-- Следующая задача: [TASK-081](tasks/TASK-081.md) — `pending`.
-- Команда для продолжения: **`Выполни TASK-081`**.
+- Текущая задача: [TASK-081](tasks/TASK-081.md) — `BLOCKED — OWNER DECISION`.
+- Для продолжения Owner выбирает вариант A или B из
+  [BACKUP.md](operations/BACKUP.md) и называет private archive provider/bucket.
 
 TASK-145 зафиксировала и проверила кодовый RC
 `f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
@@ -107,8 +108,11 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Текущие release blockers
 
-1. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
-2. До production Owner должен выбрать monitoring provider, retention и recipients;
+1. TASK-081: staging на Supabase Free Plan без scheduled database backups;
+   отдельный encrypted archive для `product-images` не выбран. Нужен Owner choice
+   из [BACKUP.md](operations/BACKUP.md) до backup/restore gate.
+2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
+3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
 
 ## Последовательность до запуска
@@ -125,7 +129,7 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 10. TASK-038 — Seller status UI staging smoke (completed).
 11. TASK-118 — staging color audit/approved cleanup (completed).
 12. TASK-147 — full staging acceptance (completed).
-13. TASK-081 — backups (next).
+13. TASK-081 — backups (blocked: Owner backup/archive decision).
 14. TASK-082 — restore/rollback rehearsal.
 15. TASK-148 — security/pilot-capacity smoke.
 16. TASK-083 — production projects.
@@ -143,7 +147,8 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 - Всего task-файлов: 151.
 - `COMPLETED`: 116.
 - `IN PROGRESS`: 0.
-- `pending`: 35.
+- `BLOCKED`: 1.
+- `pending`: 34.
 
 Завершённые ID:
 
@@ -186,7 +191,8 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Следующий шаг
 
-В новом или текущем чате Owner пишет: **`Выполни TASK-081`**.
+В новом или текущем чате Owner выбирает вариант A или B в
+[BACKUP.md](operations/BACKUP.md) и называет private archive provider/bucket.
 
-Агент начинает только TASK-081, фиксирует backup/retention evidence и обновляет
+Агент продолжает только TASK-081, фиксирует backup/retention evidence и обновляет
 указатель после её завершения. Он не начинает TASK-082 автоматически.
