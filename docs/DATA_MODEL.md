@@ -61,7 +61,9 @@ Owner создаёт invitation для Seller. Supabase Auth отправляе�
 Один вариант не должен объединять разные размеры в строке `"S,M,L"`.
 Database identity модели и варианта строится на отдельных UUID. Все receipts, movements и sales ссылаются на UUID, поэтому barcode можно оставить пустым или добавить позже без изменения stock/history. Clothing variants одной модели используют обязательный model code как human-facing lookup.
 
-Barcode — optional identifier, а не основа inventory и не alias обязательного model code. Один непустой barcode может принадлежать либо модели, либо конкретному варианту, но только одному catalog record в пределах магазина. QR хранится только после декодирования и проверки payload. Policy и локальная migration TASK-026 должны быть пересмотрены в TASK-117 до staging application.
+Barcode — optional identifier, а не основа inventory и не alias обязательного model code. Один непустой barcode может принадлежать либо модели, либо конкретному варианту, но только одному catalog record в пределах магазина. Общий barcode модели указывают только когда он действительно один для всех её variants; supplier barcode, зависящий от color/size, записывают в `ProductVariant`.
+
+`model_code` обязателен, не может быть пустым и уникален в пределах магазина без учёта регистра и внешних пробелов; сохранённое значение не переписывается, поэтому ведущие нули и буквенно-цифровой код сохраняются. QR не является barcode: scanner flow сначала должен декодировать и валидировать payload; raw URI/card QR payload database не принимает. В TASK-117 review миграции TASK-026 подтверждено, что новая защита не переписывает и не удаляет уже сохранённые barcode; её staging-применение остаётся отдельным gate TASK-146.
 
 ### PurchaseReceipt
 

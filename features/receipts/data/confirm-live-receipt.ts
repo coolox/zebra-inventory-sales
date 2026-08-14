@@ -21,7 +21,7 @@ export async function confirmLiveReceipt({ storeId, lines, locale }: ConfirmLive
     p_model: {
       model_code: command.model.code, name: command.model.name, brand: command.model.brand, category: command.model.category, gender: command.model.gender, supplier_name: command.model.supplier, barcode: command.model.barcode ?? null,
     },
-    p_lines: command.lines.map((line) => ({ color: line.color, size: line.size, quantity: line.quantity, unit_cost: line.unitCost, currency: line.currency })),
+    p_lines: command.lines.map((line) => ({ color: line.color, size: line.size, barcode: line.barcode ?? null, quantity: line.quantity, unit_cost: line.unitCost, currency: line.currency })),
     p_idempotency_key: command.idempotencyKey,
   });
 

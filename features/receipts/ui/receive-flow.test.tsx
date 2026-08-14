@@ -23,7 +23,7 @@ const product: Product = {
 };
 
 async function prepareExistingVariant(user: ReturnType<typeof userEvent.setup>, locale: "en" | "tr") {
-  await user.type(screen.getByRole("textbox", { name: locale === "tr" ? /Model kodu/ : /Model code/ }), "TR07");
+  await user.type(screen.getByRole("textbox", { name: locale === "tr" ? /Ürün kodu/ : /Product code/ }), "TR07");
   await user.click(screen.getByRole("button", { name: locale === "tr" ? "Siyah" : "Black" }));
   await user.click(screen.getByRole("button", { name: /^L$/ }));
 }
@@ -33,7 +33,7 @@ describe("ReceiveFlow localization", () => {
     render(<ReceiveFlow locale="tr" products={[product]} onCancel={vi.fn()} onSave={vi.fn()} />);
 
     expect(screen.getByText("Hızlı beden bazlı kabul")).toBeInTheDocument();
-    expect(screen.getByText("1 · Model kodu / barkod")).toBeInTheDocument();
+    expect(screen.getByText("1 · Ürün kodu / Product code")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Kadın" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "0 ürünü kabul et" })).toBeDisabled();
     expect(screen.queryByText("Fast size-based receipt")).not.toBeInTheDocument();
@@ -60,7 +60,7 @@ describe("ReceiveFlow localization", () => {
     const onSave = vi.fn();
     render(<ReceiveFlow locale="en" products={[product]} onCancel={vi.fn()} onSave={onSave} />);
 
-    await user.type(screen.getByRole("textbox", { name: /Model code/ }), "869000700001");
+    await user.type(screen.getByRole("textbox", { name: /Product code/ }), "869000700001");
     expect(screen.getByDisplayValue("TR07")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Black" }));
     await user.click(screen.getByRole("button", { name: /^L$/ }));
@@ -69,11 +69,30 @@ describe("ReceiveFlow localization", () => {
     await waitFor(() => expect(onSave).toHaveBeenCalledWith([expect.objectContaining({ code: "TR07", barcode: "869000700001" })]));
   });
 
+  it("preserves a leading-zero alphanumeric product code and keeps a variant barcode on its size row", async () => {
+    const user = userEvent.setup();
+    const onSave = vi.fn();
+    render(<ReceiveFlow locale="en" products={[]} onCancel={vi.fn()} onSave={onSave} />);
+
+    await user.type(screen.getByRole("textbox", { name: /Product code/ }), "0007-Az");
+    await user.type(screen.getByPlaceholderText("Silk Midi Dress"), "New Dress");
+    await user.type(screen.getByPlaceholderText("Zimmermann"), "Zebra");
+    await user.type(screen.getByPlaceholderText("Dresses"), "Dresses");
+    await user.type(screen.getByPlaceholderText("PINO"), "PINO");
+    await user.type(screen.getByPlaceholderText("0.00"), "20");
+    await user.type(screen.getByPlaceholderText("Type or choose a color"), "Black");
+    await user.click(screen.getByRole("button", { name: /^S$/ }));
+    await user.type(screen.getByRole("textbox", { name: /Variant barcode/ }), "869000700777");
+    await user.click(screen.getByRole("button", { name: "Receive 1 item" }));
+
+    await waitFor(() => expect(onSave).toHaveBeenCalledWith([expect.objectContaining({ code: "0007-Az", variantBarcode: "869000700777", barcode: undefined })]));
+  });
+
   it("shows only normalized colour suggestions for the selected model", async () => {
     const user = userEvent.setup();
     const noisy = [{ ...product, color: "black" }, { ...product, id: "variant-2", color: "siyah" }, { ...product, id: "variant-3", color: "Boundary EUR" }, { ...product, id: "variant-4", code: "OTHER", color: "Blue" }];
     render(<ReceiveFlow locale="en" products={noisy} onCancel={vi.fn()} onSave={vi.fn()} />);
-    await user.type(screen.getByRole("textbox", { name: /Model code/ }), "TR07");
+    await user.type(screen.getByRole("textbox", { name: /Product code/ }), "TR07");
     expect(screen.getAllByRole("button", { name: "Black" })).toHaveLength(1);
     expect(screen.queryByRole("button", { name: /Boundary/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Blue" })).not.toBeInTheDocument();
@@ -100,7 +119,7 @@ describe("ReceiveFlow localization", () => {
     ];
     render(<ReceiveFlow locale="en" products={variants} onCancel={vi.fn()} onSave={onSave} />);
 
-    await user.type(screen.getByRole("textbox", { name: /Model code/ }), "TR07");
+    await user.type(screen.getByRole("textbox", { name: /Product code/ }), "TR07");
     await user.click(screen.getByRole("button", { name: "Black" }));
     await user.click(screen.getByRole("button", { name: /^L$/ }));
     await user.click(screen.getByRole("button", { name: /^M$/ }));
@@ -122,7 +141,7 @@ describe("ReceiveFlow localization", () => {
     const onSave = vi.fn();
     render(<ReceiveFlow locale="en" products={[product]} onCancel={vi.fn()} onSave={onSave} />);
 
-    await user.type(screen.getByRole("textbox", { name: /Model code/ }), "NEW-1");
+    await user.type(screen.getByRole("textbox", { name: /Product code/ }), "NEW-1");
     await user.type(screen.getByPlaceholderText("Type or choose a color"), "Blue");
     await user.click(screen.getByRole("button", { name: /^S$/ }));
 

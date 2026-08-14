@@ -1,6 +1,6 @@
 begin;
 
-select plan(7);
+select plan(14);
 
 insert into auth.users (instance_id, id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
 values
@@ -21,7 +21,8 @@ insert into public.product_models (id, store_id, model_code, barcode, name, bran
 values
   ('00000000-0000-0000-0000-000000000221', '00000000-0000-0000-0000-000000000211', 'BARCODE-A', 'Shared-001', 'Model A', 'Zebra', 'clothing', 'unisex'),
   ('00000000-0000-0000-0000-000000000222', '00000000-0000-0000-0000-000000000212', 'BARCODE-B', 'shared-001', 'Model B', 'Zebra', 'clothing', 'unisex'),
-  ('00000000-0000-0000-0000-000000000223', '00000000-0000-0000-0000-000000000211', 'BARCODE-A-SECOND', null, 'Model A second', 'Zebra', 'clothing', 'unisex');
+  ('00000000-0000-0000-0000-000000000223', '00000000-0000-0000-0000-000000000211', 'BARCODE-A-SECOND', null, 'Model A second', 'Zebra', 'clothing', 'unisex'),
+  ('00000000-0000-0000-0000-000000000224', '00000000-0000-0000-0000-000000000211', '0007-Az', null, 'Code-first model', 'Zebra', 'clothing', 'unisex');
 
 select is(
   (select count(*) from public.product_models where lower(barcode) = 'shared-001'),
@@ -38,7 +39,8 @@ select throws_like(
 insert into public.product_variants (id, product_model_id, color, size, barcode)
 values
   ('00000000-0000-0000-0000-000000000231', '00000000-0000-0000-0000-000000000221', 'Black', 'M', 'Variant-001'),
-  ('00000000-0000-0000-0000-000000000232', '00000000-0000-0000-0000-000000000222', 'Black', 'M', 'variant-001');
+  ('00000000-0000-0000-0000-000000000232', '00000000-0000-0000-0000-000000000222', 'Black', 'M', 'variant-001'),
+  ('00000000-0000-0000-0000-000000000233', '00000000-0000-0000-0000-000000000224', 'Black', 'S', null);
 
 select is(
   (select count(*) from public.product_variants where lower(barcode) = 'variant-001'),
@@ -60,8 +62,61 @@ select throws_like(
 
 select ok(
   to_regclass('public.product_models_store_barcode_lookup_idx') is not null
-  and to_regclass('public.product_variants_barcode_lookup_idx') is not null,
-  'barcode lookup indexes are installed'
+  and to_regclass('public.product_variants_barcode_lookup_idx') is not null
+  and to_regclass('public.product_models_store_model_code_normalized_key') is not null,
+  'barcode and normalized product-code lookup indexes are installed'
+);
+
+select is(
+  (select model_code from public.product_models where id = '00000000-0000-0000-0000-000000000224'),
+  '0007-Az',
+  'leading-zero alphanumeric product code is preserved exactly without a barcode'
+);
+
+insert into public.product_models (id, store_id, model_code, name, brand, category, gender)
+values ('00000000-0000-0000-0000-000000000225', '00000000-0000-0000-0000-000000000212', '0007-az', 'Store B code-first model', 'Zebra', 'clothing', 'unisex');
+
+select is(
+  (select count(*) from public.product_models where lower(btrim(model_code)) = '0007-az'),
+  2::bigint,
+  'the same normalized product code is allowed in different stores'
+);
+
+insert into public.inventory_movements (store_id, variant_id, movement_type, quantity)
+values ('00000000-0000-0000-0000-000000000211', '00000000-0000-0000-0000-000000000233', 'receipt', 1);
+
+update public.product_variants
+set barcode = '869000700777'
+where id = '00000000-0000-0000-0000-000000000233';
+
+select is(
+  (select variant_id from public.inventory_movements where variant_id = '00000000-0000-0000-0000-000000000233'),
+  '00000000-0000-0000-0000-000000000233'::uuid,
+  'adding a barcode later does not change the UUID referenced by inventory history'
+);
+
+select is(
+  (select count(*) from public.inventory_movements where variant_id = '00000000-0000-0000-0000-000000000233'),
+  1::bigint,
+  'adding a barcode later does not create or alter stock movements'
+);
+
+select throws_like(
+  $$insert into public.product_models (store_id, model_code, name, brand, category, gender) values ('00000000-0000-0000-0000-000000000211', '   ', 'Blank code', 'Zebra', 'clothing', 'unisex')$$,
+  '%product_models_model_code_not_blank%',
+  'blank product code is rejected'
+);
+
+select throws_like(
+  $$insert into public.product_models (store_id, model_code, name, brand, category, gender) values ('00000000-0000-0000-0000-000000000211', '0007-az', 'Duplicate code', 'Zebra', 'clothing', 'unisex')$$,
+  '%product_models_store_model_code_normalized_key%',
+  'case-only duplicate product code in one store is rejected'
+);
+
+select throws_like(
+  $$update public.product_variants set barcode = 'https://example.test/raw-qr' where id = '00000000-0000-0000-0000-000000000233'$$,
+  '%QR payload must be decoded and validated%',
+  'raw QR URI payload is not stored as a barcode'
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000201', true);

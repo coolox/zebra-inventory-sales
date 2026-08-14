@@ -4,9 +4,9 @@
 
 Текущий этап: подготовка Release Candidate
 
-Текущий шаг: 3 из 24 — TASK-117 (`NEXT`)
+Текущий шаг: 5 из 24 — TASK-145 (`NEXT`)
 
-Команда для продолжения: `Выполни TASK-117`
+Команда для продолжения: `Выполни TASK-145`
 
 Этот файл полностью заменяет старый поэтапный roadmap. История выполненной работы
 сохранена в `docs/tasks/TASK-NNN.md`, git и `CHANGELOG.md`; завершённые функции не
@@ -55,14 +55,14 @@
 
 ### Уже реализовано и имеет evidence
 
-- 106 task-файлов имеют статус `COMPLETED`.
-- На текущем commit локально проходят 73 Vitest files / 172 unit и component tests.
+- 108 task-файлов имеют статус `COMPLETED`.
+- На текущем commit локально проходят 75 Vitest files / 177 unit и component tests.
 - Demo и live production builds проходят TypeScript/build validation.
 - Есть 19 Playwright сценариев, запускаемых в desktop/tablet/mobile: два
   последовательных полных прогона проходят 57/57 без retry.
 - Non-interactive ESLint CLI проходит с 0 errors и включён в frontend CI job;
   24 существующих warnings остаются видимыми.
-- Есть 27 migrations и 13 pgTAP файлов с 162 SQL assertions.
+- Есть 28 migrations и 13 pgTAP файлов с 169 SQL assertions.
 - Есть concurrency harness для sale/sale, sale/adjustment и sale/exchange conflicts.
 - Основные sale, receipt, image, auth, Seller status, cancellation и exchange flows уже
   имеют staging evidence; PWA подтверждена на Android/iOS.
@@ -93,9 +93,9 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 |---:|---|---|---|
 | 1 | DONE | TASK-142 | Рабочий non-interactive lint, стабильный Playwright animation boundary, чистый frontend release gate |
 | 2 | DONE | TASK-143 | Точная причина CI failure исправлена; 27 migrations, 162 SQL assertions и concurrency зелёные локально и в GitHub CI |
-| 3 | **NEXT** | TASK-117 | Code-first identity и optional barcode окончательно безопасны до staging/production migration |
-| 4 | WAITING | TASK-144 | Оставшиеся launch-critical Owner/Seller controls полностью локализованы EN/TR |
-| 5 | WAITING | TASK-145 | Feature freeze зафиксирован; Release Candidate влит в `main`, CI зелёный на точном commit |
+| 3 | DONE | TASK-117 | Code-first UUID identity, optional model/variant barcode, QR payload guard и clean local migration evidence готовы; staging application остаётся TASK-146 |
+| 4 | DONE | TASK-144 | Owner Supplier/Count controls снова доступны, FX/Inventory EN/TR gaps закрыты; desktop/mobile Owner/Seller smoke зелёный локально |
+| 5 | **NEXT** | TASK-145 | Feature freeze зафиксирован; Release Candidate влит в `main`, CI зелёный на точном commit |
 | 6 | WAITING | TASK-079 | Отдельный live staging frontend связан только со staging Supabase |
 | 7 | WAITING | TASK-146 | Полный RC migration chain применён и сверён в staging, включая локально завершённые migrations |
 | 8 | WAITING | TASK-080 | Safe observability, redaction и alerts проверены на staging |
@@ -119,16 +119,16 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 ### Как работать с планом в любом новом чате
 
 1. Owner копирует из `PROJECT_STATUS.md` строку `Команда для продолжения` и пишет,
-   например: `Выполни TASK-117`.
-2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-117.md`.
-3. Перед кодом агент ставит TASK-117 в `IN PROGRESS`. Если чат прервётся, следующий
-   агент продолжит TASK-117, а не начнёт другой шаг.
-4. После выполнения агент записывает проверки в TASK-117 и меняет статус на `COMPLETED`.
-5. В этой таблице TASK-117 становится `DONE`, TASK-144 — единственным `NEXT`.
+   например: `Выполни TASK-145`.
+2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-145.md`.
+3. Перед кодом агент ставит TASK-145 в `IN PROGRESS`. Если чат прервётся, следующий
+   агент продолжит TASK-145, а не начнёт другой шаг.
+4. После выполнения агент записывает проверки в TASK-145 и меняет статус на `COMPLETED`.
+5. В этой таблице TASK-145 становится `DONE`, TASK-079 — единственным `NEXT`.
 6. В `PROJECT_STATUS.md` меняются последняя завершённая TASK, текущий шаг и команда
-   `Выполни TASK-144`.
-7. Финальный ответ заканчивается результатом TASK-117 и приглашением дать точную
-   следующую команду. Агент не начинает TASK-144 самостоятельно.
+   `Выполни TASK-079`.
+7. Финальный ответ заканчивается результатом TASK-145 и приглашением дать точную
+   следующую команду. Агент не начинает TASK-079 самостоятельно.
 
 Если задача заблокирована, она остаётся текущей, получает статус `BLOCKED` с причиной,
 а указатель не переходит дальше без решения Owner.
@@ -137,7 +137,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 
 ### Phase A — Release Candidate: TASK-142—TASK-145
 
-- lint, 172+ frontend tests, demo/live builds и 57 browser checks стабильны;
+- lint, 173+ frontend tests, demo/live builds и 57 browser checks стабильны;
 - clean database migration, pgTAP/RLS и concurrency проходят;
 - текущий GitHub commit имеет два зелёных CI jobs;
 - в RC нет незакоммиченных файлов, secrets или неутверждённых функций.

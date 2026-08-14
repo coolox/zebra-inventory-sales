@@ -33,6 +33,7 @@ export function ReceiveFlow({ locale, products, onCancel, onSave }: Props) {
   const [form, setForm] = useState(emptyForm);
   const [draft, setDraft] = useState<ReceiptDraft[]>([]);
   const [sizeQuantities, setSizeQuantities] = useState<Record<string, string>>({});
+  const [sizeBarcodes, setSizeBarcodes] = useState<Record<string, string>>({});
   const [customSize, setCustomSize] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
@@ -52,18 +53,21 @@ export function ReceiveFlow({ locale, products, onCancel, onSave }: Props) {
 
   const chooseCode = (code: string) => {
     const existing = resolveProductLookup(clothing, code)[0];
-    setForm((current) => existing ? { ...current, code: existing.code, barcode: existing.barcode ?? current.barcode, name: existing.name, brand: existing.brand, category: existing.category, gender: existing.gender, cost: String(existing.cost), currency: existing.currency, supplier: existing.supplier, color: "" } : { ...current, code: code.toUpperCase(), color: "" });
+    setForm((current) => existing ? { ...current, code: existing.code, barcode: existing.barcode ?? current.barcode, name: existing.name, brand: existing.brand, category: existing.category, gender: existing.gender, cost: String(existing.cost), currency: existing.currency, supplier: existing.supplier, color: "" } : { ...current, code, color: "" });
     setSizeQuantities({});
+    setSizeBarcodes({});
     setSaveError("");
   };
 
   const toggleSize = (size: string) => {
     setSizeQuantities((current) => current[size] === undefined ? { ...current, [size]: "1" } : Object.fromEntries(Object.entries(current).filter(([key]) => key !== size)));
+    setSizeBarcodes((current) => current[size] === undefined ? current : Object.fromEntries(Object.entries(current).filter(([key]) => key !== size)));
     setSaveError("");
   };
   const addCustomSize = () => { const size = customSize.trim().toUpperCase(); if (!size) return; setSizeQuantities((current) => ({ ...current, [size]: current[size] ?? "1" })); setCustomSize(""); };
   const baseValid = Boolean(form.code.trim() && form.name.trim() && form.brand.trim() && form.category.trim() && form.color.trim() && Number(form.cost) > 0 && form.supplier.trim());
-  const matrixLines = selectedSizes.filter((size) => Number(sizeQuantities[size]) > 0).map((size): ReceiptDraft => ({ code: form.code.trim().toUpperCase(), barcode: form.barcode.trim() || undefined, name: form.name.trim(), brand: form.brand.trim(), category: form.category.trim(), gender: form.gender, color: form.color.trim(), size, cost: Number(form.cost), currency: form.currency, stock: Number(sizeQuantities[size]), supplier: form.supplier.trim(), photos: matchingModel[0]?.photos, store: "clothing" }));
+  const variantBarcodeFor = (size: string) => sizeBarcodes[size] ?? matchingModel.find((product) => product.color === form.color && product.size === size)?.variantBarcode ?? "";
+  const matrixLines = selectedSizes.filter((size) => Number(sizeQuantities[size]) > 0).map((size): ReceiptDraft => ({ code: form.code.trim(), barcode: form.barcode.trim() || undefined, variantBarcode: variantBarcodeFor(size).trim() || undefined, name: form.name.trim(), brand: form.brand.trim(), category: form.category.trim(), gender: form.gender, color: form.color.trim(), size, cost: Number(form.cost), currency: form.currency, stock: Number(sizeQuantities[size]), supplier: form.supplier.trim(), photos: matchingModel[0]?.photos, store: "clothing" }));
 
   const addColor = () => {
     if (!matrixLines.length) return;
@@ -73,6 +77,7 @@ export function ReceiveFlow({ locale, products, onCancel, onSave }: Props) {
     setDraft((current) => [...current, ...matrixLines]);
     setForm((current) => ({ ...current, color: "" }));
     setSizeQuantities({});
+    setSizeBarcodes({});
   };
   const save = async () => {
     if (matrixLines.length && !baseValid) {
@@ -104,9 +109,9 @@ export function ReceiveFlow({ locale, products, onCancel, onSave }: Props) {
 
     <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_1fr_130px]"><label><span className={labelClass}>{text.purchaseCost}</span><input type="number" min="0.01" step="0.01" value={form.cost} onChange={(event) => set("cost", event.target.value)} placeholder="0.00" className={inputClass} /></label><label><span className={labelClass}>{text.currency}</span><select value={form.currency} onChange={(event) => set("currency", event.target.value)} className={inputClass}>{currencies.map((value) => <option key={value}>{value}</option>)}</select></label></div>
 
-    <div className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-900/35 p-4 sm:p-5"><div><p className={labelClass}>{text.color}</p><input value={form.color} onChange={(event) => { set("color", event.target.value); setSizeQuantities({}); }} placeholder={text.colorPlaceholder} className={inputClass} /><Chips values={colorSuggestions} selected={form.color} onSelect={(value) => { set("color", value); setSizeQuantities({}); }} /></div>
+    <div className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-900/35 p-4 sm:p-5"><div><p className={labelClass}>{text.color}</p><input value={form.color} onChange={(event) => { set("color", event.target.value); setSizeQuantities({}); setSizeBarcodes({}); }} placeholder={text.colorPlaceholder} className={inputClass} /><Chips values={colorSuggestions} selected={form.color} onSelect={(value) => { set("color", value); setSizeQuantities({}); setSizeBarcodes({}); }} /></div>
       {form.color && <div className="fade-up mt-6"><div className="flex items-end justify-between gap-3"><div><p className={labelClass}>{text.sizes}</p><p className="mt-1 text-[10px] text-zinc-600">{text.sizesHelp}</p></div><span className="text-[10px] text-violet-400">{text.selectedPieces(matrixLines.reduce((sum, line) => sum + line.stock, 0))}</span></div><div className="mt-3 flex flex-wrap gap-2">{knownSizes.map((size) => <button key={size} type="button" onClick={() => toggleSize(size)} className={`min-w-11 rounded-lg border px-3 py-2 text-xs font-semibold ${sizeQuantities[size] !== undefined ? "theme-selected border-violet-500 bg-violet-500/15 text-violet-200" : "border-zinc-800 bg-zinc-950/40 text-zinc-500 hover:text-zinc-200"}`}>{size}</button>)}</div><div className="mt-3 flex gap-2"><input value={customSize} onChange={(event) => setCustomSize(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); addCustomSize(); } }} placeholder={text.otherSize} className="h-9 min-w-0 flex-1 rounded-lg border border-zinc-800 bg-zinc-950/40 px-3 text-xs outline-none focus:border-violet-500" /><button type="button" onClick={addCustomSize} className="flex h-9 items-center gap-1.5 rounded-lg border border-zinc-800 px-3 text-[10px] font-semibold text-zinc-400"><Plus size={13} /> {text.addSize}</button></div>
-        {selectedSizes.length > 0 && <div className="mt-4 grid gap-2 sm:grid-cols-2">{selectedSizes.map((size) => <div key={size} className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/35 p-3"><span className="flex h-9 w-12 items-center justify-center rounded-lg bg-zinc-800 text-xs font-bold text-zinc-200">{size}</span><label className="min-w-0 flex-1"><span className="text-[9px] uppercase tracking-[0.12em] text-zinc-600">{text.quantity}</span><input type="number" min="1" value={sizeQuantities[size]} onChange={(event) => setSizeQuantities((current) => ({ ...current, [size]: event.target.value }))} className="mt-1 h-8 w-full rounded-md border border-zinc-800 bg-zinc-900 px-2 text-xs outline-none focus:border-violet-500" /></label><button type="button" onClick={() => toggleSize(size)} className="p-2 text-zinc-700 hover:text-red-400" aria-label={text.removeSize(size)}><Trash2 size={14} /></button></div>)}</div>}
+        {selectedSizes.length > 0 && <div className="mt-4 grid gap-2 sm:grid-cols-2">{selectedSizes.map((size) => <div key={size} className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/35 p-3"><span className="flex h-9 w-12 items-center justify-center rounded-lg bg-zinc-800 text-xs font-bold text-zinc-200">{size}</span><div className="min-w-0 flex-1 space-y-2"><label className="block"><span className="text-[9px] uppercase tracking-[0.12em] text-zinc-600">{text.quantity}</span><input type="number" min="1" value={sizeQuantities[size]} onChange={(event) => setSizeQuantities((current) => ({ ...current, [size]: event.target.value }))} className="mt-1 h-8 w-full rounded-md border border-zinc-800 bg-zinc-900 px-2 text-xs outline-none focus:border-violet-500" /></label><label className="block"><span className="text-[9px] uppercase tracking-[0.12em] text-zinc-600">{text.variantBarcode}</span><input value={variantBarcodeFor(size)} onChange={(event) => setSizeBarcodes((current) => ({ ...current, [size]: event.target.value }))} placeholder={text.barcodePlaceholder} className="mt-1 h-8 w-full rounded-md border border-zinc-800 bg-zinc-900 px-2 font-mono text-xs outline-none focus:border-violet-500" /></label></div><button type="button" onClick={() => toggleSize(size)} className="p-2 text-zinc-700 hover:text-red-400" aria-label={text.removeSize(size)}><Trash2 size={14} /></button></div>)}</div>}
       </div>}
     </div>
 

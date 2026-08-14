@@ -6,15 +6,14 @@
 
 ## Где мы остановились
 
-- Последняя завершённая задача: [TASK-143](tasks/TASK-143.md).
-- Текущий шаг launch plan: **3 из 24**.
-- Текущая задача: [TASK-117](tasks/TASK-117.md) — `pending`, работа ещё не начата.
-- Следующая после неё: [TASK-144](tasks/TASK-144.md), но её нельзя начинать автоматически.
-- Команда для продолжения: **`Выполни TASK-117`**.
+- Последняя завершённая задача: [TASK-144](tasks/TASK-144.md).
+- Текущий шаг launch plan: **5 из 24**.
+- Текущая задача: [TASK-145](tasks/TASK-145.md) — `pending`, работа ещё не начата.
+- Следующая после неё: [TASK-079](tasks/TASK-079.md), но её нельзя начинать автоматически.
+- Команда для продолжения: **`Выполни TASK-145`**.
 
-После завершения TASK-117 агент обязан записать здесь TASK-117 как последнюю
-завершённую, переключить текущую задачу на TASK-144 и остановиться до команды
-`Выполни TASK-144`.
+TASK-144 закрыла локальный EN/TR release blocker. Агент не начинает TASK-145 до
+отдельной команды `Выполни TASK-145`.
 
 ## Главное решение по порядку работ
 
@@ -41,13 +40,13 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 | Проверка | Фактическое состояние |
 |---|---|
-| Vitest | 73 files / 172 tests проходят локально на текущем commit |
+| Vitest | 75 files / 177 tests проходят локально на текущем commit |
 | Demo build | Проходит |
 | Live build | Проходит |
 | TypeScript | Проходит как часть production builds |
 | Playwright | 19 сценариев × 3 viewport = 57; два последовательных полных прогона проходят 57/57 без retry после фикса animation boundary в TASK-142 |
 | Lint | Non-interactive ESLint CLI проходит с 0 errors; 24 существующих warnings остаются видимыми; lint включён в frontend CI job |
-| Database | 27 migrations, 13 pgTAP files, 162 SQL assertions |
+| Database | 28 migrations, 13 pgTAP files, 169 SQL assertions |
 | Concurrency | Harness существует для sale/sale, sale/adjustment, sale/exchange |
 | Current GitHub CI | Run `31816406792` на `8c5c81f`: Frontend checks и Local Supabase checks зелёные; database job применил clean migrations, прошёл 13 pgTAP files/162 assertions и concurrency |
 | Последний SQL evidence | TASK-143: clean local `supabase:verify` и concurrency прошли; повторены и подтверждены отдельным зелёным GitHub CI run |
@@ -66,19 +65,17 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Текущие release blockers
 
-1. Barcode migration должна быть пересмотрена под code-first/optional policy — TASK-117.
-2. Owner Supplier/FX и часть Inventory controls требуют targeted EN/TR pass — TASK-144.
-3. Staging не доказан как точная копия итогового RC migration set — TASK-079/TASK-146.
-4. TASK-022 и TASK-038 ожидают manual staging evidence.
-5. TASK-118 ожидает staging audit и Owner approval на cleanup.
-6. Monitoring, backup/restore, production resources/SMTP и pilot ещё отсутствуют.
+1. Staging не доказан как точная копия итогового RC migration set — TASK-079/TASK-146.
+2. TASK-022 и TASK-038 ожидают manual staging evidence.
+3. TASK-118 ожидает staging audit и Owner approval на cleanup.
+4. Monitoring, backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 
 ## Последовательность до запуска
 
 1. TASK-142 — frontend release gate.
 2. TASK-143 — database CI/RLS/concurrency gate.
-3. TASK-117 — code-first/optional barcode.
-4. TASK-144 — remaining EN/TR pass.
+3. TASK-117 — code-first/optional barcode (completed locally; staging application is TASK-146).
+4. TASK-144 — remaining EN/TR pass (completed locally).
 5. TASK-145 — Release Candidate и merge в `main`.
 6. TASK-079 — отдельный staging frontend.
 7. TASK-146 — staging migration synchronization.
@@ -103,9 +100,9 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 ## Task accounting
 
 - Всего task-файлов: 151.
-- `COMPLETED`: 106.
+- `COMPLETED`: 108.
 - `IN PROGRESS`: 1 — TASK-118.
-- `pending`: 44.
+- `pending`: 42.
 
 Завершённые ID:
 
@@ -114,7 +111,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 - TASK-039—TASK-078;
 - TASK-101—TASK-116;
 - TASK-123;
-- TASK-131—TASK-143.
+- TASK-131—TASK-144; TASK-117.
 
 Незавершённые launch-path tasks перечислены в разделе выше. Post-launch pending tasks:
 
@@ -135,8 +132,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Следующий шаг
 
-В новом или текущем чате владелец пишет: **`Выполни TASK-117`**.
+В новом или текущем чате владелец пишет: **`Выполни TASK-145`**.
 
-Агент выполняет только TASK-117, фиксирует её evidence и статус, переводит указатель
-на TASK-144 и останавливается. TASK-144 начинается только после отдельной команды
-**`Выполни TASK-144`**.
+Агент выполняет только TASK-145, фиксирует её evidence и статус, переводит указатель
+на TASK-079 и останавливается. TASK-079 начинается только после отдельной команды
+**`Выполни TASK-079`**.

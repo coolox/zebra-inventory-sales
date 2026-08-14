@@ -10,7 +10,7 @@ export type Product = {
   code: string;
   /** Barcode shared by every colour/size of a clothing model. */
   barcode?: string;
-  /** Optional legacy/future barcode assigned to one specific variant. */
+  /** Optional supplier barcode assigned to one specific colour/size variant. */
   variantBarcode?: string;
   /** Archived models remain in history but are excluded from normal inventory and sale flows. */
   isActive?: boolean;

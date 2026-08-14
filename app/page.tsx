@@ -619,7 +619,7 @@ export default function Home() {
                 <p className="mt-1 text-sm text-zinc-600">{role === "owner" ? text.ownerSubtitle : text.sellerSubtitle}</p>
               </div>
               <div className="flex flex-wrap gap-2">
-                {role === "owner" && <button type="button" onClick={() => setModal("fx")} className="flex h-10 items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 text-xs font-semibold text-zinc-300 transition hover:border-zinc-600 hover:text-white"><CircleDollarSign size={16} /> FX rates</button>}
+                {role === "owner" && <button type="button" onClick={() => setModal("fx")} className="flex h-10 items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 text-xs font-semibold text-zinc-300 transition hover:border-zinc-600 hover:text-white"><CircleDollarSign size={16} /> {text.exchangeRates}</button>}
                 <button type="button" onClick={() => setModal("receive")} className="flex h-10 items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900 px-3.5 text-xs font-semibold text-zinc-300 transition hover:border-zinc-600 hover:text-white">
                   <PackageCheck size={16} /> {text.receive}
                 </button>
@@ -647,7 +647,7 @@ export default function Home() {
           </section>
 
           <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,.75fr)]">
-            <InventoryList products={products} store={roleStore} onSelect={setSelectedProductCode} labels={{ title: text.stock, search: text.search, empty: text.noResults, units: text.units, purchase: text.purchase, noPhoto: text.noPhoto }} />
+            <InventoryList products={products} store={roleStore} onSelect={setSelectedProductCode} labels={{ title: text.stock, search: text.search, empty: text.noResults, units: text.units, unitsShort: text.unitsShort, sku: text.sku, purchase: text.purchase, noPhoto: text.noPhoto }} actions={role === "owner" ? <><button type="button" onClick={() => { void refreshSuppliers(); setModal("suppliers"); }} className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-[10px] font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-white"><Store size={13} /> {text.suppliers}</button><button type="button" onClick={() => setModal("count")} className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-[10px] font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-white"><Boxes size={14} /> {text.stockCount}</button></> : undefined} />
             {false && <article id="inventory" className="panel min-w-0 scroll-mt-24 overflow-hidden rounded-2xl">
               <div className="flex flex-col gap-4 border-b border-zinc-800/80 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
                 <div>
@@ -755,7 +755,7 @@ export default function Home() {
 
       {modal === "suppliers" && role === "owner" && (
         <Modal title={locale === "tr" ? "Tedarikçiler" : "Suppliers"} eyebrow={locale === "tr" ? "Mağaza rehberi" : "Store directory"} onClose={() => setModal(null)} wide>
-          <SupplierManager suppliers={supplierDirectory} onSave={saveSupplierDirectory} onArchive={archiveSupplierDirectory} />
+          <SupplierManager locale={locale} suppliers={supplierDirectory} onSave={saveSupplierDirectory} onArchive={archiveSupplierDirectory} />
         </Modal>
       )}
 

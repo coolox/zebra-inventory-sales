@@ -10,6 +10,7 @@ vi.mock("@/lib/supabase/client", () => ({
 const line = {
   code: "TR-07",
   barcode: "869000700001",
+  variantBarcode: "869000700002",
   name: "Structured Jacket",
   brand: "Balmain",
   category: "Jackets",
@@ -44,7 +45,7 @@ describe("confirmLiveReceipt", () => {
         supplier_name: "SUSI",
         barcode: "869000700001",
       },
-      p_lines: [{ color: "Black", size: "M", quantity: 2, unit_cost: 120, currency: "EUR" }],
+      p_lines: [{ color: "Black", size: "M", barcode: "869000700002", quantity: 2, unit_cost: 120, currency: "EUR" }],
       p_idempotency_key: "test-idempotency-key",
     });
   });
@@ -58,8 +59,8 @@ describe("confirmLiveReceipt", () => {
 
     expect(rpc).toHaveBeenCalledWith("confirm_inventory_receipt", expect.objectContaining({
       p_lines: [
-        { color: "Black", size: "M", quantity: 2, unit_cost: 120, currency: "EUR" },
-        { color: "Ivory", size: "L", quantity: 3, unit_cost: 95, currency: "USD" },
+        { color: "Black", size: "M", barcode: "869000700002", quantity: 2, unit_cost: 120, currency: "EUR" },
+        { color: "Ivory", size: "L", barcode: "869000700002", quantity: 3, unit_cost: 95, currency: "USD" },
       ],
     }));
   });

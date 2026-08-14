@@ -1,6 +1,6 @@
 # TASK-145 — Зафиксировать Clothing Pilot Release Candidate
 
-Статус: pending
+Статус: IN PROGRESS
 
 ## Цель
 

@@ -6,7 +6,7 @@ export type ReceiptLineDto = Omit<Product, "id" | "updated">;
 export type ConfirmReceiptCommand = {
   storeId: string;
   model: Pick<ReceiptLineDto, "code" | "name" | "brand" | "category" | "gender" | "supplier" | "barcode">;
-  lines: Array<{ color: string; size: string; quantity: number; unitCost: number; currency: CatalogCurrency }>;
+  lines: Array<{ color: string; size: string; barcode?: string; quantity: number; unitCost: number; currency: CatalogCurrency }>;
   idempotencyKey: string;
 };
 
@@ -16,7 +16,7 @@ export function toConfirmReceiptCommand(storeId: string, lines: ReceiptLineDto[]
   return {
     storeId,
     model: { code: first.code, name: first.name, brand: first.brand, category: first.category, gender: first.gender, supplier: first.supplier, barcode: first.barcode },
-    lines: lines.map((line) => ({ color: line.color, size: line.size, quantity: line.stock, unitCost: line.cost, currency: line.currency })),
+    lines: lines.map((line) => ({ color: line.color, size: line.size, barcode: line.variantBarcode, quantity: line.stock, unitCost: line.cost, currency: line.currency })),
     idempotencyKey,
   };
 }
