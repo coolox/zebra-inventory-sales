@@ -1,6 +1,6 @@
 # TASK-022 — Применить product-images migration на staging
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 ## Частично подтверждено на staging (2026-08-10)
 
@@ -65,3 +65,19 @@
 - Продолжение: включить Allow access to file URLs для ChatGPT browser extension,
   затем повторить допустимую тройную загрузку и две negative проверки в той же
   Owner staging session.
+
+## Финальное evidence (2026-08-15)
+
+- В Owner staging Product Card `YY22 / pantalon` без исходных фото загружены
+  три fresh repository fixtures: JPEG, PNG и WebP. Карточка сразу показала
+  carousel `1 / 3`, переход Next — `2 / 3`; после browser reload и повторного
+  открытия Product Card carousel сохранился как `1 / 3`.
+- Unsupported `.txt` отклонён сообщением `Use JPEG, PNG or WebP photos only.`;
+  9 MiB `.png` — `Each photo must be 8 MB or smaller.`. Обе negative проверки
+  остановлены validation boundary до Storage upload.
+- Existing staging evidence подтверждает private bucket, applied migration,
+  product-image RPC/RLS и cross-store denial. В текущем Owner tab console errors
+  отсутствуют. Production не изменялся.
+- Локально: product-images и Product Card test suites — **15 tests**; `npm run
+  build:live` и `git diff --check` проходят (с теми же 24 существующими lint
+  warnings).

@@ -2,11 +2,11 @@
 
 Обновлено: 2026-08-15
 
-Текущий этап: staging product-image acceptance
+Текущий этап: staging Seller status acceptance
 
-Текущий шаг: 9 из 24 — TASK-022 (`IN PROGRESS`)
+Текущий шаг: 10 из 24 — TASK-038 (`NEXT`)
 
-Команда для продолжения: Owner включает Chrome extension file access и пишет `продолжи TASK-022`
+Команда для продолжения: `Выполни TASK-038`
 
 Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
@@ -58,7 +58,7 @@ GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
 
 ### Уже реализовано и имеет evidence
 
-- 112 task-файлов имеют статус `COMPLETED`.
+- 113 task-файлов имеют статус `COMPLETED`.
 - На текущем commit локально проходят 80 Vitest files / 187 unit и component tests.
 - Demo и live production builds проходят TypeScript/build validation.
 - Есть 19 Playwright сценариев, запускаемых в desktop/tablet/mobile: два
@@ -73,7 +73,7 @@ GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
 
 ### Что перепроверено и ещё не является зелёным release gate
 
-- TASK-022 и TASK-038 реализованы частично, но требуют конкретных staging smoke checks.
+- TASK-038 реализована частично и требует конкретного staging smoke check.
 - TASK-118 имеет готовую UI normalization, но staging cleanup требует read-only audit,
   rollback plan и явного разрешения Owner.
 - Production Supabase/Vercel, SMTP, monitoring, backup/restore и pilot ещё не созданы.
@@ -102,8 +102,8 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 6 | DONE | TASK-079 | RC Preview `zebra-inventory-sales-51z34xyje-cooloxs-projects.vercel.app` готов; live-only env, callback и desktop/mobile smoke подтверждены |
 | 7 | DONE | TASK-146 | 28 RC migrations совпадают local/staging; schema checkpoint, Owner/Seller RPC/RLS и live no-mock smoke зелёные |
 | 8 | DONE | TASK-080 | Redacted client/server observability, critical-operation policy и Preview runtime-log synthetic evidence готовы; production provider choice остаётся до production gate |
-| 9 | **IN PROGRESS** | TASK-022 | Owner session и актуальный callback готовы; Chrome extension ждёт Allow access to file URLs для fresh image upload/reload и MIME/oversize rejection |
-| 10 | WAITING | TASK-038 | Seller deactivate/reactivate UI подтверждён через staging desktop/mobile |
+| 9 | DONE | TASK-022 | Owner fresh JPEG/PNG/WebP upload, carousel reload, MIME/oversize rejection и prior private Storage/RLS denial evidence подтверждены на staging |
+| 10 | **NEXT** | TASK-038 | Seller deactivate/reactivate UI подтверждён через staging desktop/mobile |
 | 11 | PARTIAL | TASK-118 | Local UI normalization готова; staging audit/cleanup ждёт Owner approval и reconciliation |
 | 12 | WAITING | TASK-147 | Полная Owner/Seller staging acceptance matrix зелёная, defects triaged |
 | 13 | WAITING | TASK-081 | Database/Storage backups и retention включены и проверены |
@@ -122,16 +122,16 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 ### Как работать с планом в любом новом чате
 
 1. Owner копирует из `PROJECT_STATUS.md` строку `Команда для продолжения` и пишет,
-   например: `Выполни TASK-022`.
-2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-022.md`.
-3. Перед кодом агент ставит TASK-022 в `IN PROGRESS`. Если чат прервётся, следующий
-   агент продолжит TASK-022, а не начнёт другой шаг.
-4. После выполнения агент записывает проверки в TASK-022 и меняет статус на `COMPLETED`.
-5. В этой таблице TASK-022 становится `DONE`, следующая задача — единственным `NEXT`.
+   например: `Выполни TASK-038`.
+2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-038.md`.
+3. Перед кодом агент ставит TASK-038 в `IN PROGRESS`. Если чат прервётся, следующий
+   агент продолжит TASK-038, а не начнёт другой шаг.
+4. После выполнения агент записывает проверки в TASK-038 и меняет статус на `COMPLETED`.
+5. В этой таблице TASK-038 становится `DONE`, следующая задача — единственным `NEXT`.
 6. В `PROJECT_STATUS.md` меняются последняя завершённая TASK, текущий шаг и команда
-   `Выполни TASK-022`.
-7. Финальный ответ заканчивается результатом TASK-022 и приглашением дать точную
-   следующую команду. Агент не начинает TASK-022 самостоятельно.
+   `Выполни TASK-038`.
+7. Финальный ответ заканчивается результатом TASK-038 и приглашением дать точную
+   следующую команду. Агент не начинает TASK-038 самостоятельно.
 
 Если задача заблокирована, она остаётся текущей, получает статус `BLOCKED` с причиной,
 а указатель не переходит дальше без решения Owner.

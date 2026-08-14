@@ -2,21 +2,22 @@
 
 Обновлено: 2026-08-15
 
-Текущая фаза: Clothing Pilot staging product-image acceptance
+Текущая фаза: Clothing Pilot Seller status acceptance
 
 ## Где мы остановились
 
-- Последняя завершённая задача: [TASK-080](tasks/TASK-080.md).
-- Текущий шаг launch plan: **9 из 24**.
-- Текущая задача: [TASK-022](tasks/TASK-022.md) — `IN PROGRESS`; она не завершена.
-- Команда для продолжения: **включить Chrome extension file access и написать `продолжи TASK-022`**.
+- Последняя завершённая задача: [TASK-022](tasks/TASK-022.md).
+- Текущий шаг launch plan: **10 из 24**.
+- Следующая задача: [TASK-038](tasks/TASK-038.md) — `pending`; её нельзя начинать автоматически.
+- Команда для продолжения: **`Выполни TASK-038`**.
 
 TASK-145 зафиксировала и проверила кодовый RC
 `f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
 зелёный для Frontend и Local Supabase. TASK-079 опубликовала staging Preview из
 `main`: `https://zebra-inventory-sales-51z34xyje-cooloxs-projects.vercel.app`.
-Staging Supabase callback указывает только на этот Preview; production resources
-не настраивались и не изменялись. TASK-146 синхронизировала staging history/schema
+Для актуального staging Preview Supabase Site URL и callback направлены на
+`https://zebra-inventory-sales-fkn819bfk-cooloxs-projects.vercel.app`; production
+resources не настраивались и не изменялись. TASK-146 синхронизировала staging history/schema
 с полным 28-migration RC set; remote dry-run теперь `upToDate`.
 
 TASK-080 добавила opt-in provider-neutral observability: redacted structured
@@ -25,6 +26,10 @@ Vercel Preview `https://zebra-inventory-sales-fkn819bfk-cooloxs-projects.vercel.
 собран Ready в live mode; synthetic event вернул `204` и подтвердил, что raw email
 и Bearer value редактируются в runtime log. Preview-only observability включён,
 Production не изменялся.
+
+TASK-022 закрыла fresh product-image acceptance: Owner загрузил JPEG/PNG/WebP
+в private staging flow, carousel сохранился после reload, unsupported MIME и >8 MiB
+отклонены до Storage; ранее подтверждённый cross-store RLS denial остаётся в силе.
 
 ## Главное решение по порядку работ
 
@@ -82,8 +87,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Текущие release blockers
 
-1. TASK-022: Owner session готова, но Chrome extension ожидает Allow access to file URLs
-   для fresh image upload/reload и negative checks.
+1. TASK-038 ожидает Seller deactivate/reactivate UI staging smoke на desktop/mobile.
 2. TASK-118 ожидает staging audit и Owner approval на cleanup.
 3. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 4. До production Owner должен выбрать monitoring provider, retention и recipients;
@@ -99,7 +103,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 6. TASK-079 — отдельный staging frontend (completed).
 7. TASK-146 — staging migration synchronization (completed).
 8. TASK-080 — observability (completed).
-9. TASK-022 — fresh product-image smoke.
+9. TASK-022 — fresh product-image smoke (completed).
 10. TASK-038 — Seller status UI staging smoke.
 11. TASK-118 — staging color audit/approved cleanup.
 12. TASK-147 — full staging acceptance.
@@ -119,14 +123,13 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 ## Task accounting
 
 - Всего task-файлов: 151.
-- `COMPLETED`: 112.
+- `COMPLETED`: 113.
 - `IN PROGRESS`: 1 — TASK-118.
-- `pending`: 38.
+- `pending`: 37.
 
 Завершённые ID:
 
-- TASK-001—TASK-021;
-- TASK-023—TASK-037;
+- TASK-001—TASK-037;
 - TASK-039—TASK-080;
 - TASK-101—TASK-116;
 - TASK-123;
@@ -142,12 +145,13 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 - Production не изменялся и реальные данные ещё не загружались.
 - Каждый новый Vercel Preview получает уникальный URL. Supabase staging Site URL и
-  callback сейчас остаются на предыдущем проверенном Preview; перед следующим
-  authenticated manual smoke их нужно переключить на выбранный актуальный Preview.
+  callback сейчас направлены на Preview `fkn819bfk`; перед следующим Preview-based
+  authenticated manual smoke их нужно переключить на выбранный актуальный URL.
 - TASK-146 оставила schema-only rollback checkpoint; полноценные managed backup и
   restore rehearsal ещё обязательны в TASK-081/TASK-082.
 - Staging содержит legacy/test colors; cleanup разрешён только после TASK-118 audit и Owner approval.
-- TASK-022 требует fresh upload плюс unsupported MIME/oversize rejection.
+- TASK-022 завершена; три non-production image fixtures остаются на staging test
+  product `YY22` как evidence свежей проверки. Production data не затронуты.
 - TASK-038 требует staging desktop/mobile visual smoke; component/backend tests уже существуют.
 - Кодовый RC `f838f78680b4fb5a18fd5600f194ec5defd335a6` прошёл два GitHub CI jobs;
   merge в `main` зафиксирован в TASK-145.
@@ -157,10 +161,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Следующий шаг
 
-В новом или текущем чате Owner включает Chrome extension file access и пишет:
-**`продолжи TASK-022`**.
+В новом или текущем чате владелец пишет: **`Выполни TASK-038`**.
 
-Агент продолжает только TASK-022, фиксирует её evidence и статус, переводит указатель
-на следующую задачу и останавливается. До разрешения Chrome file access обязательная
-fresh upload проверка не может быть заменена предыдущими объектами или локальными
-test-ами.
+Агент выполняет только TASK-038, фиксирует её evidence и статус, переводит указатель
+на следующую задачу и останавливается. TASK-038 начинается только после отдельной
+команды **`Выполни TASK-038`**.
