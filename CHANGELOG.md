@@ -3,6 +3,8 @@
 ## 2026-08-14
 
 - Configured the staging Magic Link Preview: Vercel Preview now uses live mode with the matching build command/output directory, and Supabase Site URL plus callback allow-list target the working branch Preview while retaining localhost development callback.
+- Disabled Vercel Authentication for the staging Preview so mobile Magic Links reach Zebra rather than the Vercel sign-in page; unauthenticated HTTP check of the staging login returns 200.
+- Completed staging Magic Link verification: Owner and invited Seller sign in through separate accounts, unknown email is denied, used links do not authenticate again, and logout/refresh retains the membership boundary; Owner confirmed the mobile flow.
 - Completed GitHub Actions CI verification on the public repository: the final remote run passes frontend build/unit/component/desktop-tablet-mobile smoke plus clean local Supabase migrations, RLS and concurrency checks. The workflow now starts its isolated Supabase stack explicitly; responsive test selectors and report-table keyboard access were corrected.
 - Isolated local demo/live Next.js modes with explicit mode selection and separate `.next-demo`/`.next-live` output directories. Added safe mode-specific commands, a production hydration console assertion and clean sequential Chrome smoke; demo and live both load without hydration diagnostics.
 - Added a server-side validation and rate-limit boundary for Seller invitation, Seller access changes and session reads. Malformed/oversized external payloads are rejected before privileged actions; API errors use safe domain codes without exposing provider/RPC messages or client PII. Full Vitest suite passes 165/165 and production build passes.

@@ -31,15 +31,16 @@
 - Owner Seller invitation boundary применён и проверен на staging: server-only secret не попадает в browser, приглашение создаёт audit ledger и active Seller membership; повторный запрос идемпотентен, а Owner защищён от понижения роли.
 - Backend deactivate/reactivate Seller применён на staging: Owner-only RPC меняет только store membership, audit-логирует переход и лишает blocked Seller доступа через существующие RLS/session guards; production не изменялся.
 - Login, Access Denied и Magic Link callback локализованы на English/Turkish; locale сохраняется между страницами, а auth ошибки не раскрывают внутренние детали.
-- Supabase staging Auth направляет Magic Link на работающий branch Preview `zebra-inventory-sales-git-review-task-060-077-cooloxs-projects.vercel.app`; localhost callback сохранён. На Vercel Preview заданы live Supabase variables и согласованы `npm run build:live` / `.next-live`; live login screen подтверждён. Перед сменой branch Preview этот URL нужно заменить.
+- Supabase staging Auth направляет Magic Link на работающий branch Preview `zebra-inventory-sales-git-review-task-060-077-cooloxs-projects.vercel.app`; localhost callback сохранён. На Vercel Preview заданы live Supabase variables и согласованы `npm run build:live` / `.next-live`; Vercel Authentication для Preview отключена, внешний запрос к `/login` возвращает HTTP 200. Перед сменой branch Preview этот URL нужно заменить.
 
 ## Следующая задача
 
 - PWA gate закрыт: Owner повторно подтвердил Android/iOS install, новую чёрно-белую zebra `Z`, standalone launch, основные flows и EN/TR на Vercel HTTPS preview. TASK-131—TASK-136 завершены.
 - TASK-043 завершена локально: Seller invite/status и session получили единый runtime validation boundary, safe domain errors и scoped rate limits; 165/165 tests и production build проходят. Staging/production не изменялись.
 - TASK-123 завершена локально: demo/live mode теперь explicit и изолированы по `.next-demo`/`.next-live`; Chrome smoke и production hydration assertion не нашли hydration diagnostics. Staging/production не изменялись.
-- TASK-078 завершена: GitHub account billing block снят, а `CI #3` (run `31751839301`, commit `b75d1d0`) зелёный для frontend и clean local Supabase jobs. CI не использует production/staging secrets. TASK-040 временно отложена; TASK-079 теперь заблокирована только TASK-040.
-- Следующую локально независимую задачу не начинать без новой команды владельца.
+- TASK-078 завершена: GitHub account billing block снят, а `CI #3` (run `31751839301`, commit `b75d1d0`) зелёный для frontend и clean local Supabase jobs. CI не использует production/staging secrets.
+- TASK-040 завершена на staging: Owner/Seller/unknown-email/used-link/logout/refresh/mobile matrix подтверждена владельцем; Vercel Authentication отключена для Preview.
+- Следующая задача — TASK-079; не начинать её без новой команды владельца.
 - TASK-022 отложена по прямому указанию владельца продукта и будет завершена отдельно.
 - TASK-002 и TASK-111 завершены на staging; TASK-012—TASK-017 подтверждены локально. Production не затрагивался.
 
@@ -73,7 +74,7 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 ## Сводка учёта задач
 
 - Всего TASK-файлов: 138.
-- Завершено: 100; pending: 35; in progress: 2 (`TASK-040`, `TASK-118`).
+- Завершено: 101; pending: 34; in progress: 1 (`TASK-118`).
 - Все 138 TASK представлены ровно один раз в списках ниже; сверка выполнена 2026-08-14.
 
 ## Список выполненных задач
@@ -140,6 +141,7 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 - [TASK-036](tasks/TASK-036.md) — Owner invite Seller form подключена к live boundary, локализована и подтверждена staging smoke-test.
 - [TASK-037](tasks/TASK-037.md) — Owner-only Seller deactivate/reactivate RPC, server route и local RLS/idempotency coverage; migration применена на staging.
 - [TASK-039](tasks/TASK-039.md) — локализованы login/access-denied/callback, locale сохраняется и error redirects безопасны.
+- [TASK-040](tasks/TASK-040.md) — staging Magic Link configuration завершена: Preview public, redirects согласованы; Owner/Seller/unknown/used-link/logout/mobile matrix подтверждена владельцем.
 - [TASK-041](tasks/TASK-041.md) — добавлен store-scoped Owner audit-log query с безопасным actor mapping, filters/pagination и RLS cross-store coverage.
 - [TASK-042](tasks/TASK-042.md) — добавлен Owner Audit Log UI с фильтрами, pagination, safe details и Owner/Seller boundary.
 - [TASK-043](tasks/TASK-043.md) — добавлены единые runtime validation и rate-limit boundaries для Seller invite/status и session; API errors безопасны, 165/165 tests и build проходят.
@@ -191,7 +193,6 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 
 - [TASK-022](tasks/TASK-022.md) — Завершить fresh upload и MIME/oversize smoke для staging product images
 - [TASK-038](tasks/TASK-038.md) — Подтвердить Seller status UI через staging visual и mobile smoke
-- [TASK-040](tasks/TASK-040.md) — Завершить staging Magic Link configuration
 - [TASK-079](tasks/TASK-079.md) — Развернуть отдельный staging frontend
 - [TASK-080](tasks/TASK-080.md) — Добавить observability и error monitoring
 - [TASK-081](tasks/TASK-081.md) — Настроить автоматические backups
@@ -240,6 +241,5 @@ TASK-123 завершена: локальные demo/live sessions изолир�
 - Repository visibility изменена на public для бесплатных standard GitHub runners. CI workflow опубликован и распознан, но run `31717664237` также остановлен до jobs из-за GitHub account billing lock. Frontend/database jobs ещё не получили remote evidence; E2E, RLS и concurrency suites включены без production secrets. После снятия account lock повторно запустить run.
 - `app/page.tsx` остаётся перегруженным; routing и demo persistence не завершены.
 - XLSX export завершён без новой production-зависимости: server-side structural checks подтверждают workbook/sheet XML. В текущем окружении нет LibreOffice, поэтому его visual open smoke выполняется в Owner live browser после скачивания.
-- TASK-040 ожидает установки Vercel Preview environment variables (`NEXT_PUBLIC_APP_MODE=live`, Supabase URL и publishable key) и controlled Owner/Seller/unknown-email/expired-link/mobile auth matrix. Не добавлять временный Preview wildcard в Supabase redirects.
 - В staging остаются legacy/test color values. UI скрывает и нормализует их; удаление/merge данных разрешается только после отдельного read-only audit и подтверждения владельца (TASK-118).
 - Production projects, SMTP, monitoring, backup/restore и pilot launch не настроены.
