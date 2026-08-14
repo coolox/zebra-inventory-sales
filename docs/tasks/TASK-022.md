@@ -53,3 +53,15 @@
 - После входа остаются: загрузить допустимые JPEG/PNG/WebP, reload и подтвердить
   carousel; затем проверить unsupported MIME и файл больше 8 MiB. Production не
   менять.
+
+## Browser handoff (2026-08-15)
+
+- Owner staging session подтверждена: открыт Product Card модели `YY22 / pantalon`
+  без фотографий, поэтому fresh carousel evidence будет однозначным.
+- Prepared repository product-image fixtures имеют JPEG, PNG и WebP форматы, но
+  Chrome extension отклонил `fileChooser.setFiles` с `Not allowed` до включения
+  доступа extension к локальным файлам. Upload не начался: в Storage и
+  `product_images` этой попыткой ничего не записано.
+- Продолжение: включить Allow access to file URLs для ChatGPT browser extension,
+  затем повторить допустимую тройную загрузку и две negative проверки в той же
+  Owner staging session.

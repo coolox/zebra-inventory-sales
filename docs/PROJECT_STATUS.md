@@ -9,7 +9,7 @@
 - Последняя завершённая задача: [TASK-080](tasks/TASK-080.md).
 - Текущий шаг launch plan: **9 из 24**.
 - Текущая задача: [TASK-022](tasks/TASK-022.md) — `IN PROGRESS`; она не завершена.
-- Команда для продолжения: **войти Owner в staging tab и написать `продолжи TASK-022`**.
+- Команда для продолжения: **включить Chrome extension file access и написать `продолжи TASK-022`**.
 
 TASK-145 зафиксировала и проверила кодовый RC
 `f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
@@ -82,7 +82,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Текущие release blockers
 
-1. TASK-022 ждёт Owner sign-in в staging для fresh image upload/reload и negative checks.
+1. TASK-022: Owner session готова, но Chrome extension ожидает Allow access to file URLs
+   для fresh image upload/reload и negative checks.
 2. TASK-118 ожидает staging audit и Owner approval на cleanup.
 3. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 4. До production Owner должен выбрать monitoring provider, retention и recipients;
@@ -156,8 +157,10 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Следующий шаг
 
-В новом или текущем чате Owner входит в staging и пишет: **`продолжи TASK-022`**.
+В новом или текущем чате Owner включает Chrome extension file access и пишет:
+**`продолжи TASK-022`**.
 
 Агент продолжает только TASK-022, фиксирует её evidence и статус, переводит указатель
-на следующую задачу и останавливается. До Owner sign-in обязательная fresh upload
-проверка не может быть заменена предыдущими объектами или локальными test-ами.
+на следующую задачу и останавливается. До разрешения Chrome file access обязательная
+fresh upload проверка не может быть заменена предыдущими объектами или локальными
+test-ами.
