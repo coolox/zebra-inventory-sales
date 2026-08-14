@@ -4,9 +4,9 @@
 
 Текущий этап: подготовка Release Candidate
 
-Текущий шаг: 2 из 24 — TASK-143 (`IN PROGRESS`)
+Текущий шаг: 3 из 24 — TASK-117 (`NEXT`)
 
-Команда для продолжения: `Выполни TASK-143`
+Команда для продолжения: `Выполни TASK-117`
 
 Этот файл полностью заменяет старый поэтапный roadmap. История выполненной работы
 сохранена в `docs/tasks/TASK-NNN.md`, git и `CHANGELOG.md`; завершённые функции не
@@ -55,7 +55,7 @@
 
 ### Уже реализовано и имеет evidence
 
-- 105 task-файлов имеют статус `COMPLETED`.
+- 106 task-файлов имеют статус `COMPLETED`.
 - На текущем commit локально проходят 73 Vitest files / 172 unit и component tests.
 - Demo и live production builds проходят TypeScript/build validation.
 - Есть 19 Playwright сценариев, запускаемых в desktop/tablet/mobile: два
@@ -70,11 +70,6 @@
 
 ### Что перепроверено и ещё не является зелёным release gate
 
-- Последний GitHub CI run `31785382973` на commit `b9d2fc6` имеет зелёный Frontend job,
-  но database job падает на `Run RLS and database integration tests`; concurrency step
-  после него не выполняется.
-- Последний документированный локальный SQL pass относится к TASK-140. На текущем
-  commit локальный повтор не выполнен, потому что Docker daemon не отвечает.
 - TASK-022 и TASK-038 реализованы частично, но требуют конкретных staging smoke checks.
 - TASK-118 имеет готовую UI normalization, но staging cleanup требует read-only audit,
   rollback plan и явного разрешения Owner.
@@ -97,8 +92,8 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | Шаг | Статус | Task | Результат / gate |
 |---:|---|---|---|
 | 1 | DONE | TASK-142 | Рабочий non-interactive lint, стабильный Playwright animation boundary, чистый frontend release gate |
-| 2 | **IN PROGRESS** | TASK-143 | Точная причина CI failure найдена и fixture исправлен; local migrations, 162 SQL assertions и concurrency зелёные, ожидается CI на новом commit |
-| 3 | WAITING | TASK-117 | Code-first identity и optional barcode окончательно безопасны до staging/production migration |
+| 2 | DONE | TASK-143 | Точная причина CI failure исправлена; 27 migrations, 162 SQL assertions и concurrency зелёные локально и в GitHub CI |
+| 3 | **NEXT** | TASK-117 | Code-first identity и optional barcode окончательно безопасны до staging/production migration |
 | 4 | WAITING | TASK-144 | Оставшиеся launch-critical Owner/Seller controls полностью локализованы EN/TR |
 | 5 | WAITING | TASK-145 | Feature freeze зафиксирован; Release Candidate влит в `main`, CI зелёный на точном commit |
 | 6 | WAITING | TASK-079 | Отдельный live staging frontend связан только со staging Supabase |
@@ -124,16 +119,16 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 ### Как работать с планом в любом новом чате
 
 1. Owner копирует из `PROJECT_STATUS.md` строку `Команда для продолжения` и пишет,
-   например: `Выполни TASK-143`.
-2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-143.md`.
-3. Перед кодом агент ставит TASK-143 в `IN PROGRESS`. Если чат прервётся, следующий
-   агент продолжит TASK-143, а не начнёт другой шаг.
-4. После выполнения агент записывает проверки в TASK-143 и меняет статус на `COMPLETED`.
-5. В этой таблице TASK-143 становится `DONE`, TASK-117 — единственным `NEXT`.
+   например: `Выполни TASK-117`.
+2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-117.md`.
+3. Перед кодом агент ставит TASK-117 в `IN PROGRESS`. Если чат прервётся, следующий
+   агент продолжит TASK-117, а не начнёт другой шаг.
+4. После выполнения агент записывает проверки в TASK-117 и меняет статус на `COMPLETED`.
+5. В этой таблице TASK-117 становится `DONE`, TASK-144 — единственным `NEXT`.
 6. В `PROJECT_STATUS.md` меняются последняя завершённая TASK, текущий шаг и команда
-   `Выполни TASK-117`.
-7. Финальный ответ заканчивается результатом TASK-143 и приглашением дать точную
-   следующую команду. Агент не начинает TASK-117 самостоятельно.
+   `Выполни TASK-144`.
+7. Финальный ответ заканчивается результатом TASK-117 и приглашением дать точную
+   следующую команду. Агент не начинает TASK-144 самостоятельно.
 
 Если задача заблокирована, она остаётся текущей, получает статус `BLOCKED` с причиной,
 а указатель не переходит дальше без решения Owner.

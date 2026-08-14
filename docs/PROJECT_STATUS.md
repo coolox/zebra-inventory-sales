@@ -6,15 +6,15 @@
 
 ## Где мы остановились
 
-- Последняя завершённая задача: [TASK-142](tasks/TASK-142.md).
-- Текущий шаг launch plan: **2 из 24**.
-- Текущая задача: [TASK-143](tasks/TASK-143.md) — `IN PROGRESS`.
-- Следующая после неё: [TASK-117](tasks/TASK-117.md), но её нельзя начинать автоматически.
-- Команда для продолжения: **`Выполни TASK-143`**.
+- Последняя завершённая задача: [TASK-143](tasks/TASK-143.md).
+- Текущий шаг launch plan: **3 из 24**.
+- Текущая задача: [TASK-117](tasks/TASK-117.md) — `pending`, работа ещё не начата.
+- Следующая после неё: [TASK-144](tasks/TASK-144.md), но её нельзя начинать автоматически.
+- Команда для продолжения: **`Выполни TASK-117`**.
 
-После завершения TASK-143 агент обязан записать здесь TASK-143 как последнюю
-завершённую, переключить текущую задачу на TASK-117 и остановиться до команды
-`Выполни TASK-117`.
+После завершения TASK-117 агент обязан записать здесь TASK-117 как последнюю
+завершённую, переключить текущую задачу на TASK-144 и остановиться до команды
+`Выполни TASK-144`.
 
 ## Главное решение по порядку работ
 
@@ -49,8 +49,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 | Lint | Non-interactive ESLint CLI проходит с 0 errors; 24 существующих warnings остаются видимыми; lint включён в frontend CI job |
 | Database | 27 migrations, 13 pgTAP files, 162 SQL assertions |
 | Concurrency | Harness существует для sale/sale, sale/adjustment, sale/exchange |
-| Current GitHub CI | Run `31785382973` на `b9d2fc6`: Frontend success; Local Supabase остановился в `030_seller_sales_summary_test.sql`, потому что cancelled fixture нарушал обязательный cancellation snapshot. Fixture исправлен; local clean reset, 13 pgTAP files/162 assertions и concurrency уже зелёные, ожидается CI на новом commit |
-| Последний SQL evidence | TASK-140 документирует локальный `supabase:verify` pass; текущий commit требует повторного clean run в TASK-143 |
+| Current GitHub CI | Run `31816406792` на `8c5c81f`: Frontend checks и Local Supabase checks зелёные; database job применил clean migrations, прошёл 13 pgTAP files/162 assertions и concurrency |
+| Последний SQL evidence | TASK-143: clean local `supabase:verify` и concurrency прошли; повторены и подтверждены отдельным зелёным GitHub CI run |
 
 ## Что проверено на staging ранее
 
@@ -66,13 +66,12 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Текущие release blockers
 
-1. Current-head database CI красный; точная SQL/RLS причина ещё не воспроизведена — TASK-143.
-2. Barcode migration должна быть пересмотрена под code-first/optional policy — TASK-117.
-3. Owner Supplier/FX и часть Inventory controls требуют targeted EN/TR pass — TASK-144.
-4. Staging не доказан как точная копия итогового RC migration set — TASK-079/TASK-146.
-5. TASK-022 и TASK-038 ожидают manual staging evidence.
-6. TASK-118 ожидает staging audit и Owner approval на cleanup.
-7. Monitoring, backup/restore, production resources/SMTP и pilot ещё отсутствуют.
+1. Barcode migration должна быть пересмотрена под code-first/optional policy — TASK-117.
+2. Owner Supplier/FX и часть Inventory controls требуют targeted EN/TR pass — TASK-144.
+3. Staging не доказан как точная копия итогового RC migration set — TASK-079/TASK-146.
+4. TASK-022 и TASK-038 ожидают manual staging evidence.
+5. TASK-118 ожидает staging audit и Owner approval на cleanup.
+6. Monitoring, backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 
 ## Последовательность до запуска
 
@@ -104,9 +103,9 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 ## Task accounting
 
 - Всего task-файлов: 151.
-- `COMPLETED`: 105.
+- `COMPLETED`: 106.
 - `IN PROGRESS`: 1 — TASK-118.
-- `pending`: 45.
+- `pending`: 44.
 
 Завершённые ID:
 
@@ -115,7 +114,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 - TASK-039—TASK-078;
 - TASK-101—TASK-116;
 - TASK-123;
-- TASK-131—TASK-142.
+- TASK-131—TASK-143.
 
 Незавершённые launch-path tasks перечислены в разделе выше. Post-launch pending tasks:
 
@@ -129,15 +128,15 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 - Staging содержит legacy/test colors; cleanup разрешён только после TASK-118 audit и Owner approval.
 - TASK-022 требует fresh upload плюс unsupported MIME/oversize rejection.
 - TASK-038 требует staging desktop/mobile visual smoke; component/backend tests уже существуют.
-- TASK-143 ожидает разрешение Owner на commit/push текущего worktree в existing review branch для финального GitHub CI run; staging и production не затрагиваются.
+- Current-head CI зелёный на review branch; merge в `main` остаётся отдельным gate TASK-145.
 - `app/page.tsx` остаётся большим, но broad refactor отложен после pilot во избежание регрессий.
 - XLSX structural tests существуют; visual open smoke выполняется в live Owner browser.
 - Генерируемые test/visual-QA PDF в `tmp/` остаются локальными, игнорируются git и не удаляются автоматически.
 
 ## Следующий шаг
 
-В новом или текущем чате владелец пишет: **`Выполни TASK-143`**.
+В новом или текущем чате владелец пишет: **`Выполни TASK-117`**.
 
-Агент выполняет только TASK-143, фиксирует её evidence и статус, переводит указатель
-на TASK-117 и останавливается. TASK-117 начинается только после отдельной команды
-**`Выполни TASK-117`**.
+Агент выполняет только TASK-117, фиксирует её evidence и статус, переводит указатель
+на TASK-144 и останавливается. TASK-144 начинается только после отдельной команды
+**`Выполни TASK-144`**.

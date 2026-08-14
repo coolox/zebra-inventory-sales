@@ -1,6 +1,6 @@
 # TASK-143 — Восстановить зелёный database CI на текущем commit
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 ## Цель
 
@@ -32,7 +32,7 @@ TASK-140, TASK-142.
 - Clean reset и `npm run supabase:concurrency`.
 - Полный GitHub Actions run без production/staging secrets.
 
-## Прогресс и текущий блокер
+## Результат и проверка
 
 - Точный failure из GitHub CI run `31785382973` установлен: файл
   `030_seller_sales_summary_test.sql` пытался создать sale со статусом
@@ -48,6 +48,7 @@ TASK-140, TASK-142.
 - После второго clean reset прошёл `npm run supabase:concurrency`: sale/sale,
   sale/adjustment и sale/exchange отклонили по одной конфликтующей операции без
   отрицательных ledger balances.
-- До `COMPLETED` остаётся новый GitHub CI run на commit с этим фиксом. Для него
-  требуется отдельное разрешение Owner на commit и push текущего worktree в
-  `origin/review/task-060-077`; staging и production не затрагиваются.
+- Итоговый commit `8c5c81f` отправлен в `origin/review/task-060-077`.
+  GitHub Actions run `31816406792` завершился зелёным: Frontend checks и
+  Local Supabase checks прошли, включая clean migrations, pgTAP/RLS и
+  concurrency. Staging и production не изменялись.
