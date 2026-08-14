@@ -8,8 +8,10 @@
 
 - Последняя завершённая задача: [TASK-118](tasks/TASK-118.md).
 - Текущий шаг launch plan: **12 из 24**.
-- Следующая задача: [TASK-147](tasks/TASK-147.md) — `pending`.
-- Команда для продолжения: **`Выполни TASK-147`**.
+- Текущая задача: [TASK-147](tasks/TASK-147.md) — `IN PROGRESS`, ожидает
+  решения Owner по staging reconciliation P1.
+- Команда для продолжения: **`Подтверждаю TASK-147: отменить 4 test sales`**
+  (или Owner задаёт payment remediation для точных sale IDs в TASK-147).
 
 TASK-145 зафиксировала и проверила кодовый RC
 `f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
@@ -98,7 +100,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Текущие release blockers
 
-1. TASK-147: полный Owner/Seller staging acceptance и defect triage ещё не выполнены.
+1. TASK-147: четыре confirmed staging sales имеют payment mismatch (€640 expected,
+   €0 captured); нужна Owner remediation decision до полного acceptance.
 2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
@@ -163,6 +166,10 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
   colour variants канонизированы migration `20260815120000` и reconciled.
   Rollback archive остаётся Owner-only restore; 13 audit records сохраняют
   исходные цвета для обратной транзакции, если потребуется до новых receipts.
+- TASK-147 повторно прочитала Owner reconciliation: нет missing sale movements и
+  negative balances, но четыре sale без captured payment и 11 manual-correction
+  review records блокируют staging exit до Owner decision. Exact sale IDs и
+  варианты remediation записаны в TASK-147.
 - TASK-022 завершена; три non-production image fixtures остаются на staging test
   product `YY22` как evidence свежей проверки. Production data не затронуты.
 - TASK-038 завершена; staging Seller status восстановлен в `Active` после smoke.
@@ -174,7 +181,9 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Следующий шаг
 
-В новом или текущем чате Owner пишет: **`Выполни TASK-147`**.
+В новом или текущем чате Owner выбирает: **`Подтверждаю TASK-147: отменить 4 test
+sales`** либо задаёт документированный payment remediation для четырёх IDs из
+TASK-147 и статус 11 manual-correction review records.
 
-Агент начинает только TASK-147, фиксирует её evidence и статус, переводит указатель
+Агент продолжает только TASK-147, фиксирует её evidence и статус, переводит указатель
 на следующую задачу и останавливается. Он не начинает TASK-081 автоматически.

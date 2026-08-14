@@ -2,11 +2,11 @@
 
 Обновлено: 2026-08-15
 
-Текущий этап: full staging acceptance
+Текущий этап: full staging acceptance — reconciliation decision pending
 
-Текущий шаг: 12 из 24 — TASK-147 (`NEXT`)
+Текущий шаг: 12 из 24 — TASK-147 (`IN PROGRESS`)
 
-Команда для продолжения: `Выполни TASK-147`
+Команда для продолжения: `Подтверждаю TASK-147: отменить 4 test sales`
 
 Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
@@ -105,7 +105,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 9 | DONE | TASK-022 | Owner fresh JPEG/PNG/WebP upload, carousel reload, MIME/oversize rejection и prior private Storage/RLS denial evidence подтверждены на staging |
 | 10 | DONE | TASK-038 | Owner staging UI подтвердил Active → Blocked → Active с восстановлением доступа; mobile Seller dialog без horizontal overflow |
 | 11 | DONE | TASK-118 | Fixture archived через Owner flow, 13 variants canonicalized и audited; staging reconciliation зелёная |
-| 12 | **NEXT** | TASK-147 | Полная Owner/Seller staging acceptance matrix зелёная, defects triaged |
+| 12 | **IN PROGRESS — OWNER DECISION** | TASK-147 | 4 payment mismatch errors (€640 total) и 11 manual-correction reviews требуют remediation/triage до staging exit |
 | 13 | WAITING | TASK-081 | Database/Storage backups и retention включены и проверены |
 | 14 | WAITING | TASK-082 | Изолированный restore rehearsal и rollback plan доказаны |
 | 15 | WAITING | TASK-148 | Security, authorization, rate-limit и pilot-capacity smoke не находят release blockers |
