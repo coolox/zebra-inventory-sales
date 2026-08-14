@@ -2,11 +2,11 @@
 
 Обновлено: 2026-08-15
 
-Текущий этап: staging color audit — awaiting Owner approval
+Текущий этап: full staging acceptance
 
-Текущий шаг: 11 из 24 — TASK-118 (`IN PROGRESS`)
+Текущий шаг: 12 из 24 — TASK-147 (`NEXT`)
 
-Команда для продолжения: `Подтверждаю TASK-118: архивировать fixture и нормализовать 13 variants`
+Команда для продолжения: `Выполни TASK-147`
 
 Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
@@ -58,14 +58,14 @@ GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
 
 ### Уже реализовано и имеет evidence
 
-- 114 task-файлов имеют статус `COMPLETED`.
+- 115 task-файлов имеют статус `COMPLETED`.
 - На текущем commit локально проходят 80 Vitest files / 187 unit и component tests.
 - Demo и live production builds проходят TypeScript/build validation.
 - Есть 19 Playwright сценариев, запускаемых в desktop/tablet/mobile: два
   последовательных полных прогона проходят 57/57 без retry.
 - Non-interactive ESLint CLI проходит с 0 errors и включён в frontend CI job;
   24 существующих warnings остаются видимыми.
-- Есть 28 migrations и 13 pgTAP файлов с 169 SQL assertions.
+- Есть 29 migrations и 14 pgTAP файлов с 175 SQL assertions.
 - Есть concurrency harness для sale/sale, sale/adjustment и sale/exchange conflicts.
 - Основные sale, receipt, image, auth, Seller status, cancellation и exchange flows уже
   имеют staging evidence; PWA подтверждена на Android/iOS.
@@ -73,10 +73,9 @@ GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
 
 ### Что перепроверено и ещё не является зелёным release gate
 
-- TASK-118 имеет готовую UI normalization и завершённый read-only audit. Fixture
-  имеет receipt/sale history и может только архивироваться; 13 normalizable
-  variants не имеют canonical collisions. Нужны rollback migration и явное
-  разрешение Owner на точный вариант изменения.
+- TASK-118 закрыта: Owner-approved fixture archived с сохранением history;
+  server-side receipt canonicalization и 13 audited colour updates применены
+  на staging, rollback path и reconciliation записаны.
 - Production Supabase/Vercel, SMTP, monitoring, backup/restore и pilot ещё не созданы.
 
 ## 4. Единая последовательность задач до запуска
@@ -105,8 +104,8 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 8 | DONE | TASK-080 | Redacted client/server observability, critical-operation policy и Preview runtime-log synthetic evidence готовы; production provider choice остаётся до production gate |
 | 9 | DONE | TASK-022 | Owner fresh JPEG/PNG/WebP upload, carousel reload, MIME/oversize rejection и prior private Storage/RLS denial evidence подтверждены на staging |
 | 10 | DONE | TASK-038 | Owner staging UI подтвердил Active → Blocked → Active с восстановлением доступа; mobile Seller dialog без horizontal overflow |
-| 11 | **IN PROGRESS — OWNER DECISION** | TASK-118 | Read-only audit готов: archive fixture вместо delete; 13 variants можно normalise без collision. Ждём Owner approval и reconciliation |
-| 12 | WAITING | TASK-147 | Полная Owner/Seller staging acceptance matrix зелёная, defects triaged |
+| 11 | DONE | TASK-118 | Fixture archived через Owner flow, 13 variants canonicalized и audited; staging reconciliation зелёная |
+| 12 | **NEXT** | TASK-147 | Полная Owner/Seller staging acceptance matrix зелёная, defects triaged |
 | 13 | WAITING | TASK-081 | Database/Storage backups и retention включены и проверены |
 | 14 | WAITING | TASK-082 | Изолированный restore rehearsal и rollback plan доказаны |
 | 15 | WAITING | TASK-148 | Security, authorization, rate-limit и pilot-capacity smoke не находят release blockers |
@@ -123,16 +122,15 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 ### Как работать с планом в любом новом чате
 
 1. Owner копирует из `PROJECT_STATUS.md` строку `Команда для продолжения` и пишет,
-   например: `Выполни TASK-118`.
-2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-118.md`.
-3. TASK-118 уже `IN PROGRESS`; audit завершён, поэтому следующий агент ждёт точного
-   Owner approval на archive/normalization, а не начинает другой шаг.
-4. После выполнения агент записывает проверки в TASK-118 и меняет статус на `COMPLETED`.
-5. В этой таблице TASK-118 становится `DONE`, следующая задача — единственным `NEXT`.
+   например: `Выполни TASK-147`.
+2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-147.md`.
+3. TASK-147 — единственная следующая задача; агент не начинает другой шаг.
+4. После выполнения агент записывает проверки в TASK-147 и меняет статус на `COMPLETED`.
+5. В этой таблице TASK-147 становится `DONE`, следующая задача — единственным `NEXT`.
 6. В `PROJECT_STATUS.md` меняются последняя завершённая TASK, текущий шаг и команда
-   `Выполни TASK-118`.
-7. Финальный ответ заканчивается результатом TASK-118 и приглашением дать точную
-   следующую команду. Агент не начинает TASK-118 самостоятельно.
+   `Выполни TASK-147`.
+7. Финальный ответ заканчивается результатом TASK-147 и приглашением дать точную
+   следующую команду. Агент не начинает TASK-147 самостоятельно.
 
 Если задача заблокирована, она остаётся текущей, получает статус `BLOCKED` с причиной,
 а указатель не переходит дальше без решения Owner.
@@ -182,7 +180,7 @@ TASK-038, TASK-118, TASK-147
 
 1. До TASK-083/TASK-149: monitoring provider, retention и получатели production alerts.
 2. TASK-081/082: backup retention, RPO/RTO и место восстановления.
-3. TASK-118: явное Owner approval точного списка staging records на cleanup.
+3. TASK-118: Owner approval выполнен; fixture archive и colour normalization reconciled.
 4. TASK-084: production domain, SMTP provider и язык email template.
 5. TASK-087: способ первичного ввода inventory и человек, подписывающий сверку.
 6. TASK-088: продолжительность pilot; рекомендация — минимум 7 рабочих дней.

@@ -2,16 +2,14 @@
 
 Обновлено: 2026-08-15
 
-Текущая фаза: Clothing Pilot staging color audit
+Текущая фаза: Clothing Pilot full staging acceptance
 
 ## Где мы остановились
 
-- Последняя завершённая задача: [TASK-038](tasks/TASK-038.md).
-- Текущий шаг launch plan: **11 из 24**.
-- Текущая задача: [TASK-118](tasks/TASK-118.md) — `IN PROGRESS`, audit завершён;
-  она ожидает явного решения Owner и не завершена.
-- Команда для продолжения: **`Подтверждаю TASK-118: архивировать fixture и нормализовать 13 variants`**
-  (либо явно выбрать только архивирование / не менять staging data).
+- Последняя завершённая задача: [TASK-118](tasks/TASK-118.md).
+- Текущий шаг launch plan: **12 из 24**.
+- Следующая задача: [TASK-147](tasks/TASK-147.md) — `pending`.
+- Команда для продолжения: **`Выполни TASK-147`**.
 
 TASK-145 зафиксировала и проверила кодовый RC
 `f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
@@ -36,6 +34,13 @@ TASK-022 закрыла fresh product-image acceptance: Owner загрузил J
 TASK-038 закрыла Seller status acceptance: Owner staging UI подтвердил
 `Active → Blocked → Active`, а mobile Seller dialog не имеет horizontal overflow.
 Тестовый Seller оставлен `Active`; Production не изменялся.
+
+TASK-118 завершена: Owner-approved staging fixture `TASK021-FX-BOUNDARY`
+обратимо архивирован с сохранением 4 movements, 2 receipt lines и 2 sale lines.
+Migration `20260815120000` canonicalizes server-side receipt colours и
+нормализовала 13 проверенных legacy variants с audit records. Staging
+reconciliation зелёная: 13/13 colours совпали, active temporary markers = 0;
+Production не изменялся.
 
 ## Главное решение по порядку работ
 
@@ -68,7 +73,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 | TypeScript | Проходит как часть production builds |
 | Playwright | 19 сценариев × 3 viewport = 57; два последовательных полных прогона проходят 57/57 без retry после фикса animation boundary в TASK-142 |
 | Lint | Non-interactive ESLint CLI проходит с 0 errors; 24 существующих warnings остаются видимыми; lint включён в frontend CI job |
-| Database | 28 migrations, 13 pgTAP files, 169 SQL assertions |
+| Database | 29 migrations, 14 pgTAP files, 175 SQL assertions |
 | Concurrency | Harness существует для sale/sale, sale/adjustment, sale/exchange |
 | Current GitHub CI | Run `31822493717` на RC `f838f78680b4fb5a18fd5600f194ec5defd335a6`: Frontend checks и Local Supabase checks зелёные; database job прошёл clean 28 migrations, 13 pgTAP files/169 assertions и concurrency |
 | Последний SQL evidence | TASK-143: clean local `supabase:verify` и concurrency прошли; повторены и подтверждены отдельным зелёным GitHub CI run |
@@ -93,8 +98,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Текущие release blockers
 
-1. TASK-118: staging audit завершён; требуется Owner approval на обратимое
-   архивирование fixture и/или физическую нормализацию 13 legacy variants.
+1. TASK-147: полный Owner/Seller staging acceptance и defect triage ещё не выполнены.
 2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
@@ -111,8 +115,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 8. TASK-080 — observability (completed).
 9. TASK-022 — fresh product-image smoke (completed).
 10. TASK-038 — Seller status UI staging smoke (completed).
-11. TASK-118 — staging color audit/approved cleanup (in progress).
-12. TASK-147 — full staging acceptance.
+11. TASK-118 — staging color audit/approved cleanup (completed).
+12. TASK-147 — full staging acceptance (next).
 13. TASK-081 — backups.
 14. TASK-082 — restore/rollback rehearsal.
 15. TASK-148 — security/pilot-capacity smoke.
@@ -129,8 +133,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 ## Task accounting
 
 - Всего task-файлов: 151.
-- `COMPLETED`: 114.
-- `IN PROGRESS`: 1 — TASK-118.
+- `COMPLETED`: 115.
+- `IN PROGRESS`: 0.
 - `pending`: 36.
 
 Завершённые ID:
@@ -154,11 +158,11 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
   authenticated manual smoke их нужно переключить на выбранный актуальный URL.
 - TASK-146 оставила schema-only rollback checkpoint; полноценные managed backup и
   restore rehearsal ещё обязательны в TASK-081/TASK-082.
-- Staging audit TASK-118 зафиксировал fixture model
-  `6d3763de-f554-4bcd-92da-6fea5dac74ed` с двумя boundary variants. У него есть
-  receipt/sale history, поэтому допускается только обратимое archive, не delete.
-  Для `AS123`, `USD123` и `XX123` найдены 13 normalizable color variants без
-  canonical collisions. Любое изменение ожидает явного Owner approval.
+- TASK-118 завершена: staging fixture model
+  `6d3763de-f554-4bcd-92da-6fea5dac74ed` обратимо archived, не deleted; 13
+  colour variants канонизированы migration `20260815120000` и reconciled.
+  Rollback archive остаётся Owner-only restore; 13 audit records сохраняют
+  исходные цвета для обратной транзакции, если потребуется до новых receipts.
 - TASK-022 завершена; три non-production image fixtures остаются на staging test
   product `YY22` как evidence свежей проверки. Production data не затронуты.
 - TASK-038 завершена; staging Seller status восстановлен в `Active` после smoke.
@@ -170,10 +174,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Следующий шаг
 
-В новом или текущем чате Owner выбирает точный вариант: **`Подтверждаю TASK-118:
-архивировать fixture и нормализовать 13 variants`**, **`…только архивировать
-fixture`** или **`…не менять staging data`**.
+В новом или текущем чате Owner пишет: **`Выполни TASK-147`**.
 
-Агент продолжает только TASK-118, фиксирует её evidence и статус, переводит указатель
-на следующую задачу и останавливается. TASK-118 не выполняет cleanup без явного
-Owner approval.
+Агент начинает только TASK-147, фиксирует её evidence и статус, переводит указатель
+на следующую задачу и останавливается. Он не начинает TASK-081 автоматически.

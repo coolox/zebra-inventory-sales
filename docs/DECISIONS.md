@@ -1,6 +1,6 @@
 # Журнал решений
 
-Обновлено: 2026-08-14
+Обновлено: 2026-08-15
 
 Этот документ хранит решения, которые нельзя оставлять только в истории чата.
 
@@ -64,6 +64,7 @@
 | D-054 | 2026-08-14 | Принято | Inventory показывает Seller и Owner компактное первое фото модели и purchase cost в исходной валюте; Product Card не показывает purchase cost, а показывает только sell price. Sell price — только ориентир `purchase cost × 3`, не хранится и не фиксирует фактическую цену Sale. Seller видит aggregate текущего магазина за today/week и только свои totals за today/week/month/year/all time | Фото остаются private и загружаются существующими signed URLs. Store aggregate не раскрывает строки или личные результаты других Seller; доступ проверяется server-side. |
 | D-055 | 2026-08-14 | Принято | До завершения Clothing Pilot действует feature freeze: release path включает только стабилизацию RC, staging, operations, production и pilot; AI receipt, Telegram, AI labels и multi-store остаются post-launch backlog | Это сохраняет ранее принятые D-009/D-019, исключает повторную реализацию готового MVP и снижает риск перед первым реальным запуском. Старый roadmap заменён линейным launch plan TASK-142—TASK-151 с переиспользованием существующих pending tasks. |
 | D-056 | 2026-08-14 | Принято | Между чатами `PROJECT_STATUS.md` является единственным текущим указателем, а работа запускается явной командой Owner `Выполни TASK-NNN`; после completion агент переключает указатель на одну следующую TASK и останавливается | Новый агент не зависит от истории чата, не повторяет завершённую работу и не начинает следующий шаг автоматически. `ROADMAP.md` хранит общую последовательность и статусы launch steps. |
+| D-057 | 2026-08-15 | Принято | Для TASK-118 staging fixture `TASK021-FX-BOUNDARY` не удаляется, а архивируется через Owner-only flow; 13 точно audited legacy variants нормализуются до canonical English storage values | Fixture имеет receipt/sale history и должен сохранять ledger. Archive имеет Owner audit и restore rollback. Нормализация выполнена только после audit на collisions, транзакционной migration и Owner approval; UI локализует значения в EN/TR. |
 
 ## Предварительные решения
 

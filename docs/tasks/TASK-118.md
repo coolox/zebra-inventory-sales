@@ -1,6 +1,6 @@
 # TASK-118 — Нормализовать цвета и удалить staging test fixtures
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 ## Цель
 
@@ -78,4 +78,32 @@ TASK-021.
 2. только архивировать fixture model;
 3. не менять staging data.
 
-До такого подтверждения TASK-118 остаётся `IN PROGRESS`.
+## Выполнение после Owner approval 2026-08-15
+
+- Owner подтвердил рекомендованный вариант: fixture архивирован, 13 variants
+  нормализованы. Model `6d3763de-f554-4bcd-92da-6fea5dac74ed` архивирован через
+  существующий Owner-only `set_product_model_archived` flow, поэтому его history
+  сохранена и создан один `product_model.archived` audit record.
+- Migration `20260815120000_canonical_catalog_colors.sql` применена к linked
+  staging. Она canonicalizes цвета в server-side receipt wrapper и обновляет
+  только 13 audited UUID, добавляя 13 `catalog.color_normalized` audit records.
+  Новая database test coverage проверяет alias `siyah` → `Black` и отсутствие
+  duplicate color/size variant при повторной receipt.
+- Post-cleanup reconciliation staging: fixture `active=false`; balance `0`,
+  movements `4`, receipt lines `2`, sale lines `2` — значения сохранены. Все
+  13 expected canonical colours совпали с результатом; aggregate их balance
+  остаётся `0`, movement count `26`; active temporary colour markers `0`.
+  После reload Inventory search больше не показывает `TASK021-FX-BOUNDARY`, а
+  `AS123` показывает `Blue` для S/M/L.
+- Rollback: fixture восстанавливается только Owner RPC с `p_archived=false`;
+  до появления новой receipt с canonical значением exact 13 colours могут быть
+  возвращены к значениям audit `old_color` в обратной транзакции. Physical delete
+  не допускается.
+
+## Проверки
+
+- Clean local Supabase: 29 migrations, 14 pgTAP files / 175 assertions — PASS.
+- Local concurrency harness: sale/sale, sale/adjustment, sale/exchange — PASS.
+- `npm run build` — PASS (только существующие ESLint warnings).
+- Staging migration list: `20260815120000` применена; post-cleanup SQL
+  reconciliation и Owner UI reload — PASS. Production не изменялся.
