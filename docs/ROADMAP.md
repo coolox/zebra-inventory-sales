@@ -2,11 +2,11 @@
 
 Обновлено: 2026-08-15
 
-Текущий этап: staging color audit
+Текущий этап: staging color audit — awaiting Owner approval
 
 Текущий шаг: 11 из 24 — TASK-118 (`IN PROGRESS`)
 
-Команда для продолжения: `Выполни TASK-118`
+Команда для продолжения: `Подтверждаю TASK-118: архивировать fixture и нормализовать 13 variants`
 
 Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
@@ -73,8 +73,10 @@ GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
 
 ### Что перепроверено и ещё не является зелёным release gate
 
-- TASK-118 имеет готовую UI normalization, но staging cleanup требует read-only audit,
-  rollback plan и явного разрешения Owner.
+- TASK-118 имеет готовую UI normalization и завершённый read-only audit. Fixture
+  имеет receipt/sale history и может только архивироваться; 13 normalizable
+  variants не имеют canonical collisions. Нужны rollback migration и явное
+  разрешение Owner на точный вариант изменения.
 - Production Supabase/Vercel, SMTP, monitoring, backup/restore и pilot ещё не созданы.
 
 ## 4. Единая последовательность задач до запуска
@@ -103,7 +105,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 8 | DONE | TASK-080 | Redacted client/server observability, critical-operation policy и Preview runtime-log synthetic evidence готовы; production provider choice остаётся до production gate |
 | 9 | DONE | TASK-022 | Owner fresh JPEG/PNG/WebP upload, carousel reload, MIME/oversize rejection и prior private Storage/RLS denial evidence подтверждены на staging |
 | 10 | DONE | TASK-038 | Owner staging UI подтвердил Active → Blocked → Active с восстановлением доступа; mobile Seller dialog без horizontal overflow |
-| 11 | **IN PROGRESS** | TASK-118 | Local UI normalization готова; staging audit/cleanup ждёт Owner approval и reconciliation |
+| 11 | **IN PROGRESS — OWNER DECISION** | TASK-118 | Read-only audit готов: archive fixture вместо delete; 13 variants можно normalise без collision. Ждём Owner approval и reconciliation |
 | 12 | WAITING | TASK-147 | Полная Owner/Seller staging acceptance matrix зелёная, defects triaged |
 | 13 | WAITING | TASK-081 | Database/Storage backups и retention включены и проверены |
 | 14 | WAITING | TASK-082 | Изолированный restore rehearsal и rollback plan доказаны |
@@ -123,8 +125,8 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 1. Owner копирует из `PROJECT_STATUS.md` строку `Команда для продолжения` и пишет,
    например: `Выполни TASK-118`.
 2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-118.md`.
-3. TASK-118 уже `IN PROGRESS`; если чат прервётся, следующий агент продолжит её,
-   а не начнёт другой шаг.
+3. TASK-118 уже `IN PROGRESS`; audit завершён, поэтому следующий агент ждёт точного
+   Owner approval на archive/normalization, а не начинает другой шаг.
 4. После выполнения агент записывает проверки в TASK-118 и меняет статус на `COMPLETED`.
 5. В этой таблице TASK-118 становится `DONE`, следующая задача — единственным `NEXT`.
 6. В `PROJECT_STATUS.md` меняются последняя завершённая TASK, текущий шаг и команда

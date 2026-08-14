@@ -8,8 +8,10 @@
 
 - Последняя завершённая задача: [TASK-038](tasks/TASK-038.md).
 - Текущий шаг launch plan: **11 из 24**.
-- Текущая задача: [TASK-118](tasks/TASK-118.md) — `IN PROGRESS`; она не завершена.
-- Команда для продолжения: **`Выполни TASK-118`**.
+- Текущая задача: [TASK-118](tasks/TASK-118.md) — `IN PROGRESS`, audit завершён;
+  она ожидает явного решения Owner и не завершена.
+- Команда для продолжения: **`Подтверждаю TASK-118: архивировать fixture и нормализовать 13 variants`**
+  (либо явно выбрать только архивирование / не менять staging data).
 
 TASK-145 зафиксировала и проверила кодовый RC
 `f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
@@ -91,7 +93,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Текущие release blockers
 
-1. TASK-118 ожидает staging audit и Owner approval на cleanup.
+1. TASK-118: staging audit завершён; требуется Owner approval на обратимое
+   архивирование fixture и/или физическую нормализацию 13 legacy variants.
 2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
@@ -151,7 +154,11 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
   authenticated manual smoke их нужно переключить на выбранный актуальный URL.
 - TASK-146 оставила schema-only rollback checkpoint; полноценные managed backup и
   restore rehearsal ещё обязательны в TASK-081/TASK-082.
-- Staging содержит legacy/test colors; cleanup разрешён только после TASK-118 audit и Owner approval.
+- Staging audit TASK-118 зафиксировал fixture model
+  `6d3763de-f554-4bcd-92da-6fea5dac74ed` с двумя boundary variants. У него есть
+  receipt/sale history, поэтому допускается только обратимое archive, не delete.
+  Для `AS123`, `USD123` и `XX123` найдены 13 normalizable color variants без
+  canonical collisions. Любое изменение ожидает явного Owner approval.
 - TASK-022 завершена; три non-production image fixtures остаются на staging test
   product `YY22` как evidence свежей проверки. Production data не затронуты.
 - TASK-038 завершена; staging Seller status восстановлен в `Active` после smoke.
@@ -163,8 +170,10 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Следующий шаг
 
-В новом или текущем чате владелец пишет: **`Выполни TASK-118`**.
+В новом или текущем чате Owner выбирает точный вариант: **`Подтверждаю TASK-118:
+архивировать fixture и нормализовать 13 variants`**, **`…только архивировать
+fixture`** или **`…не менять staging data`**.
 
 Агент продолжает только TASK-118, фиксирует её evidence и статус, переводит указатель
-на следующую задачу и останавливается. TASK-118 не заменяется cleanup без явного
+на следующую задачу и останавливается. TASK-118 не выполняет cleanup без явного
 Owner approval.
