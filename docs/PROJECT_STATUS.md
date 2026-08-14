@@ -2,14 +2,14 @@
 
 Обновлено: 2026-08-15
 
-Текущая фаза: Clothing Pilot Seller status acceptance
+Текущая фаза: Clothing Pilot staging color audit
 
 ## Где мы остановились
 
-- Последняя завершённая задача: [TASK-022](tasks/TASK-022.md).
-- Текущий шаг launch plan: **10 из 24**.
-- Следующая задача: [TASK-038](tasks/TASK-038.md) — `pending`; её нельзя начинать автоматически.
-- Команда для продолжения: **`Выполни TASK-038`**.
+- Последняя завершённая задача: [TASK-038](tasks/TASK-038.md).
+- Текущий шаг launch plan: **11 из 24**.
+- Текущая задача: [TASK-118](tasks/TASK-118.md) — `IN PROGRESS`; она не завершена.
+- Команда для продолжения: **`Выполни TASK-118`**.
 
 TASK-145 зафиксировала и проверила кодовый RC
 `f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
@@ -30,6 +30,10 @@ Production не изменялся.
 TASK-022 закрыла fresh product-image acceptance: Owner загрузил JPEG/PNG/WebP
 в private staging flow, carousel сохранился после reload, unsupported MIME и >8 MiB
 отклонены до Storage; ранее подтверждённый cross-store RLS denial остаётся в силе.
+
+TASK-038 закрыла Seller status acceptance: Owner staging UI подтвердил
+`Active → Blocked → Active`, а mobile Seller dialog не имеет horizontal overflow.
+Тестовый Seller оставлен `Active`; Production не изменялся.
 
 ## Главное решение по порядку работ
 
@@ -87,10 +91,9 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Текущие release blockers
 
-1. TASK-038 ожидает Seller deactivate/reactivate UI staging smoke на desktop/mobile.
-2. TASK-118 ожидает staging audit и Owner approval на cleanup.
-3. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
-4. До production Owner должен выбрать monitoring provider, retention и recipients;
+1. TASK-118 ожидает staging audit и Owner approval на cleanup.
+2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
+3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
 
 ## Последовательность до запуска
@@ -104,8 +107,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 7. TASK-146 — staging migration synchronization (completed).
 8. TASK-080 — observability (completed).
 9. TASK-022 — fresh product-image smoke (completed).
-10. TASK-038 — Seller status UI staging smoke.
-11. TASK-118 — staging color audit/approved cleanup.
+10. TASK-038 — Seller status UI staging smoke (completed).
+11. TASK-118 — staging color audit/approved cleanup (in progress).
 12. TASK-147 — full staging acceptance.
 13. TASK-081 — backups.
 14. TASK-082 — restore/rollback rehearsal.
@@ -123,14 +126,13 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 ## Task accounting
 
 - Всего task-файлов: 151.
-- `COMPLETED`: 113.
+- `COMPLETED`: 114.
 - `IN PROGRESS`: 1 — TASK-118.
-- `pending`: 37.
+- `pending`: 36.
 
 Завершённые ID:
 
-- TASK-001—TASK-037;
-- TASK-039—TASK-080;
+- TASK-001—TASK-080;
 - TASK-101—TASK-116;
 - TASK-123;
 - TASK-131—TASK-146; TASK-117.
@@ -152,7 +154,7 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 - Staging содержит legacy/test colors; cleanup разрешён только после TASK-118 audit и Owner approval.
 - TASK-022 завершена; три non-production image fixtures остаются на staging test
   product `YY22` как evidence свежей проверки. Production data не затронуты.
-- TASK-038 требует staging desktop/mobile visual smoke; component/backend tests уже существуют.
+- TASK-038 завершена; staging Seller status восстановлен в `Active` после smoke.
 - Кодовый RC `f838f78680b4fb5a18fd5600f194ec5defd335a6` прошёл два GitHub CI jobs;
   merge в `main` зафиксирован в TASK-145.
 - `app/page.tsx` остаётся большим, но broad refactor отложен после pilot во избежание регрессий.
@@ -161,8 +163,8 @@ AI receipt, Telegram, AI labels и multi-store не входят в критич
 
 ## Следующий шаг
 
-В новом или текущем чате владелец пишет: **`Выполни TASK-038`**.
+В новом или текущем чате владелец пишет: **`Выполни TASK-118`**.
 
-Агент выполняет только TASK-038, фиксирует её evidence и статус, переводит указатель
-на следующую задачу и останавливается. TASK-038 начинается только после отдельной
-команды **`Выполни TASK-038`**.
+Агент продолжает только TASK-118, фиксирует её evidence и статус, переводит указатель
+на следующую задачу и останавливается. TASK-118 не заменяется cleanup без явного
+Owner approval.
