@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+umask 077
+
+required_variables=(
+  SUPABASE_DB_URL
+  SUPABASE_STORAGE_S3_ENDPOINT
+  SUPABASE_STORAGE_S3_REGION
+  SUPABASE_STORAGE_S3_ACCESS_KEY_ID
+  SUPABASE_STORAGE_S3_SECRET_ACCESS_KEY
+  BACKUP_VPS_HOST
+  BACKUP_VPS_PORT
+  BACKUP_VPS_USER
+  BACKUP_VPS_PATH
+  BACKUP_VPS_SSH_PRIVATE_KEY
+  BACKUP_VPS_KNOWN_HOSTS
+  BACKUP_AGE_RECIPIENT
+)
+
+for variable_name in "${required_variables[@]}"; do
+  if [[ -z "${!variable_name:-}" ]]; then
+    echo "Missing required backup configuration: ${variable_name}" >&2
+    exit 1
+  fi
+done
+
+if [[ ! "$BACKUP_VPS_HOST" =~ ^[A-Za-z0-9.-]+$ ]] || [[ ! "$BACKUP_VPS_PORT" =~ ^[0-9]{1,5}$ ]]; then
+  echo "Invalid backup VPS host or port." >&2
+  exit 1
+fi
+
+if [[ ! "$BACKUP_VPS_USER" =~ ^[A-Za-z_][A-Za-z0-9_-]*$ ]] || [[ ! "$BACKUP_VPS_PATH" =~ ^/([A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+$ ]] || [[ "$BACKUP_VPS_PATH" == *..* ]]; then
+  echo "Invalid backup VPS user or path." >&2
+  exit 1
+fi
+
+if [[ ! "$BACKUP_AGE_RECIPIENT" =~ ^age1[0-9a-z]+$ ]]; then
+  echo "Invalid age recipient. Backup encryption requires an age public recipient." >&2
+  exit 1
+fi
+
+backup_id="${BACKUP_ID:-$(date -u +%F)}"
+if [[ ! "$backup_id" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+  echo "Invalid backup identifier." >&2
+  exit 1
+fi
+
+work_dir="$(mktemp -d)"
+ssh_key_path="$work_dir/backup_key"
+known_hosts_path="$work_dir/known_hosts"
+payload_dir="$work_dir/payload"
+trap 'rm -rf "$work_dir"' EXIT
+
+mkdir -p "$payload_dir/database" "$payload_dir/product-images"
+printf '%s\n' "$BACKUP_VPS_SSH_PRIVATE_KEY" > "$ssh_key_path"
+printf '%s\n' "$BACKUP_VPS_KNOWN_HOSTS" > "$known_hosts_path"
+chmod 600 "$ssh_key_path" "$known_hosts_path"
+
+supabase db dump --db-url "$SUPABASE_DB_URL" --role-only -f "$payload_dir/database/roles.sql"
+supabase db dump --db-url "$SUPABASE_DB_URL" -f "$payload_dir/database/schema.sql"
+supabase db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -f "$payload_dir/database/data.sql"
+
+rclone sync ':s3:product-images' "$payload_dir/product-images" \
+  --s3-provider Other \
+  --s3-endpoint "$SUPABASE_STORAGE_S3_ENDPOINT" \
+  --s3-region "$SUPABASE_STORAGE_S3_REGION" \
+  --s3-access-key-id "$SUPABASE_STORAGE_S3_ACCESS_KEY_ID" \
+  --s3-secret-access-key "$SUPABASE_STORAGE_S3_SECRET_ACCESS_KEY" \
+  --s3-force-path-style
+
+for dump_file in "$payload_dir/database/roles.sql" "$payload_dir/database/schema.sql" "$payload_dir/database/data.sql"; do
+  if [[ ! -s "$dump_file" ]]; then
+    echo "Backup dump is unexpectedly empty: ${dump_file##*/}" >&2
+    exit 1
+  fi
+done
+
+archive_path="$work_dir/staging-${backup_id}.tar.gz"
+encrypted_archive_path="$archive_path.age"
+tar --sort=name --mtime="UTC 1970-01-01" --owner=0 --group=0 --numeric-owner -C "$payload_dir" -czf "$archive_path" .
+age -r "$BACKUP_AGE_RECIPIENT" -o "$encrypted_archive_path" "$archive_path"
+(cd "$work_dir" && sha256sum "${encrypted_archive_path##*/}" > SHA256SUMS)
+
+remote_root="${BACKUP_VPS_PATH%/}/zebra-retail/staging"
+ssh_target="${BACKUP_VPS_USER}@${BACKUP_VPS_HOST}"
+ssh_options=(-i "$ssh_key_path" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$known_hosts_path" -p "$BACKUP_VPS_PORT")
+
+ssh "${ssh_options[@]}" "$ssh_target" "umask 077; mkdir -p '$remote_root/incoming' '$remote_root/daily'; test ! -e '$remote_root/daily/$backup_id'"
+ssh "${ssh_options[@]}" "$ssh_target" "mkdir -p '$remote_root/incoming/$backup_id'"
+rsync -a --chmod=Du=rwx,Dgo=,Fu=rw,Fgo= -- "$encrypted_archive_path" "$work_dir/SHA256SUMS" "$ssh_target:$remote_root/incoming/$backup_id/"
+ssh "${ssh_options[@]}" "$ssh_target" "set -eu; cd '$remote_root/incoming/$backup_id'; sha256sum -c SHA256SUMS; mv '$remote_root/incoming/$backup_id' '$remote_root/daily/$backup_id'; find '$remote_root/daily' -mindepth 1 -maxdepth 1 -type d -mtime +13 -exec rm -rf -- {} +; test -f '$remote_root/daily/$backup_id/staging-$backup_id.tar.gz.age'"
+
+echo "Encrypted staging backup completed: ${backup_id}; retention: 14 daily copies."

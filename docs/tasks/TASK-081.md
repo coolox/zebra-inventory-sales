@@ -1,6 +1,6 @@
 # TASK-081 — Настроить автоматические backups
 
-Статус: BLOCKED — OWNER DECISION
+Статус: IN PROGRESS
 
 ## Цель
 
@@ -33,11 +33,12 @@ TASK-079.
   и artifacts недоступны; Pro даёт daily database backups с retention 7 days.
 - Нативный database backup не содержит private Storage objects, поэтому
   `product-images` требует отдельного encrypted off-site mirror.
-- Создан [backup policy](../operations/BACKUP.md) с required retention,
-  access boundary и двумя выполнимыми вариантами.
+- Owner выбрал Plan B: encrypted off-site backups на свой VPS. Добавлены
+  scheduled GitHub Actions workflow и VPS bootstrap для отдельного
+  non-privileged backup user; secrets в репозиторий не попадают.
 - Production не открывался и не изменялся. Secrets не читались.
 
-Для completion Owner должен выбрать вариант A или B из `BACKUP.md` и определить
-private archive provider/bucket. Без этого нельзя включить schedule, создать
-fresh artifact или подтвердить retention/access control без скрытого выбора
-платёжного плана и внешнего хранилища.
+Для completion нужен новый Owner-authorized backup SSH key/user, GitHub Secrets
+и один manual workflow run. Предыдущий read-only VPS audit key удалён; agent не
+восстанавливает старый доступ и не меняет legacy bot. После первого run будут
+проверены fresh encrypted artifact, checksum, 14-day retention и access control.

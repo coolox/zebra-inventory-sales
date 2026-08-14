@@ -1,0 +1,46 @@
+name: Staging backup
+
+on:
+  schedule:
+    - cron: '20 1 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    name: Encrypted database and product-images backup
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      SUPABASE_STORAGE_S3_ENDPOINT: ${{ secrets.SUPABASE_STORAGE_S3_ENDPOINT }}
+      SUPABASE_STORAGE_S3_REGION: ${{ secrets.SUPABASE_STORAGE_S3_REGION }}
+      SUPABASE_STORAGE_S3_ACCESS_KEY_ID: ${{ secrets.SUPABASE_STORAGE_S3_ACCESS_KEY_ID }}
+      SUPABASE_STORAGE_S3_SECRET_ACCESS_KEY: ${{ secrets.SUPABASE_STORAGE_S3_SECRET_ACCESS_KEY }}
+      BACKUP_VPS_HOST: ${{ secrets.BACKUP_VPS_HOST }}
+      BACKUP_VPS_PORT: ${{ secrets.BACKUP_VPS_PORT }}
+      BACKUP_VPS_USER: ${{ secrets.BACKUP_VPS_USER }}
+      BACKUP_VPS_PATH: ${{ secrets.BACKUP_VPS_PATH }}
+      BACKUP_VPS_SSH_PRIVATE_KEY: ${{ secrets.BACKUP_VPS_SSH_PRIVATE_KEY }}
+      BACKUP_VPS_KNOWN_HOSTS: ${{ secrets.BACKUP_VPS_KNOWN_HOSTS }}
+      BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.113.0
+
+      - name: Install backup clients
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends age rclone rsync
+
+      - name: Create encrypted staging backup
+        run: bash scripts/backup/run-staging-backup.sh
