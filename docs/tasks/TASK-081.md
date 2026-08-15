@@ -205,8 +205,9 @@ does not alter an already existing destination directory. Files themselves were
 correctly `600` and the parent `daily` is `700`, so nothing was exposed, but the
 policy relied on a single level of protection. The call now sets `umask 077` and
 an explicit `chmod 700`, which also repairs a directory left by an interrupted
-run. The `775` directory from run `31911881685` still needs one Owner-approved
-`chmod 700`.
+run. The `775` directory from run `31911881685` was corrected with one
+Owner-approved `chmod 700`; the whole path is now `700` and the checksum still
+verifies afterwards.
 
 ### Restore is not self-sufficient — input for TASK-082
 

@@ -116,10 +116,10 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
    archive was decrypted with the real `age` identity and reconciled: 21 tables,
    21 RLS policies, 32 functions, 3 triggers, 49 sales and a 16 ↔ 16 match
    between `storage.objects` rows and mirrored image files. Access boundary
-   confirmed: no `sudo`, no `/root`, legacy bot untouched. Two items remain
-   before completion — Owner must keep a second copy of the `age` identity off
-   the workstation, and one Owner-approved `chmod 700` is needed on the `775`
-   directory left by that run. Retention cannot be proven from one artifact.
+   confirmed: no `sudo`, no `/root`, legacy bot untouched. The `775` directory
+   left by that run was corrected to `700` with Owner approval. One item remains
+   before completion: Owner must keep a second copy of the `age` identity off the
+   workstation. Retention cannot be proven from one artifact.
 2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
@@ -200,11 +200,12 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Следующий шаг
 
-Owner stores a second copy of the `age` identity outside this workstation and
-approves one `chmod 700` on the directory left by run `31911881685`. TASK-081 then
-closes, and TASK-082 begins with a documented requirement: restore must apply the
-migration chain, because `on_auth_user_created` and the `rls_auto_enable` event
-trigger are absent from `supabase db dump` by design.
+Owner stores a second copy of the `age` identity outside this workstation. That is
+the last item in TASK-081; the archive is unreadable without it, so a single copy
+is the dominant data-loss risk. TASK-081 then closes and TASK-082 begins under
+D-061: restore must apply the migration chain first, because
+`on_auth_user_created` and the `rls_auto_enable` event trigger are absent from
+`supabase db dump` by design.
 
 Агент продолжает только TASK-081, фиксирует backup/retention evidence и обновляет
 указатель после её завершения. Он не начинает TASK-082 автоматически.
