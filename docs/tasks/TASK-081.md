@@ -122,3 +122,16 @@ TASK-079.
 - Secret values were never opened after saving. The prepared workflow is still
   local only; its publication awaits separate Owner approval because a push to
   `main` triggers a new Vercel production deployment.
+
+## First manual workflow evidence — 2026-08-15
+
+- Owner approved publication; `main` was pushed and GitHub Actions run
+  `Staging backup #1` was manually started from the published workflow.
+- The job failed before any archive/artifact was created. Its redacted log shows
+  that `SUPABASE_DB_URL` resolves to the direct IPv6 database host while hosted
+  GitHub runners lack IPv6 connectivity. VPS and Storage stages were not reached.
+- Required corrective action: Owner replaces only `SUPABASE_DB_URL` with the
+  staging project's **IPv4 Transaction Pooler** connection string from Supabase
+  Dashboard → Connect, retaining the existing database password locally. Do not
+  paste the URL/password in chat. Then rerun the same workflow; no code or VPS
+  change is currently indicated.

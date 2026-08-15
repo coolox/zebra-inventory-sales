@@ -2,6 +2,11 @@
 
 ## 2026-08-15
 
+- TASK-081: after Owner-approved push to `main`, manual GitHub Actions run
+  `Staging backup #1` failed before producing an archive because the staging
+  database Secret uses a direct IPv6 host and GitHub runner has no IPv6 route.
+  VPS/Storage were untouched. The corrective action is to replace only that
+  secret with the staging project's IPv4 Transaction Pooler URL, then rerun.
 - TASK-081: Owner added the private backup SSH key to GitHub; agent added the
   fingerprint-verified public ED25519 known-hosts line and confirmed all twelve
   required secret names. Values remained unread. The backup workflow remains
