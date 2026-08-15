@@ -2,6 +2,12 @@
 
 ## 2026-08-15
 
+- TASK-081: Owner-supplied ED25519 fingerprint exactly matched the public key
+  scanned from the backup VPS. The subsequent pinned, read-only SSH login was
+  rejected by server authorization; passwords and private keys were neither
+  requested nor inspected, and the VPS remains unchanged. A temporary,
+  Owner-controlled access path is the only blocker before the isolated backup
+  user can be created.
 - TASK-081: Owner-authorized Contabo panel confirmed the backup VPS endpoint;
   the address is deliberately kept out of Git and reserved for the GitHub Secret.
   A read-only SSH probe reaches host-key verification, but no ED25519 host key

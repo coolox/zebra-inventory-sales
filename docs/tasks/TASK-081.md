@@ -65,3 +65,15 @@ TASK-079.
 - Before bootstrap, verify and pin the VPS ED25519 fingerprint through a trusted
   Contabo console or another independent access path. Only then create the
   isolated backup user; legacy bot files, service and data remain out of scope.
+
+## Host identity and authorization check — 2026-08-15
+
+- Owner supplied an out-of-band ED25519 fingerprint. A direct public-key scan
+  matched it exactly, so the VPS host identity is verified.
+- The resulting pinned, read-only SSH login was rejected with
+  `Permission denied (publickey,password)`. No password was requested or tried,
+  no private key was inspected, and no VPS mutation occurred.
+- Completion now needs the Owner to make a temporary, Owner-controlled SSH
+  authorization path available from this workstation. Once access is confirmed,
+  bootstrap will create the isolated `zebra-backup` user and remove any temporary
+  root authorization before the GitHub private key is configured.
