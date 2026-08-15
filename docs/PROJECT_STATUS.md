@@ -114,9 +114,9 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
    Проверенный read-only SSH login отклонён по authorization, поэтому нужен
    Owner-controlled temporary access. Isolated `zebra-backup` account and
    closed archive directories now exist; its public key was verified and the
-   temporary root authorization removed. Four non-key VPS GitHub Secrets already
-   exist; Owner must enter the SSH private key and pinned known-hosts line. Then
-   explicit workflow-publish approval и первый manual run для artifact evidence.
+   temporary root authorization removed. All twelve backup repository Secrets
+   now exist by name, without agent opening their values. Next gate is explicit
+   workflow-publish approval, then first manual run для artifact evidence.
 2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
@@ -197,12 +197,10 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Следующий шаг
 
-В новом или текущем чате Owner вводит private backup key только в GitHub Secret
-`BACKUP_VPS_SSH_PRIVATE_KEY` и pinned public host line в
-`BACKUP_VPS_KNOWN_HOSTS`. Затем Owner даёт explicit publish approval: push в
-`main` создаст новый Vercel production deployment. После этого agent отправляет
-workflow и проводит manual backup evidence run. GitHub Secrets для Supabase уже
-проверены по именам.
+В новом или текущем чате Owner даёт explicit publish approval: push в `main`
+создаст новый Vercel production deployment. После этого agent отправляет
+prepared workflow и проводит manual backup evidence run. Все GitHub Secrets
+проверены только по именам.
 
 Агент продолжает только TASK-081, фиксирует backup/retention evidence и обновляет
 указатель после её завершения. Он не начинает TASK-082 автоматически.

@@ -113,3 +113,12 @@ TASK-079.
   `BACKUP_VPS_SSH_PRIVATE_KEY` and install the independently pinned ED25519
   known-hosts line in `BACKUP_VPS_KNOWN_HOSTS`. No key material is copied into
   project files or chat.
+
+## GitHub secret set complete — 2026-08-15
+
+- Owner entered `BACKUP_VPS_SSH_PRIVATE_KEY`. Agent installed the independently
+  fingerprint-verified public ED25519 line as `BACKUP_VPS_KNOWN_HOSTS` and
+  confirmed all twelve required repository secret names are present.
+- Secret values were never opened after saving. The prepared workflow is still
+  local only; its publication awaits separate Owner approval because a push to
+  `main` triggers a new Vercel production deployment.

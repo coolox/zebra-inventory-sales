@@ -2,6 +2,11 @@
 
 ## 2026-08-15
 
+- TASK-081: Owner added the private backup SSH key to GitHub; agent added the
+  fingerprint-verified public ED25519 known-hosts line and confirmed all twelve
+  required secret names. Values remained unread. The backup workflow remains
+  local pending explicit `main` publish approval because that push creates a
+  Vercel production deployment.
 - TASK-081: Added the four non-key VPS repository secrets (`HOST`, `PORT`,
   `USER`, `PATH`) through the Owner GitHub session without opening any existing
   secret values. The only remaining VPS secret inputs are Owner-controlled SSH
