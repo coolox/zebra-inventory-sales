@@ -8,7 +8,10 @@
 
 - Последняя завершённая задача: [TASK-081](tasks/TASK-081.md).
 - Текущий шаг launch plan: **14 из 24**.
-- Текущая задача: [TASK-082](tasks/TASK-082.md) — restore rehearsal и rollback plan.
+- Текущая задача: [TASK-082](tasks/TASK-082.md) — restore часть выполнена и сверена
+  (43/43 таблицы, 16/16 изображений); rollback описан в
+  [ROLLBACK.md](operations/ROLLBACK.md), но не отрепетирован, так как production ещё
+  не существует. Нужны решения Owner по D-062 и по приёмке RPO 24 часа.
 - Backup automation работает и проверена: artifact создаётся, шифруется, переносится,
   сверяется checksum и расшифровывается настоящим `age` key. Owner хранит вторую копию
   ключа вне рабочей станции. Детали — [BACKUP.md](operations/BACKUP.md).
@@ -193,11 +196,16 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Следующий шаг
 
-TASK-082: restore rehearsal из проверенного artifact
-`staging-2026-08-15.tar.gz.age` в изолированное окружение под D-061 — сначала
-цепочка миграций, затем data-only load, затем Storage upload. Дальше row/count
-reconciliation против исходных цифр TASK-081 и application smoke против
-восстановленной базы. Результат — `RESTORE.md` и `ROLLBACK.md`.
+Restore rehearsal выполнен и сверен; `RESTORE.md` и `ROLLBACK.md` написаны. Для
+закрытия TASK-082 нужны три решения Owner:
+
+1. Приёмка **RPO до 24 часов** (расписание backup `20 1 * * *` UTC) либо переход на
+   более частые прогоны/point-in-time recovery.
+2. По D-062: внести `statement_timeout` `3s`/`8s` миграцией до production и решить
+   судьбу осиротевшей функции `rls_auto_enable` на staging.
+3. Признать, что репетиция откатов production невозможна до его создания, и
+   перенести её в TASK-085/TASK-150 — иначе TASK-082 блокирует TASK-083, от которого
+   сама зависит.
 
 Агент продолжает только TASK-082 и обновляет указатель после её завершения. Он не
 начинает TASK-148 автоматически.

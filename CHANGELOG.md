@@ -2,6 +2,25 @@
 
 ## 2026-08-16
 
+- TASK-082: restore rehearsal executed against the verified
+  `staging-2026-08-15.tar.gz.age` artifact in an isolated local stack. All 43 `auth`
+  and `public` tables reconciled with zero mismatches, 16 images restored with zero
+  orphans and byte-identical `sha256` round-trip, Owner RPCs returned the expected
+  volumes and the Seller was correctly denied reconciliation. The 11 reconciliation
+  rows match the D-058 fixtures, confirming business state and not just row counts.
+- TASK-082: documented four defects in the naive restore path — `roles.sql` fails on
+  its final privilege GRANT, `data.sql` collides with the migration-created storage
+  bucket, internal `storage` tables deny writes even to `postgres`, and a load without
+  `--single-transaction` leaves the database partially populated. Storage is instead
+  restored by re-uploading mirrored files, which is safe because `storage_path` is a
+  text path rather than an object foreign key. Added `RESTORE.md` and `ROLLBACK.md`.
+- TASK-082: found staging schema drift and recorded D-062. Function `rls_auto_enable`
+  exists on staging but nowhere in the repository, with no event trigger referencing
+  it, and role `statement_timeout` values live only in `roles.sql`. A production
+  project built from migrations would lack both.
+- TASK-082: corrected D-061. Its original rationale about cluster-global event
+  triggers was wrong; the decision now rests only on `on_auth_user_created`, verified
+  as absent from the dump and created by migrations.
 - TASK-081 completed: Owner confirmed a second copy of the `age` identity is held
   off the workstation, closing the last open item. Retention over 14 daily copies
   remains observable only after two weeks of scheduled runs and is recorded as a
