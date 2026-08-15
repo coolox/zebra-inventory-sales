@@ -2,6 +2,12 @@
 
 ## 2026-08-15
 
+- TASK-081: after verified host identity and Owner-controlled root access, created
+  the isolated `zebra-backup` account plus closed staging archive directories on
+  the Owner VPS. Read-only verification confirms no supplementary groups, mode
+  `700` for account/archive paths and `600` for its empty authorized-keys file.
+  The legacy bot/service/SQLite data were untouched; only Owner can install the
+  existing public backup key, after which temporary root authorization is removed.
 - TASK-081: Owner-supplied ED25519 fingerprint exactly matched the public key
   scanned from the backup VPS. The subsequent pinned, read-only SSH login was
   rejected by server authorization; passwords and private keys were neither

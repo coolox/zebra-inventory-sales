@@ -77,3 +77,16 @@ TASK-079.
   authorization path available from this workstation. Once access is confirmed,
   bootstrap will create the isolated `zebra-backup` user and remove any temporary
   root authorization before the GitHub private key is configured.
+
+## Isolated VPS archive account — 2026-08-15
+
+- Owner authorized the temporary root path after the host identity check. Agent
+  created `zebra-backup` (uid/gid 1000), without sudo or supplementary groups.
+- `/home/zebra-backup`, `/srv/zebra-backups` and its staging `daily`/`incoming`
+  directories are owned by that user with mode `700`; its `authorized_keys` is
+  mode `600`. Existing bot files, SQLite data and service were not read or
+  changed.
+- The public GitHub backup key is deliberately still absent from the new account:
+  agent does not read or copy key material. Owner must install the already-created
+  public key locally, then agent will verify unprivileged login and remove the
+  temporary root authorization.
