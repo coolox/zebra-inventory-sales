@@ -2,6 +2,11 @@
 
 ## 2026-08-15
 
+- TASK-081: Owner locally installed the existing public key into isolated
+  `zebra-backup`; SSH verification confirms it can write only to the closed
+  archive area and not `/root`. After finding exactly one marked temporary root
+  authorization, agent removed that entry. VPS access is now least-privilege;
+  the next gate is the GitHub Secret set and first encrypted-artifact run.
 - TASK-081: after verified host identity and Owner-controlled root access, created
   the isolated `zebra-backup` account plus closed staging archive directories on
   the Owner VPS. Read-only verification confirms no supplementary groups, mode

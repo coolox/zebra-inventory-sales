@@ -90,3 +90,16 @@ TASK-079.
   agent does not read or copy key material. Owner must install the already-created
   public key locally, then agent will verify unprivileged login and remove the
   temporary root authorization.
+
+## Backup key cutover — 2026-08-15
+
+- Owner installed the existing public backup key into `zebra-backup` locally;
+  agent verified SSH login with only that account group, writable archive inbox
+  and no write access to `/root`.
+- Exactly one temporary `zebra-staging-backup` root authorization was found and
+  removed after that successful verification. The archive account remains the
+  only configured access path for the backup job.
+- VPS side is ready. Remaining TASK-081 work: add the six VPS GitHub Secret
+  values (including the Owner-entered private key), publish the already-reviewed
+  workflow with explicit deployment approval, run it once and inspect artifact,
+  checksum, retention and access boundary.
