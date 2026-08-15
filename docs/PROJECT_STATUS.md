@@ -109,9 +109,10 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Текущие release blockers
 
-1. TASK-081: Plan B выбран и workflow подготовлен; нужны новый dedicated VPS
-   backup user/key, точный VPS hostname/IP, GitHub Secrets и первый manual run
-   для artifact evidence. Локальный `contabo` alias не настроен и не разрешается.
+1. TASK-081: Plan B выбран и workflow подготовлен. Owner подтвердил endpoint
+   VPS вне репозитория; routing до SSH доступен, но ED25519 host key ещё не
+   independently verified/pinned. Затем нужны dedicated backup user/key, шесть
+   VPS GitHub Secrets и первый manual run для artifact evidence.
 2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
@@ -192,9 +193,10 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Следующий шаг
 
-В новом или текущем чате Owner сообщает точный VPS hostname/IP и port (без
-пароля/ключа), затем agent создаёт dedicated `zebra-backup` access и продолжает
-TASK-081. GitHub Secrets для Supabase уже проверены по именам.
+В новом или текущем чате Owner подтверждает безопасный fingerprint VPS (без
+пароля/ключа) либо даёт доступ через доверенную Contabo console. Затем agent
+создаёт dedicated `zebra-backup` access и продолжает TASK-081. GitHub Secrets
+для Supabase уже проверены по именам.
 
 Агент продолжает только TASK-081, фиксирует backup/retention evidence и обновляет
 указатель после её завершения. Он не начинает TASK-082 автоматически.

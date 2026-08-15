@@ -2,6 +2,11 @@
 
 ## 2026-08-15
 
+- TASK-081: Owner-authorized Contabo panel confirmed the backup VPS endpoint;
+  the address is deliberately kept out of Git and reserved for the GitHub Secret.
+  A read-only SSH probe reaches host-key verification, but no ED25519 host key
+  was previously pinned, so no VPS login or mutation occurred. Completion now
+  awaits independent fingerprint verification before dedicated backup-user setup.
 - TASK-081 VPS access check was intentionally read-only. The historical `contabo` name is not a configured SSH alias and does not resolve in DNS, so no remote connection or mutation occurred; keys, passwords and VPS files were not read. Completion now awaits the exact Owner-scoped hostname/IP and port for the dedicated backup user bootstrap.
 - TASK-081 accepted Owner Plan B: an isolated GitHub Actions workflow now prepares daily encrypted logical Postgres and `product-images` backups for the Owner VPS, with checksum verification and 14-day retention. Added a root-run VPS bootstrap for the dedicated non-privileged `zebra-backup` user; it does not touch the legacy bot, its SQLite data or service. The task remains in progress until Owner creates the new access/secrets and one manual run yields fresh artifact evidence.
 - TASK-081 assessed the real staging backup boundary. Supabase Dashboard confirms the staging project is Free Plan with no scheduled database backups or artifacts; native database backups also exclude Storage objects, so `product-images` needs its own encrypted off-site mirror. Added `docs/operations/BACKUP.md` with required retention/access policy and two safe implementation options. The task is blocked only on Owner choice of plan/automation and private archive location; no secrets or production resources were accessed.

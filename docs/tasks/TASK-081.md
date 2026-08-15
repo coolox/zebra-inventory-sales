@@ -53,3 +53,15 @@ TASK-079.
 - Для реального VPS bootstrap нужен точный SSH hostname/IP (и port, если не 22)
   либо рабочий Host alias. Это несекретные данные; private key/password в чат
   передавать не нужно.
+
+## VPS endpoint check — 2026-08-15
+
+- Owner-authorized Contabo panel confirmed the running Linux VPS endpoint and
+  default SSH port. The endpoint is intentionally not copied into Git or project
+  documents; it belongs only in the `BACKUP_VPS_HOST` GitHub Secret.
+- A read-only SSH check reached host-key verification, so network routing is
+  available. The machine has no previously trusted ED25519 host key, therefore
+  no connection or mutation was made under trust-on-first-use.
+- Before bootstrap, verify and pin the VPS ED25519 fingerprint through a trusted
+  Contabo console or another independent access path. Only then create the
+  isolated backup user; legacy bot files, service and data remain out of scope.
