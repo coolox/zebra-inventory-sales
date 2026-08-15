@@ -2,6 +2,10 @@
 
 ## 2026-08-15
 
+- TASK-081: Added the four non-key VPS repository secrets (`HOST`, `PORT`,
+  `USER`, `PATH`) through the Owner GitHub session without opening any existing
+  secret values. The only remaining VPS secret inputs are Owner-controlled SSH
+  private key and independently pinned public known-hosts line.
 - TASK-081: Owner locally installed the existing public key into isolated
   `zebra-backup`; SSH verification confirms it can write only to the closed
   archive area and not `/root`. After finding exactly one marked temporary root

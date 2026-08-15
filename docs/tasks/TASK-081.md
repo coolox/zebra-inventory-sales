@@ -103,3 +103,13 @@ TASK-079.
   values (including the Owner-entered private key), publish the already-reviewed
   workflow with explicit deployment approval, run it once and inspect artifact,
   checksum, retention and access boundary.
+
+## GitHub VPS secret progress — 2026-08-15
+
+- Agent added the four non-key repository secret names/values required by the
+  workflow: `BACKUP_VPS_HOST`, `BACKUP_VPS_PORT`, `BACKUP_VPS_USER` and
+  `BACKUP_VPS_PATH`. Existing secret values were not opened.
+- Owner must still enter the private SSH key only in
+  `BACKUP_VPS_SSH_PRIVATE_KEY` and install the independently pinned ED25519
+  known-hosts line in `BACKUP_VPS_KNOWN_HOSTS`. No key material is copied into
+  project files or chat.
