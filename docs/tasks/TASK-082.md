@@ -79,15 +79,26 @@ by Owner in D-058, so business state was reproduced rather than just row counts.
 ### Schema drift found on staging
 
 Comparing the dumped staging schema against a freshly migrated database showed the
-migration chain reproduces staging exactly, with two exceptions:
+migration chain reproduces staging exactly, with one exception: function
+`rls_auto_enable`. It exists in the staging dump but nowhere in the repository, and
+no event trigger references it on staging or locally.
 
-- function `rls_auto_enable` exists in the staging dump but nowhere in the
-  repository, and no event trigger references it on staging or locally — an orphan;
-- `statement_timeout` `3s`/`8s` for `anon`/`authenticated` lives only in `roles.sql`.
+Inspecting its body showed it is not junk: it is an event-trigger function
+(`SECURITY DEFINER`, `search_path=pg_catalog`) that enables RLS on any newly created
+`public` table. So it is an unfinished safety net whose registration was never
+created. It cannot be invoked directly, because event-trigger functions may only run
+as triggers, and its absence weakens nothing — all 21 tables get RLS explicitly from
+migrations, which CI verifies.
 
-All other "missing" functions were `citext` extension internals, which `pg_dump`
-correctly omits. Recorded as D-062: the timeouts should become a migration before
-production, and `rls_auto_enable` needs an explicit keep-or-drop decision.
+An earlier version of this section and of D-062 also claimed `statement_timeout`
+`3s`/`8s` was staging-only drift that production would miss. That was wrong.
+Checking a clean database straight after migrations showed `anon` already at `3s` and
+`authenticated` at `8s`: these are Supabase platform defaults and `roles.sql` merely
+restates them. No migration was needed, and none was added — verifying first avoided
+putting a pointless change into a frozen RC.
+
+All other functions "missing" from staging were `citext` extension internals, which
+`pg_dump` correctly omits.
 
 ### Correction to D-061
 

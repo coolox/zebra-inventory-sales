@@ -16,8 +16,14 @@
   text path rather than an object foreign key. Added `RESTORE.md` and `ROLLBACK.md`.
 - TASK-082: found staging schema drift and recorded D-062. Function `rls_auto_enable`
   exists on staging but nowhere in the repository, with no event trigger referencing
-  it, and role `statement_timeout` values live only in `roles.sql`. A production
-  project built from migrations would lack both.
+  it. Inspection showed it is an unfinished RLS auto-enable safety net rather than
+  junk, and it cannot be invoked directly; its absence weakens nothing because all 21
+  tables get RLS explicitly from migrations.
+- TASK-082: corrected D-062 before acting on it. It had claimed role
+  `statement_timeout` values were staging-only drift that a production project would
+  miss; a clean database straight after migrations already has `anon` at `3s` and
+  `authenticated` at `8s`, so they are Supabase platform defaults. The planned
+  migration was not needed and was not added.
 - TASK-082: corrected D-061. Its original rationale about cluster-global event
   triggers was wrong; the decision now rests only on `on_auth_user_created`, verified
   as absent from the dump and created by migrations.
