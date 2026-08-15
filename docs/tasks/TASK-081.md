@@ -148,3 +148,16 @@ TASK-079.
 - `bash -n`, workflow YAML parse, pooler-URL fixture assertion, missing-config
   guard and `git diff --check` pass. Fix awaits a push and rerun of Staging
   backup; no artifact exists yet.
+
+## Second manual workflow evidence — 2026-08-15
+
+- After the pooler fix was published, `Staging backup #2` reached and completed
+  roles/schema/data dumps and the `product-images` S3 mirror. No archive was
+  transferred because `rsync` exited `255` at host-key verification.
+- Root cause: direct `ssh` commands correctly used the private key and pinned
+  known-hosts file, but the `rsync` transport did not receive those options and
+  fell back to the empty runner-wide known-hosts store.
+- The script now builds an escaped `rsync -e` SSH command from the same pinned
+  option array. `bash -n`, YAML parse, rsync-SSH-pinning fixture and diff check
+  pass. Push and one final manual run are required; VPS content remains unchanged
+  and no backup artifact has been accepted yet.

@@ -113,10 +113,14 @@ age -r "$BACKUP_AGE_RECIPIENT" -o "$encrypted_archive_path" "$archive_path"
 remote_root="${BACKUP_VPS_PATH%/}/zebra-retail/staging"
 ssh_target="${BACKUP_VPS_USER}@${BACKUP_VPS_HOST}"
 ssh_options=(-i "$ssh_key_path" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$known_hosts_path" -p "$BACKUP_VPS_PORT")
+rsync_ssh_command="ssh"
+for ssh_option in "${ssh_options[@]}"; do
+  printf -v rsync_ssh_command '%s %q' "$rsync_ssh_command" "$ssh_option"
+done
 
 ssh "${ssh_options[@]}" "$ssh_target" "umask 077; mkdir -p '$remote_root/incoming' '$remote_root/daily'; test ! -e '$remote_root/daily/$backup_id'"
 ssh "${ssh_options[@]}" "$ssh_target" "mkdir -p '$remote_root/incoming/$backup_id'"
-rsync -a --chmod=Du=rwx,Dgo=,Fu=rw,Fgo= -- "$encrypted_archive_path" "$work_dir/SHA256SUMS" "$ssh_target:$remote_root/incoming/$backup_id/"
+rsync -a -e "$rsync_ssh_command" --chmod=Du=rwx,Dgo=,Fu=rw,Fgo= -- "$encrypted_archive_path" "$work_dir/SHA256SUMS" "$ssh_target:$remote_root/incoming/$backup_id/"
 ssh "${ssh_options[@]}" "$ssh_target" "set -eu; cd '$remote_root/incoming/$backup_id'; sha256sum -c SHA256SUMS; mv '$remote_root/incoming/$backup_id' '$remote_root/daily/$backup_id'; find '$remote_root/daily' -mindepth 1 -maxdepth 1 -type d -mtime +13 -exec rm -rf -- {} +; test -f '$remote_root/daily/$backup_id/staging-$backup_id.tar.gz.age'"
 
 echo "Encrypted staging backup completed: ${backup_id}; retention: 14 daily copies."

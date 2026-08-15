@@ -37,6 +37,10 @@ GitHub-hosted runners не имеют direct IPv6 route к staging Postgres. Wor
 преобразует его в staging Shared Transaction Pooler URL; пароль не выводится в
 logs и не требует отдельного Secret.
 
+Каждая SSH и `rsync` передача pin-ит тот же `BACKUP_VPS_KNOWN_HOSTS` public host
+key, использует только `BACKUP_VPS_SSH_PRIVATE_KEY` и не опирается на runner-wide
+`known_hosts`.
+
 Workflow: [staging-backup.yml](../../.github/workflows/staging-backup.yml).
 VPS bootstrap: [bootstrap-vps-backup-user.sh](../../scripts/backup/bootstrap-vps-backup-user.sh).
 

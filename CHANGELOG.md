@@ -2,6 +2,11 @@
 
 ## 2026-08-15
 
+- TASK-081: second manual backup run completed encrypted DB/Storage preparation
+  but stopped before transfer because `rsync` did not inherit the already-pinned
+  SSH key/known-hosts options. Added an escaped `rsync -e` command generated from
+  the same strict SSH options; shell/YAML/pinning fixture checks pass. Final
+  publication and evidence run remain pending; VPS content is unchanged.
 - TASK-081: added a password-preserving IPv4 pooler compatibility path after
   the first Actions run exposed GitHub runner's direct-IPv6 limitation. The
   existing DB URL is transformed only in runner temp storage to the verified

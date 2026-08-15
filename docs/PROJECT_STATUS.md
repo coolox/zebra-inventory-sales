@@ -117,9 +117,10 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
    temporary root authorization removed. All twelve backup repository Secrets
    now exist by name, without agent opening their values. Workflow is published
    and run `Staging backup #1` failed before artifact creation because direct
-   IPv6 is unreachable from GitHub. A password-preserving runner-side pooler
-   transform is now locally verified and awaits a push/re-run for evidence;
-   Owner need not replace the DB Secret.
+   IPv6 is unreachable from GitHub. Pooler fix allowed run #2 to complete DB and
+   Storage stages; it then exposed missing pinned SSH options only in `rsync`.
+   The narrowly scoped rsync fix is locally verified and awaits a push/final run;
+   Owner need not replace any Secret.
 2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
@@ -200,9 +201,9 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Следующий шаг
 
-Agent pushes the locally verified IPv4 pooler compatibility fix, reruns
-`Staging backup` and verifies artifact/checksum/retention/access evidence.
-Owner does not replace or disclose the DB Secret.
+Agent pushes the locally verified rsync SSH-pinning fix, reruns `Staging backup`
+and verifies artifact/checksum/retention/access evidence. Owner does not replace
+or disclose any Secret.
 
 Агент продолжает только TASK-081, фиксирует backup/retention evidence и обновляет
 указатель после её завершения. Он не начинает TASK-082 автоматически.
