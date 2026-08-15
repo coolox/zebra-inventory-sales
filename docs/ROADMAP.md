@@ -1,12 +1,12 @@
 # План запуска Zebra Retail — Clothing Pilot
 
-Обновлено: 2026-08-15
+Обновлено: 2026-08-16
 
-Текущий этап: operational readiness — VPS backup setup
+Текущий этап: operational readiness — restore rehearsal
 
-Текущий шаг: 13 из 24 — TASK-081 (`IN PROGRESS`)
+Текущий шаг: 14 из 24 — TASK-082 (`IN PROGRESS`)
 
-Команда для продолжения: создать VPS/GitHub Secrets из `docs/operations/BACKUP.md`, затем `Backup Secrets готовы`
+Команда для продолжения: `Выполни TASK-082`
 
 Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.

@@ -1,6 +1,6 @@
 # TASK-081 — Настроить автоматические backups
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 ## Цель
 
@@ -222,10 +222,12 @@ from the migration chain, not from the archive:
 A restore that only loads this archive would silently lose automatic profile
 creation and the auto-RLS safety net. `RESTORE.md` must apply migrations first.
 
-### Remaining before completion
+### Completion — 2026-08-16
 
-- Owner must hold a second copy of the `age` identity off this workstation.
-  Verification proved the archive is unreadable without it, so a single copy is
-  now the dominant data-loss risk.
-- Retention cannot be demonstrated from one artifact; the prune command is only
-  known to execute without error.
+Owner confirmed a second copy of the `age` identity is stored off this
+workstation, which was the last open item. TASK-081 is closed.
+
+Standing limitation carried forward, not a blocker: retention over 14 daily
+copies cannot be demonstrated from a single artifact. The prune command is known
+only to execute without error, and the property becomes observable after two
+weeks of scheduled runs. The daily schedule is `20 1 * * *` UTC.

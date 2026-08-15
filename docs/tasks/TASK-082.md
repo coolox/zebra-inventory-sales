@@ -1,6 +1,6 @@
 # TASK-082 — Провести restore rehearsal и rollback plan
 
-Статус: pending
+Статус: IN PROGRESS
 
 ## Цель
 

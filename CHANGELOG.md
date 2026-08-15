@@ -2,6 +2,10 @@
 
 ## 2026-08-16
 
+- TASK-081 completed: Owner confirmed a second copy of the `age` identity is held
+  off the workstation, closing the last open item. Retention over 14 daily copies
+  remains observable only after two weeks of scheduled runs and is recorded as a
+  standing limitation rather than a blocker. Pointer moved to TASK-082.
 - TASK-081: first accepted staging backup artifact. `Staging backup` run
   `31911881685` succeeded after the rsync SSH-pinning fix; the 20 MiB encrypted
   archive was checksum-verified on the VPS, re-verified locally, decrypted with

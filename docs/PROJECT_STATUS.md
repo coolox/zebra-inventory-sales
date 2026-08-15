@@ -1,17 +1,17 @@
 # Статус проекта
 
-Обновлено: 2026-08-15
+Обновлено: 2026-08-16
 
 Текущая фаза: Clothing Pilot operational readiness
 
 ## Где мы остановились
 
-- Последняя завершённая задача: [TASK-147](tasks/TASK-147.md).
-- Текущий шаг launch plan: **13 из 24**.
-- Текущая задача: [TASK-081](tasks/TASK-081.md) — `IN PROGRESS`.
-- Owner выбрал Plan B: encrypted daily backups на свой VPS. Для completion нужны
-  новый dedicated backup access и GitHub Secrets по
-  [BACKUP.md](operations/BACKUP.md); agent не читает их значения.
+- Последняя завершённая задача: [TASK-081](tasks/TASK-081.md).
+- Текущий шаг launch plan: **14 из 24**.
+- Текущая задача: [TASK-082](tasks/TASK-082.md) — restore rehearsal и rollback plan.
+- Backup automation работает и проверена: artifact создаётся, шифруется, переносится,
+  сверяется checksum и расшифровывается настоящим `age` key. Owner хранит вторую копию
+  ключа вне рабочей станции. Детали — [BACKUP.md](operations/BACKUP.md).
 
 TASK-145 зафиксировала и проверила кодовый RC
 `f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
@@ -109,18 +109,11 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Текущие release blockers
 
-1. TASK-081: automation works end to end. After the rsync SSH-pinning fix, run
-   `31911881685` produced the first accepted artifact
-   `staging-2026-08-15.tar.gz.age` (20,636,465 bytes, mode `600`). Checksum was
-   verified on the VPS, re-verified independently there and again locally; the
-   archive was decrypted with the real `age` identity and reconciled: 21 tables,
-   21 RLS policies, 32 functions, 3 triggers, 49 sales and a 16 ↔ 16 match
-   between `storage.objects` rows and mirrored image files. Access boundary
-   confirmed: no `sudo`, no `/root`, legacy bot untouched. The `775` directory
-   left by that run was corrected to `700` with Owner approval. One item remains
-   before completion: Owner must keep a second copy of the `age` identity off the
-   workstation. Retention cannot be proven from one artifact.
-2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
+1. TASK-081 завершена: backup automation работает end to end и проверена
+   расшифровкой реального artifact. Открытым остаётся restore: пока не выполнен
+   rehearsal (TASK-082), способность восстановиться доказана только на уровне
+   читаемости archive, но не на уровне работающего приложения.
+2. Production resources/SMTP и pilot ещё отсутствуют.
 3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
 
@@ -138,8 +131,8 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 10. TASK-038 — Seller status UI staging smoke (completed).
 11. TASK-118 — staging color audit/approved cleanup (completed).
 12. TASK-147 — full staging acceptance (completed).
-13. TASK-081 — backups (in progress: VPS/GitHub secret setup).
-14. TASK-082 — restore/rollback rehearsal.
+13. TASK-081 — backups (completed: artifact verified and decrypted).
+14. TASK-082 — restore/rollback rehearsal (in progress).
 15. TASK-148 — security/pilot-capacity smoke.
 16. TASK-083 — production projects.
 17. TASK-084 — production Auth/SMTP.
@@ -154,14 +147,14 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 ## Task accounting
 
 - Всего task-файлов: 151.
-- `COMPLETED`: 116.
+- `COMPLETED`: 117.
 - `IN PROGRESS`: 1.
 - `BLOCKED`: 0.
-- `pending`: 34.
+- `pending`: 33.
 
 Завершённые ID:
 
-- TASK-001—TASK-080;
+- TASK-001—TASK-081;
 - TASK-101—TASK-116;
 - TASK-123;
 - TASK-131—TASK-147; TASK-117.
@@ -200,12 +193,11 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Следующий шаг
 
-Owner stores a second copy of the `age` identity outside this workstation. That is
-the last item in TASK-081; the archive is unreadable without it, so a single copy
-is the dominant data-loss risk. TASK-081 then closes and TASK-082 begins under
-D-061: restore must apply the migration chain first, because
-`on_auth_user_created` and the `rls_auto_enable` event trigger are absent from
-`supabase db dump` by design.
+TASK-082: restore rehearsal из проверенного artifact
+`staging-2026-08-15.tar.gz.age` в изолированное окружение под D-061 — сначала
+цепочка миграций, затем data-only load, затем Storage upload. Дальше row/count
+reconciliation против исходных цифр TASK-081 и application smoke против
+восстановленной базы. Результат — `RESTORE.md` и `ROLLBACK.md`.
 
-Агент продолжает только TASK-081, фиксирует backup/retention evidence и обновляет
-указатель после её завершения. Он не начинает TASK-082 автоматически.
+Агент продолжает только TASK-082 и обновляет указатель после её завершения. Он не
+начинает TASK-148 автоматически.
