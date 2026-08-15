@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-08-16
+
+- TASK-081: first accepted staging backup artifact. `Staging backup` run
+  `31911881685` succeeded after the rsync SSH-pinning fix; the 20 MiB encrypted
+  archive was checksum-verified on the VPS, re-verified locally, decrypted with
+  the real `age` identity and structurally reconciled (21 tables/21 RLS policies,
+  32 functions, 3 triggers, 49 sales, and a 16 ↔ 16 match between
+  `storage.objects` rows and mirrored image files). Access-control review found
+  no `sudo`, no `/root` access and no contact with the legacy bot.
+- TASK-081: fixed per-backup directories being created `775` instead of `700`;
+  the second remote `mkdir` ran without `umask 077` and `rsync --chmod` does not
+  change an existing destination directory. Files were already `600` and the
+  `700` parent prevented exposure.
+- TASK-081: recorded that `on_auth_user_created` and the `rls_auto_enable` event
+  trigger are absent from `supabase db dump` by design, so restore must apply the
+  migration chain first. Captured as required input for TASK-082.
+
 ## 2026-08-15
 
 - TASK-081: second manual backup run completed encrypted DB/Storage preparation

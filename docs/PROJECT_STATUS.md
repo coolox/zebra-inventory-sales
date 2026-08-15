@@ -109,18 +109,17 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Текущие release blockers
 
-1. TASK-081: Plan B выбран и workflow подготовлен. Owner подтвердил endpoint
-   вне репозитория и ED25519 fingerprint VPS; routing/host identity зелёные.
-   Проверенный read-only SSH login отклонён по authorization, поэтому нужен
-   Owner-controlled temporary access. Isolated `zebra-backup` account and
-   closed archive directories now exist; its public key was verified and the
-   temporary root authorization removed. All twelve backup repository Secrets
-   now exist by name, without agent opening their values. Workflow is published
-   and run `Staging backup #1` failed before artifact creation because direct
-   IPv6 is unreachable from GitHub. Pooler fix allowed run #2 to complete DB and
-   Storage stages; it then exposed missing pinned SSH options only in `rsync`.
-   The narrowly scoped rsync fix is locally verified and awaits a push/final run;
-   Owner need not replace any Secret.
+1. TASK-081: automation works end to end. After the rsync SSH-pinning fix, run
+   `31911881685` produced the first accepted artifact
+   `staging-2026-08-15.tar.gz.age` (20,636,465 bytes, mode `600`). Checksum was
+   verified on the VPS, re-verified independently there and again locally; the
+   archive was decrypted with the real `age` identity and reconciled: 21 tables,
+   21 RLS policies, 32 functions, 3 triggers, 49 sales and a 16 ↔ 16 match
+   between `storage.objects` rows and mirrored image files. Access boundary
+   confirmed: no `sudo`, no `/root`, legacy bot untouched. Two items remain
+   before completion — Owner must keep a second copy of the `age` identity off
+   the workstation, and one Owner-approved `chmod 700` is needed on the `775`
+   directory left by that run. Retention cannot be proven from one artifact.
 2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
@@ -201,9 +200,11 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Следующий шаг
 
-Agent pushes the locally verified rsync SSH-pinning fix, reruns `Staging backup`
-and verifies artifact/checksum/retention/access evidence. Owner does not replace
-or disclose any Secret.
+Owner stores a second copy of the `age` identity outside this workstation and
+approves one `chmod 700` on the directory left by run `31911881685`. TASK-081 then
+closes, and TASK-082 begins with a documented requirement: restore must apply the
+migration chain, because `on_auth_user_created` and the `rls_auto_enable` event
+trigger are absent from `supabase db dump` by design.
 
 Агент продолжает только TASK-081, фиксирует backup/retention evidence и обновляет
 указатель после её завершения. Он не начинает TASK-082 автоматически.

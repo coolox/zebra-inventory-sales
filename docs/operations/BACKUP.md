@@ -1,6 +1,14 @@
 # Backup policy — Clothing Pilot
 
-Статус: **Plan B selected; automation awaits safe VPS/GitHub secret setup**.
+Статус: **Plan B работает; первый artifact принят, расшифрован и сверён**.
+
+Проверенный artifact: `staging-2026-08-15.tar.gz.age`, run `31911881685`. Полное
+evidence — [TASK-081](../tasks/TASK-081.md).
+
+Восстановление **не самодостаточно**: `on_auth_user_created` и event trigger
+`rls_auto_enable` отсутствуют в `supabase db dump` by design, поэтому restore
+обязан сначала применить цепочку миграций. Private `age` key должен иметь вторую
+копию вне рабочей станции — без него archive нечитаем.
 
 ## Проверенное состояние staging — 2026-08-15
 

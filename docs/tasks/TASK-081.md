@@ -161,3 +161,70 @@ TASK-079.
   option array. `bash -n`, YAML parse, rsync-SSH-pinning fixture and diff check
   pass. Push and one final manual run are required; VPS content remains unchanged
   and no backup artifact has been accepted yet.
+
+## First accepted backup artifact — 2026-08-16
+
+The rsync SSH-pinning fix was published as `69a58e9`; CI run `31911491194` stayed
+green. `Staging backup` run `31911881685` then succeeded in 1m45s and produced the
+first accepted artifact, `staging-2026-08-15.tar.gz.age` (20,636,465 bytes, mode
+`600`, backup id from `date -u`).
+
+Integrity was proven end to end. The workflow verified `sha256sum -c` on the VPS,
+an independent read-only SSH session re-verified it there, and the artifact was
+re-verified again locally after transfer. All three checks matched.
+
+The archive was decrypted with the real `age` identity — the first time the key
+was exercised against production-shaped output — and `gzip -t` passed. Structural
+reconciliation of the decrypted payload:
+
+| Object | Count |
+|---|---|
+| Tables | 21 |
+| `ENABLE ROW LEVEL SECURITY` | 21 |
+| Policies | 21 |
+| Functions | 32 |
+| Triggers (`public`) | 3 |
+| Indexes / constraints | 11 / 81 |
+| Roles | 3 |
+| `storage.objects` rows ↔ mirrored image files | 16 ↔ 16 |
+
+Business data present: 49 sales, 80 sale lines, 57 sale payments, 180 inventory
+movements, 166 audit logs, 77 variants, 13 models. The 16 ↔ 16 match proves the
+Storage mirror is consistent with database metadata rather than merely non-empty.
+
+Access-control review passed: the backup account has no `sudo`, cannot read
+`/root` or the legacy bot files, `zebra-bot.service` was untouched, and
+`incoming/` was left empty after the atomic move. Decrypted staging data was
+removed from the workstation after verification.
+
+### Defect found and fixed
+
+Per-backup directories were created `775` instead of the documented `700`: the
+second `ssh` call created the directory without `umask 077`, and `rsync --chmod`
+does not alter an already existing destination directory. Files themselves were
+correctly `600` and the parent `daily` is `700`, so nothing was exposed, but the
+policy relied on a single level of protection. The call now sets `umask 077` and
+an explicit `chmod 700`, which also repairs a directory left by an interrupted
+run. The `775` directory from run `31911881685` still needs one Owner-approved
+`chmod 700`.
+
+### Restore is not self-sufficient — input for TASK-082
+
+Two objects are legitimately absent from `supabase db dump` and must be restored
+from the migration chain, not from the archive:
+
+- trigger `on_auth_user_created` on `auth.users` — the managed `auth` schema DDL
+  is not dumped, although `auth.users` **data** is present;
+- event trigger `rls_auto_enable` — its function is dumped, its registration is
+  not, because event triggers are cluster-global.
+
+A restore that only loads this archive would silently lose automatic profile
+creation and the auto-RLS safety net. `RESTORE.md` must apply migrations first.
+
+### Remaining before completion
+
+- Owner must hold a second copy of the `age` identity off this workstation.
+  Verification proved the archive is unreadable without it, so a single copy is
+  now the dominant data-loss risk.
+- Retention cannot be demonstrated from one artifact; the prune command is only
+  known to execute without error.
