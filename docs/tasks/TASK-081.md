@@ -42,3 +42,14 @@ TASK-079.
 и один manual workflow run. Предыдущий read-only VPS audit key удалён; agent не
 восстанавливает старый доступ и не меняет legacy bot. После первого run будут
 проверены fresh encrypted artifact, checksum, 14-day retention и access control.
+
+## VPS access check — 2026-08-15
+
+- После прямого разрешения Owner выполнена только read-only проверка локального
+  SSH profile `contabo`: это default unresolved hostname, не рабочий configured
+  alias. `ssh ... contabo 'id -un'` остановилась до подключения с DNS error.
+- SSH private keys, passwords, `.env` и VPS files не читались; remote mutation
+  не выполнялась.
+- Для реального VPS bootstrap нужен точный SSH hostname/IP (и port, если не 22)
+  либо рабочий Host alias. Это несекретные данные; private key/password в чат
+  передавать не нужно.
