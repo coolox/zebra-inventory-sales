@@ -116,9 +116,10 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
    closed archive directories now exist; its public key was verified and the
    temporary root authorization removed. All twelve backup repository Secrets
    now exist by name, without agent opening their values. Workflow is published
-   and run `Staging backup #1` failed before artifact creation because the DB
-   Secret uses direct IPv6; Owner must replace it with IPv4 Transaction Pooler
-   URL and agent reruns it for evidence.
+   and run `Staging backup #1` failed before artifact creation because direct
+   IPv6 is unreachable from GitHub. A password-preserving runner-side pooler
+   transform is now locally verified and awaits a push/re-run for evidence;
+   Owner need not replace the DB Secret.
 2. Backup/restore, production resources/SMTP и pilot ещё отсутствуют.
 3. До production Owner должен выбрать monitoring provider, retention и recipients;
    до этого текущая policy использует Vercel Preview logs.
@@ -199,10 +200,9 @@ TASK-147 объединила это evidence с fresh Owner reload и фина�
 
 ## Следующий шаг
 
-В новом или текущем чате Owner заменяет только `SUPABASE_DB_URL` на IPv4
-Transaction Pooler строку staging-проекта через Supabase Dashboard → Connect,
-не передавая URL/password в чат. Затем agent повторно запускает `Staging backup`
-и проверяет artifact/checksum/retention/access evidence.
+Agent pushes the locally verified IPv4 pooler compatibility fix, reruns
+`Staging backup` and verifies artifact/checksum/retention/access evidence.
+Owner does not replace or disclose the DB Secret.
 
 Агент продолжает только TASK-081, фиксирует backup/retention evidence и обновляет
 указатель после её завершения. Он не начинает TASK-082 автоматически.

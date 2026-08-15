@@ -5,6 +5,8 @@ umask 077
 
 required_variables=(
   SUPABASE_DB_URL
+  SUPABASE_DB_POOLER_HOST
+  SUPABASE_DB_POOLER_PORT
   SUPABASE_STORAGE_S3_ENDPOINT
   SUPABASE_STORAGE_S3_REGION
   SUPABASE_STORAGE_S3_ACCESS_KEY_ID
@@ -30,6 +32,11 @@ if [[ ! "$BACKUP_VPS_HOST" =~ ^[A-Za-z0-9.-]+$ ]] || [[ ! "$BACKUP_VPS_PORT" =~ 
   exit 1
 fi
 
+if [[ ! "$SUPABASE_DB_POOLER_HOST" =~ ^[A-Za-z0-9.-]+$ ]] || [[ ! "$SUPABASE_DB_POOLER_PORT" =~ ^[0-9]{1,5}$ ]]; then
+  echo "Invalid Supabase pooler host or port." >&2
+  exit 1
+fi
+
 if [[ ! "$BACKUP_VPS_USER" =~ ^[A-Za-z_][A-Za-z0-9_-]*$ ]] || [[ ! "$BACKUP_VPS_PATH" =~ ^/([A-Za-z0-9._-]+/)*[A-Za-z0-9._-]+$ ]] || [[ "$BACKUP_VPS_PATH" == *..* ]]; then
   echo "Invalid backup VPS user or path." >&2
   exit 1
@@ -49,6 +56,7 @@ fi
 work_dir="$(mktemp -d)"
 ssh_key_path="$work_dir/backup_key"
 known_hosts_path="$work_dir/known_hosts"
+pooler_db_url_path="$work_dir/pooler-db-url"
 payload_dir="$work_dir/payload"
 trap 'rm -rf "$work_dir"' EXIT
 
@@ -57,9 +65,29 @@ printf '%s\n' "$BACKUP_VPS_SSH_PRIVATE_KEY" > "$ssh_key_path"
 printf '%s\n' "$BACKUP_VPS_KNOWN_HOSTS" > "$known_hosts_path"
 chmod 600 "$ssh_key_path" "$known_hosts_path"
 
-supabase db dump --db-url "$SUPABASE_DB_URL" --role-only -f "$payload_dir/database/roles.sql"
-supabase db dump --db-url "$SUPABASE_DB_URL" -f "$payload_dir/database/schema.sql"
-supabase db dump --db-url "$SUPABASE_DB_URL" --data-only --use-copy -f "$payload_dir/database/data.sql"
+# GitHub-hosted runners are IPv4-only. Transform the existing direct connection
+# URL locally without logging its password; pooler username embeds the project ref.
+node - "$pooler_db_url_path" <<'NODE'
+const fs = require('node:fs');
+const outputPath = process.argv[2];
+const source = new URL(process.env.SUPABASE_DB_URL);
+const refMatch = source.hostname.match(/^db\.([a-z0-9]+)\.supabase\.co$/);
+
+if (!refMatch || source.username !== 'postgres' || !source.pathname) {
+  throw new Error('SUPABASE_DB_URL must be a direct Supabase Postgres URL.');
+}
+
+source.hostname = process.env.SUPABASE_DB_POOLER_HOST;
+source.port = process.env.SUPABASE_DB_POOLER_PORT;
+source.username = `postgres.${refMatch[1]}`;
+fs.writeFileSync(outputPath, source.toString(), { mode: 0o600 });
+NODE
+
+pooler_db_url="$(<"$pooler_db_url_path")"
+
+supabase db dump --db-url "$pooler_db_url" --role-only -f "$payload_dir/database/roles.sql"
+supabase db dump --db-url "$pooler_db_url" -f "$payload_dir/database/schema.sql"
+supabase db dump --db-url "$pooler_db_url" --data-only --use-copy -f "$payload_dir/database/data.sql"
 
 rclone sync ':s3:product-images' "$payload_dir/product-images" \
   --s3-provider Other \

@@ -2,6 +2,11 @@
 
 ## 2026-08-15
 
+- TASK-081: added a password-preserving IPv4 pooler compatibility path after
+  the first Actions run exposed GitHub runner's direct-IPv6 limitation. The
+  existing DB URL is transformed only in runner temp storage to the verified
+  staging Transaction Pooler endpoint; its password is never logged, read or
+  committed. Shell/YAML/fixture/guard validation passes; re-run remains pending.
 - TASK-081: after Owner-approved push to `main`, manual GitHub Actions run
   `Staging backup #1` failed before producing an archive because the staging
   database Secret uses a direct IPv6 host and GitHub runner has no IPv6 route.

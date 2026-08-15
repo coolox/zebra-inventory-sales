@@ -135,3 +135,16 @@ TASK-079.
   Dashboard → Connect, retaining the existing database password locally. Do not
   paste the URL/password in chat. Then rerun the same workflow; no code or VPS
   change is currently indicated.
+
+## IPv4 runner compatibility fix — 2026-08-15
+
+- Owner requested an agent-side fix without exposing the database password.
+  Workflow now supplies the confirmed staging Shared Transaction Pooler host and
+  port as non-secret configuration. The script transforms the existing direct
+  `SUPABASE_DB_URL` only in runner memory: it preserves the hidden password,
+  switches hostname/port and uses the required `postgres.<project-ref>` user.
+- The transformed URL is written mode `600` inside the task temp directory,
+  never printed or committed. No Secret replacement is needed.
+- `bash -n`, workflow YAML parse, pooler-URL fixture assertion, missing-config
+  guard and `git diff --check` pass. Fix awaits a push and rerun of Staging
+  backup; no artifact exists yet.
