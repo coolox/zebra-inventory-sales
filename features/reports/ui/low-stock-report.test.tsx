@@ -24,6 +24,7 @@ describe("LowStockReport", () => {
     expect(screen.getByText("Her şey yolunda")).toBeInTheDocument();
     rerender(<LowStockReport locale="tr" state="loading" rows={[]} onRetry={retry} />);
     expect(screen.getByText("Düşük stoklu ürünler yükleniyor…")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Listeyi gör" })).toHaveClass("secondary-action");
     expect(screen.getByRole("button", { name: "Listeyi gör" })).toBeDisabled();
     rerender(<LowStockReport locale="tr" state="error" rows={[]} onRetry={retry} />);
     expect(screen.getByRole("alert")).toHaveTextContent("Düşük stoklu ürünler yüklenemedi.");

@@ -6,13 +6,13 @@
 
 ## Единственный указатель продолжения
 
-- Последняя завершённая задача: [TASK-191](tasks/TASK-191.md) — full release gates
-  восстановлены, документация синхронизирована, remediation set сохранён consolidated
-  commit.
-- Следующий release gate после закрытия Owner intake: [TASK-165](tasks/TASK-165.md)
-  — опубликовать post-intake reviewed commit в staging и провести общий Owner/Seller
-  walkthrough на physical iPhone и Redmi 14.
-- Команда для продолжения: ожидать явную команду Owner после завершения visual intake.
+- Последняя завершённая задача: [TASK-192](tasks/TASK-192.md) — Turkish greeting
+  больше не повторяет пожелание в heading.
+- Текущая задача: [TASK-194](tasks/TASK-194.md) — восстановить читаемость active
+  Audit Log category chip в light theme.
+- После текущего согласованного пакета TASK-192—TASK-198: [TASK-165](tasks/TASK-165.md)
+  — post-intake staging/device acceptance.
+- Команда Owner: выполнить все зафиксированные visual fixes последовательно до TASK-165.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
@@ -25,9 +25,9 @@ Owner снова собирает локальные visual/copy observations. [
 contrast findings; [TASK-196](tasks/TASK-196.md) фиксирует photo-first Sale Details
 acceptance gap; [TASK-197](tasks/TASK-197.md) фиксирует unified Product edit и
 Sell-first hierarchy; [TASK-198](tasks/TASK-198.md) фиксирует доступное после
-сохранения Owner photo deletion и local-demo acceptance. Implementation не авторизована до прямого сообщения Owner, что intake завершён.
-До этого не начинать эти задачи или TASK-165 и не менять
-staging/production.
+сохранения Owner photo deletion и local-demo acceptance. Owner 2026-08-22
+авторизовал последовательную реализацию TASK-192—TASK-198. Staging/production
+до TASK-165 не менять.
 
 ## Фактический уровень приложения
 
@@ -92,11 +92,11 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 ## Task accounting
 
 - Всего task-файлов: 198.
-- `COMPLETED` / legacy `completed`: 161.
-- `pending`: 35, включая TASK-192—TASK-198 и post-launch backlog.
+- `COMPLETED` / legacy `completed`: 163.
+- `pending`: 32, включая TASK-195—TASK-198 и post-launch backlog.
 - `WAITING`: 2 — TASK-084 и TASK-165.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 0.
+- `IN PROGRESS`: 1 — TASK-194.
 
 Завершённые диапазоны:
 

@@ -1,6 +1,6 @@
 # TASK-194 — Восстановить контраст selected category в light-theme Audit Log
 
-Статус: pending
+Статус: IN PROGRESS
 
 Приоритет: P1 — active Audit category не читается и не выглядит выбранной.
 
@@ -36,4 +36,3 @@ foreground, distinct selected surface/border и visible keyboard focus.
 
 Не начинать implementation до прямой команды Owner после закрытия renewed visual
 intake.
-

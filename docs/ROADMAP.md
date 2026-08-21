@@ -158,9 +158,9 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19AL | DONE | TASK-189 | Responsive full-value KPI implementation and automated coverage complete; Redmi 14 recheck explicitly moves to TASK-165 |
 | 19AM | DONE | TASK-190 | Owner bug intake closed; TASK-170—TASK-189 order, evidence locations, staging and publication gates fixed |
 | 19AN | DONE | TASK-191 | Full frontend/database gates restored, handoff sources synchronized and consolidated remediation commit created before TASK-165 |
-| 19AO | PAUSED | TASK-192 | Turkish greeting copy correction; implementation waits for Owner to close renewed visual intake |
-| 19AP | PAUSED | TASK-193 | Light-theme action controls need readable, distinct enabled/disabled/loading states |
-| 19AQ | PAUSED | TASK-194 | Light-theme Audit Log selected category contrast correction |
+| 19AO | DONE | TASK-192 | Turkish greeting heading now ends after the name; demo build passed |
+| 19AP | DONE | TASK-193 | Light-theme secondary actions have readable enabled/disabled/hover contrast; targeted tests and demo build passed |
+| 19AQ | IN PROGRESS | TASK-194 | Light-theme Audit Log selected category contrast correction |
 | 19AR | PAUSED | TASK-195 | Light-theme Sale Flow duplicate/out-of-stock warning contrast correction |
 | 19AS | PAUSED | TASK-196 | Sale Details photo-first thumbnail/fullscreen acceptance, including local demo fixture coverage |
 | 19AT | PAUSED | TASK-197 | Unified Owner Product edit dialog and Sell-first Product Details action hierarchy |

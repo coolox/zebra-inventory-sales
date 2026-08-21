@@ -1,6 +1,6 @@
 # TASK-193 — Сделать light-theme action controls различимыми и читаемыми
 
-Статус: pending
+Статус: COMPLETED
 
 Приоритет: P1 — действия в light theme выглядят неактивными или нечитаемыми.
 
@@ -44,3 +44,14 @@
 Не начинать implementation до прямой команды Owner после закрытия renewed visual
 intake.
 
+## Реализация и evidence
+
+- `secondary-action` даёт enabled actions в light theme тёмный violet foreground,
+  ясный border/surface, hover/active state; disabled controls остаются semantic
+  disabled, но получают нейтральный читаемый foreground без opacity ambiguity.
+- Применено к Low stock, Reconciliation, Sale Flow `Add another item` и Owner
+  inventory actions, включая Archived products. Dark theme не переопределяется.
+- Targeted Vitest: `low-stock-report`, `discrepancy-report`, `sale-flow` —
+  17/17 passed. `npm run build` — passed (only existing warnings).
+- Local Chrome light-theme check подтвердил computed contrast для View list и
+  View checks: `#4c1d95` foreground на `rgba(124,58,237,.12)` surface.

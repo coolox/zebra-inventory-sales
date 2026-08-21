@@ -347,7 +347,7 @@ export function SaleFlow({ products, sellerName, locale, paymentRates, initialCo
 
       <div className="mt-6 grid gap-3 sm:grid-cols-[.8fr_1fr_1.2fr]">
         <button type="button" disabled={saving} onClick={onCancel} className="h-11 rounded-lg border border-zinc-800 text-xs font-semibold text-zinc-500 hover:text-zinc-200 disabled:opacity-40">{text.cancel}</button>
-        <button type="button" disabled={!canAdd} onClick={addAnother} className="flex h-11 items-center justify-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 text-xs font-semibold text-violet-300 disabled:cursor-not-allowed disabled:opacity-30"><Plus size={15} /> {text.addAnother}</button>
+        <button type="button" disabled={!canAdd} onClick={addAnother} className="secondary-action flex h-11 items-center justify-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 text-xs font-semibold text-violet-300 disabled:cursor-not-allowed"><Plus size={15} /> {text.addAnother}</button>
         <button type="button" disabled={saving || !saleLines.length || !paymentSummary.isValid} onClick={() => void sellNow()} className="purple-shadow h-11 rounded-lg bg-violet-600 text-xs font-semibold text-white hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-30">{saving ? text.saving : totalItems ? `${text.sell} ${totalItems} ${itemLabel(totalItems)}` : text.sell}</button>
       </div>
     </div>

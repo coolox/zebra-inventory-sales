@@ -799,3 +799,9 @@
   Owner must be able to find and remove a mistakenly uploaded photo. TASK-178's
   private live deletion safeguards remain required; the local demo must make the
   scenario verifiable too.
+- Completed TASK-192: Turkish seller greeting now ends after the name, while the
+  Zebra Boutique supporting line retains `bol satışlar!`; demo production build
+  passed.
+- Completed TASK-193: light-theme secondary actions now have explicit readable
+  enabled, disabled and hover states across reports, Sale Flow and Owner catalog
+  actions; targeted tests (17/17) and demo build passed.

@@ -22,6 +22,7 @@ describe("DiscrepancyReport", () => {
     expect(screen.queryByLabelText("Reconciliation")).not.toBeInTheDocument();
 
     rerender(<DiscrepancyReport role="owner" locale="en" load={load} />);
+    expect(screen.getByRole("button", { name: "View checks" })).toHaveClass("secondary-action");
     expect(screen.getByRole("button", { name: "View checks" })).toBeVisible();
     expect(load).not.toHaveBeenCalled();
     await user.click(screen.getByRole("button", { name: "View checks" }));

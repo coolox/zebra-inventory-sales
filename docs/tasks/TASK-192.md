@@ -1,6 +1,6 @@
 # TASK-192 — Исправить Turkish greeting: пожелание только в supporting line
 
-Статус: pending
+Статус: COMPLETED
 
 Приоритет: P2 — visual/copy regression перед consolidated staging acceptance.
 
@@ -48,3 +48,10 @@ English boundary остаётся уже принятым: `Hello {name},` и su
 Owner продолжает собирать visual feedback. Не начинать реализацию до прямой команды
 после завершения intake.
 
+## Реализация и evidence
+
+- Seller Turkish heading теперь рендерит только `Merhaba {name},`; `bol satışlar!`
+  остаётся в существующей Zebra Boutique supporting line. English остаётся
+  `Hello {name},`.
+- `npm run build` — demo production build passed; only 11 pre-existing lint
+  warnings reported by Next.js.
