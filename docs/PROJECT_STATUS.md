@@ -22,8 +22,9 @@
 Owner снова собирает локальные visual/copy observations. [TASK-192](tasks/TASK-192.md)
 фиксирует Turkish greeting; [TASK-193](tasks/TASK-193.md),
 [TASK-194](tasks/TASK-194.md) и [TASK-195](tasks/TASK-195.md) фиксируют light-theme
-contrast findings. Implementation не авторизована до прямого сообщения Owner, что
-intake завершён. До этого не начинать эти задачи или TASK-165 и не менять
+contrast findings; [TASK-196](tasks/TASK-196.md) фиксирует photo-first Sale Details
+acceptance gap. Implementation не авторизована до прямого сообщения Owner, что intake завершён.
+До этого не начинать эти задачи или TASK-165 и не менять
 staging/production.
 
 ## Фактический уровень приложения
@@ -88,9 +89,9 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 
 ## Task accounting
 
-- Всего task-файлов: 195.
+- Всего task-файлов: 196.
 - `COMPLETED` / legacy `completed`: 161.
-- `pending`: 32, включая TASK-192—TASK-195 и post-launch backlog.
+- `pending`: 33, включая TASK-192—TASK-196 и post-launch backlog.
 - `WAITING`: 2 — TASK-084 и TASK-165.
 - `BLOCKED`: 1 — TASK-149.
 - `IN PROGRESS`: 0.

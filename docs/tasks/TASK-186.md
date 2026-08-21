@@ -55,3 +55,12 @@ Owner не скажет, что закончил передавать найде
   TASK-178; past sale details do not resolve a replacement gallery image.
 - `npx vitest run features/sales/ui/sale-history.test.tsx` — 8/8 passed;
   `npm run build` passed. Physical mobile acceptance is batched into TASK-165.
+
+## Follow-up visual acceptance gap — 2026-08-22
+
+- Owner local-demo screenshot shows a neutral `—` placeholder in Sale Details for
+  `Structured Jacket`; sellers therefore still cannot identify that line by photo.
+- TASK-186 technical historical-snapshot boundary remains valid, but it does not
+  demonstrate the Owner's photo-first recognition scenario in current demo. That
+  visual/fixture acceptance gap is isolated in [TASK-196](TASK-196.md).
+- Do not change TASK-186 implementation during renewed visual intake.

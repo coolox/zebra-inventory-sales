@@ -13,6 +13,11 @@
   These are isolated presentation tasks; no code or staging/production change is
   authorized until Owner closes the renewed intake.
 
+- Recorded TASK-196 from Owner local-demo Sale Details screenshot: the existing
+  historical image boundary does not currently demonstrate photo-first seller
+  recognition because the line renders only a neutral placeholder. Thumbnail and
+  fullscreen acceptance, including demo coverage, are deferred until intake closes.
+
 - TASK-191 completed: consolidated remediation release gates are green (Vitest
   243/243, Playwright 78/78, demo/live builds, lint 0 errors, fresh pgTAP 214/214,
   concurrency and 27 security/capacity checks). Cash export route mocks and the
