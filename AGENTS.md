@@ -54,19 +54,23 @@ Zebra Retail — система учёта товаров, приёмок и п�
   boundary; broad refactor отложен после Clothing Pilot.
 - Demo использует client persistence, live mode читает только Supabase и не подставляет
   mock-данные при ошибке.
-- Production ещё не создан; Telegram-бот и legacy VPS не подключены к приложению.
+- Empty production Supabase/Vercel resources и schema подготовлены, но application
+  ещё не опубликован, реальные inventory data не загружены и pilot не начат.
+  Telegram-бот и legacy VPS не подключены к приложению.
 - Текущий release path и актуальные test/CI gates находятся в `docs/PROJECT_STATUS.md`
   и `docs/ROADMAP.md`.
 
-Подробности: `docs/CURRENT_STATE.md`.
+Исторические подробности есть в `docs/CURRENT_STATE.md`, но он не является routing
+source и не должен читаться для определения текущей TASK.
 
 ## 5. Правила работы
 
 Перед изменениями:
 
 1. Прочитать документы из раздела 2.
-2. Проверить, что команда владельца и поле `Следующая задача` в `PROJECT_STATUS.md`
-   указывают на одну TASK. Если владелец явно выбрал другую TASK, проверить и
+2. Проверить, что команда владельца и единственный pointer в начале
+   `PROJECT_STATUS.md` указывают на одну TASK. Не использовать команды внутри
+   completed task-файлов. Если владелец явно выбрал другую TASK, проверить и
    зафиксировать изменение порядка до работы.
 3. Проверить, что выбранная TASK имеет статус `pending` или `IN PROGRESS`, а её
    зависимости завершены.
@@ -209,3 +213,30 @@ Use `PROJECT_STATUS.md` as the primary handoff between sessions.
 If previous implementation details are needed, inspect the actual code or the relevant task file instead of relying on chat history.
 
 The repository is the source of truth, not the conversation history.
+
+## 10. Token-efficient execution
+
+Use this protocol for every task to preserve the working budget without reducing
+release safety.
+
+1. Treat `PROJECT_STATUS.md` and the selected `TASK-NNN.md` as the routing
+   context. Do not re-read broad project documents, completed tasks, or source
+   trees unless the current task directly requires them.
+2. Inspect only files named by the task or found through a narrow, targeted
+   search. Prefer one concise, evidence-driven inspection over exploratory
+   repository-wide scans or repeated output dumps.
+3. Make the smallest scoped patch that satisfies the acceptance criteria. Avoid
+   speculative refactors and do not revisit unchanged files after a passing
+   check.
+4. Use a test ladder: run the affected unit/component check first; run a build
+   after code changes; add database/RLS, browser, physical-device, or full-suite
+   checks only when the task changes those boundaries or explicitly requires
+   them. Do not repeat a passed check without a code or environment change.
+5. Batch staging publication and broad walkthroughs at the release milestones
+   defined in the roadmap; do not deploy, browse, or perform network checks for
+   an otherwise local task unless its acceptance criteria need them.
+6. Keep commentary, task evidence, and final reports concise. Record command
+   names and outcomes, not long logs, unless a failure needs diagnosis.
+
+Never save tokens by skipping mandatory checks for money, stock, authentication,
+RLS, data migrations, security, or an explicit release gate.

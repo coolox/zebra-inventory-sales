@@ -1,17 +1,35 @@
 # Supabase setup
 
 1. Create separate `staging` and `production` Supabase projects. Do not use the legacy VPS database. In project creation: enable Data API, disable automatic table exposure, and enable automatic RLS for new public tables.
-2. Apply migrations to staging in chronological order through the Supabase SQL Editor or CLI. After the foundation, apply the receipt, exchange-rate, business-date, and product-images migrations before testing their corresponding live flows.
+2. Apply migrations in chronological order through the Supabase CLI. Do not use the hosted SQL Editor for a project managed by repository migrations: it bypasses migration history and makes later `db push` unsafe.
 3. Create a private `.env.local` from `.env.example` and add only the project URL and publishable/anon key. Never commit it.
 4. Configure Magic Link redirect URLs before enabling login. The next migration will add authenticated write RPCs for receipts, sales, exchange and cancellation.
 
 ## Temporary staging Magic Link Preview
 
-For the current staging test cycle, Supabase Auth Site URL is `https://zebra-inventory-sales-mwq23cdh0-cooloxs-projects.vercel.app`. Its exact callback URL and `http://localhost:3000/auth/callback` are in the redirect allow-list. This is intentionally temporary: before a new Vercel Preview is tested, replace the Preview Site URL and its `/auth/callback` allow-list entry; do not use a broad `*.vercel.app` wildcard.
+For the current staging test cycle, Supabase Auth Site URL is `https://zebra-inventory-sales-bokm6pf92-cooloxs-projects.vercel.app`. Its exact callback URL and `http://localhost:3000/auth/callback` are in the redirect allow-list. This is intentionally temporary: before a new Vercel Preview is tested, replace the Preview Site URL and add its exact `/auth/callback` allow-list entry; do not use a broad `*.vercel.app` wildcard.
 
 The selected Preview must also be deployed with `NEXT_PUBLIC_APP_MODE=live`, `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Keep the values in Vercel environment settings only — never commit them. Use `shouldCreateUser: false`: an unknown email must not create an Auth user.
 
 The foundation migration deliberately grants read access through RLS but no direct inventory mutations. Financial and stock-changing operations must be atomic audited RPCs.
+
+## Production migration protocol
+
+Use the CLI only after the production project is empty, linked by the Owner who enters
+the database password locally, and a clean local rehearsal has passed. Never put the
+project ref, connection string or password into Git, shell history shared with others
+or chat.
+
+```bash
+npx --yes supabase@2.113.0 db push --dry-run
+npx --yes supabase@2.113.0 db push
+npx --yes supabase@2.113.0 db push --dry-run
+```
+
+The first command must list exactly the repository migrations and no seed data; the
+last must report `upToDate`. Do not use `db reset --linked` against production: it is
+destructive. Schema rollback is compensating forward migration; data recovery uses
+the isolated restore procedure in `docs/operations/ROLLBACK.md`.
 
 ## Local SQL integration harness
 
@@ -26,7 +44,7 @@ npm run supabase:verify
 
 `supabase:verify` resets the local database, reapplies every migration from a clean state, and runs the pgTAP baseline in `supabase/tests/database`. Run `npm run supabase:verify` a second time to verify reset reproducibility. Stop the local stack with `npx --yes supabase@2.113.0 stop` when finished.
 
-## Bootstrap the first Owner (staging only)
+## Bootstrap the first Owner (controlled staging or production)
 
 After the first user has been created in Supabase Auth, the `on_auth_user_created` trigger creates `public.profiles` automatically. Run this in the SQL Editor and replace `OWNER_PROFILE_UUID` with that user's `auth.users.id`.
 
@@ -48,7 +66,10 @@ set status = 'active', updated_at = now()
 where id = 'OWNER_PROFILE_UUID'::uuid;
 ```
 
-The initial Owner is intentionally bootstrapped through the dashboard SQL Editor. The app will later provide the audited Owner invite flow for Sellers.
+The initial Owner is intentionally bootstrapped through the dashboard SQL Editor only
+after the full migration chain is recorded by CLI. Keep the UUID out of SQL history,
+task files and chat. The app will later provide the audited Owner invite flow for
+Sellers. Do not seed catalog, stock or pilot users during the migration rehearsal.
 
 ## Receipt FX date correction
 

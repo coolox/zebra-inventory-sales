@@ -1,6 +1,6 @@
 # Журнал решений
 
-Обновлено: 2026-08-15
+Обновлено: 2026-08-16
 
 Этот документ хранит решения, которые нельзя оставлять только в истории чата.
 
@@ -72,6 +72,10 @@
 | D-062 | 2026-08-16 | Принято, уточнено проверкой | Единственное расхождение staging с миграциями — незаряженная функция `rls_auto_enable`; `statement_timeout` расхождением **не является** | Первоначально запись утверждала, что `statement_timeout` `3s`/`8s` существует только в `roles.sql` и потому не попадёт в production. Проверка на чистой базе после миграций опровергла это: `anon` уже имеет `3s`, `authenticated` — `8s`. Это платформенные значения Supabase, а `roles.sql` их лишь дублирует. Миграция для timeouts не нужна и не создавалась. Реальное расхождение одно: `rls_auto_enable` — event-trigger функция (`SECURITY DEFINER`, `search_path=pg_catalog`), включающая RLS на любой новой таблице `public`. Она есть в дампе staging, отсутствует в репозитории, и event trigger для неё не зарегистрирован нигде. То есть это незавершённая страховка, а не мусор; вызвать её напрямую нельзя. Все 21 таблица и так имеют RLS явно из миграций, поэтому её отсутствие ничего не ослабляет. Решение о снятии со staging либо о полноценной регистрации принимается отдельно и не входит в RC пилота. |
 
 | D-063 | 2026-08-16 | Принято | Owner принимает RPO до 24 часов для Clothing Pilot: backup выполняется раз в сутки по расписанию `20 1 * * *` UTC | При потере базы теряются продажи, внесённые после последнего успешного прогона. Для пилота одного магазина это сознательный компромисс вместо платного Supabase Pro с point-in-time recovery. Следствие: восстановление за пропущенный период выполняется вручную через audited flow, а не правкой ledger; при росте оборота решение пересматривается. Восстановление проверено на TASK-082, RTO локально измеряется минутами. |
+| D-064 | 2026-08-16 | Принято | Production Supabase размещается в AWS `eu-central-1`; production Supabase и Vercel создаются отдельными пустыми projects до запуска приложения | Owner подтвердил регион. Production остаётся изолированным от staging; credentials и endpoints существуют только в hosted secret management и не записываются в repository. До TASK-150 нет Git deployment, pilot users и реальных данных. |
+| D-065 | 2026-08-16 | Принято | До покупки собственного домена production Auth использует единственный managed Vercel HTTPS origin | Это временная бесплатная граница для Site URL и redirect allowlist. При переходе на собственный domain owner добавляет новый exact HTTPS origin, проверяет Magic Link и только затем удаляет старый; endpoint value не записывается в repository. |
+| D-066 | 2026-08-16 | Принято | Для малого Clothing Pilot custom SMTP временно отправляет через Owner-controlled Gmail account с Google App Password и sender name `Zebra Retail` | Credentials существуют только в Supabase dashboard. Provider предупреждает о personal, а не transactional, sending; это принято только для малой группы пилота. Перед расширением требуется verified transactional sender/domain и повторная delivery acceptance. |
+| D-067 | 2026-08-20 | Принято | Исправление Product code меняет только current catalog identity; уже записанные receipt/sale/ledger rows и их snapshots не переписываются | Model/variant UUID остаются общей связью истории, а audit `product_model.code_updated` хранит old/new code и actor. Старый code не становится скрытым alias. |
 
 ## Предварительные решения
 

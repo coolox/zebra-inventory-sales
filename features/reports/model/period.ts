@@ -1,37 +1,25 @@
-export const businessTimezone = "Europe/Istanbul";
+import {
+  businessAddDays,
+  businessCalendarDay,
+  businessDate,
+  businessDateFromParts,
+  businessTimezone,
+  businessWeekday,
+} from "@/lib/business-date";
+
+export { businessTimezone } from "@/lib/business-date";
 
 export type ReportPeriodPreset = "today" | "week" | "month" | "year" | "custom";
 export type ReportPeriod = { preset: Exclude<ReportPeriodPreset, "custom">; from: string; to: string } | { preset: "custom"; from: string; to: string };
 export type ReportPeriodQuery = { from: string; to: string };
 
-type CalendarDay = { year: number; month: number; day: number };
-
-function calendarDay(date: Date, timezone = businessTimezone): CalendarDay {
-  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(date);
-  const value = (type: Intl.DateTimeFormatPartTypes) => Number(parts.find((part) => part.type === type)?.value);
-  return { year: value("year"), month: value("month"), day: value("day") };
-}
-
-function dateValue(day: CalendarDay) {
-  return `${day.year}-${String(day.month).padStart(2, "0")}-${String(day.day).padStart(2, "0")}`;
-}
-
-function addDays(day: CalendarDay, amount: number): CalendarDay {
-  const value = new Date(Date.UTC(day.year, day.month - 1, day.day + amount));
-  return { year: value.getUTCFullYear(), month: value.getUTCMonth() + 1, day: value.getUTCDate() };
-}
-
-function weekday(day: CalendarDay) {
-  return new Date(Date.UTC(day.year, day.month - 1, day.day)).getUTCDay();
-}
-
 export function reportPeriod(preset: ReportPeriodPreset, now = new Date(), timezone = businessTimezone): ReportPeriod {
-  const today = calendarDay(now, timezone);
-  const to = dateValue(today);
+  const today = businessCalendarDay(now, timezone);
+  const to = businessDate(now, timezone);
   if (preset === "today") return { preset, from: to, to };
-  if (preset === "week") return { preset, from: dateValue(addDays(today, -((weekday(today) - 3 + 7) % 7))), to };
-  if (preset === "month") return { preset, from: dateValue({ ...today, day: 1 }), to };
-  if (preset === "year") return { preset, from: dateValue({ year: today.year, month: 1, day: 1 }), to };
+  if (preset === "week") return { preset, from: businessDateFromParts(businessAddDays(today, -((businessWeekday(today) - 3 + 7) % 7))), to };
+  if (preset === "month") return { preset, from: businessDateFromParts({ ...today, day: 1 }), to };
+  if (preset === "year") return { preset, from: businessDateFromParts({ year: today.year, month: 1, day: 1 }), to };
   return { preset, from: to, to };
 }
 

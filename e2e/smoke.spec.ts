@@ -27,10 +27,24 @@ test("demo dashboard opens in each supported viewport", async ({ page }, testInf
     await page.getByRole("button", { name: "Workspace" }).click();
     const mobileDrawer = page.locator("aside").last();
     await expect(mobileDrawer.getByText("Retail system")).toBeVisible();
-    await expect(mobileDrawer.getByText("Zebra Boutique")).toBeVisible();
+    await expect(mobileDrawer.getByRole("navigation").getByText("Zebra Boutique", { exact: true })).toBeVisible();
   } else {
     await expect(page.getByText("Zebra Boutique").first()).toBeVisible();
   }
+});
+
+test("Sales Trend reveals a precise revenue value on tap without mobile overflow", async ({ page }) => {
+  await page.goto("/");
+
+  const trend = page.locator("#sales-trend");
+  const zeroBar = trend.getByRole("button", { name: /: €0\. Show day revenue/ }).first();
+  await zeroBar.click();
+  await expect(trend.getByText("Selected day:")).toBeVisible();
+  await expect(trend.getByText("€0").last()).toBeVisible();
+  await expect(zeroBar).toHaveAttribute("aria-pressed", "true");
+  await trend.getByRole("button", { name: "Close selection" }).click();
+  await expect(trend.getByText("Tap a day to see its amount")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 });
 
 test("receive flow opens and remains usable in each supported viewport", async ({ page }, testInfo) => {
@@ -73,6 +87,63 @@ test("inventory rows show product thumbnails and purchase cost", async ({ page }
   await expect(productRow).toContainText("Purchase: 75 USD");
 });
 
+test("Owner selects a size before adjusting stock", async ({ page }) => {
+  await page.goto("/inventory");
+  await page.locator("#inventory").getByRole("button").filter({ hasText: "Silk Midi Dress" }).first().click();
+  const productDialog = page.getByRole("dialog", { name: "Silk Midi Dress" });
+  await productDialog.getByRole("button", { name: "Adjust stock" }).click();
+  const adjustmentDialog = page.getByRole("dialog", { name: "Stock adjustment" });
+  await expect(adjustmentDialog.getByText("Select size")).toBeVisible();
+  await expect(adjustmentDialog.getByRole("button", { name: "Save adjustment" })).toBeDisabled();
+  await adjustmentDialog.getByRole("button", { name: /^1/ }).click();
+  await adjustmentDialog.getByLabel("Quantity change").fill("-1");
+  await expect(adjustmentDialog.getByText(/Ivory \/ 1.*Before: 2.*Delta: -1.*After: 1/)).toBeVisible();
+});
+
+test("Movement history is centered on mobile and remains contained in every viewport", async ({ page }) => {
+  await page.goto("/inventory");
+  await page.locator("#inventory").getByRole("button").filter({ hasText: "Silk Midi Dress" }).first().click();
+  const productDialog = page.getByRole("dialog", { name: "Silk Midi Dress" });
+  await productDialog.getByRole("button", { name: "Movement history" }).click();
+
+  const historyDialog = page.getByRole("dialog", { name: "Stock movements" });
+  await expect(historyDialog).toBeVisible();
+  await expect(historyDialog).toHaveAttribute("data-mobile-placement", "centered");
+  await expect(historyDialog.getByText("No movements have been recorded for this variant yet.")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe("hidden");
+
+  await page.keyboard.press("Escape");
+  await expect(historyDialog).toHaveCount(0);
+  await expect(productDialog.getByRole("button", { name: "Movement history" })).toBeVisible();
+});
+
+test("Owner can always find archived products and restore one", async ({ page }) => {
+  await page.goto("/inventory");
+
+  const archivedButton = page.getByRole("button", { name: /Archived products/ });
+  await expect(archivedButton).toContainText("0");
+  await archivedButton.click();
+  let archiveDialog = page.getByRole("dialog", { name: "Archived products" });
+  await expect(archiveDialog.getByText("No archived products")).toBeVisible();
+  await archiveDialog.getByRole("button", { name: "Close" }).click();
+
+  await page.locator("#inventory").getByRole("button").filter({ hasText: "Silk Midi Dress" }).first().click();
+  const productDialog = page.getByRole("dialog", { name: "Silk Midi Dress" });
+  await productDialog.getByRole("button", { name: "Archive product" }).click();
+  await productDialog.getByRole("button", { name: "Archive", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Product archived");
+  await productDialog.getByRole("button", { name: "Close" }).click();
+
+  await expect(archivedButton).toContainText("1");
+  await archivedButton.click();
+  archiveDialog = page.getByRole("dialog", { name: "Archived products" });
+  await expect(archiveDialog.getByText("Silk Midi Dress")).toBeVisible();
+  await archiveDialog.getByRole("button", { name: "Restore to catalog" }).click();
+  await expect(archiveDialog.getByText("No archived products")).toBeVisible();
+  await expect(page.getByText("Product restored", { exact: true })).toBeVisible();
+});
+
 test("sales deep link opens store-scoped sales history and its detail", async ({ page }) => {
   await page.goto("/sales");
   await expect(page.getByRole("heading", { name: "Sales history" })).toBeVisible();
@@ -94,18 +165,46 @@ test("reports deep link opens the Owner reports workspace", async ({ page }) => 
   await expect(page.getByLabel("Report period")).toBeVisible();
 });
 
+test("Owner opens the full low-stock list only on demand", async ({ page }) => {
+  await page.goto("/reports");
+
+  const lowStock = page.getByRole("region", { name: "Low stock" });
+  await expect(lowStock.getByRole("button", { name: "View list" })).toBeVisible();
+  await lowStock.getByRole("button", { name: "View list" }).click();
+  await expect(lowStock.getByRole("button", { name: "Hide list" })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  await lowStock.getByRole("button", { name: "Hide list" }).click();
+  await expect(lowStock.getByRole("button", { name: "View list" })).toBeVisible();
+});
+
+test("Owner opens reconciliation only on demand and can hide it again", async ({ page }) => {
+  await page.goto("/reports");
+
+  const reconciliation = page.getByRole("region", { name: "Reconciliation" });
+  await expect(reconciliation.getByRole("button", { name: "View checks" })).toBeVisible();
+  await expect(reconciliation.getByText("No discrepancies found.")).toHaveCount(0);
+  await reconciliation.getByRole("button", { name: "View checks" }).click();
+  await expect(reconciliation.getByText("No discrepancies found.")).toBeVisible();
+  await reconciliation.getByRole("button", { name: "Refresh" }).click();
+  await expect(reconciliation.getByText("No discrepancies found.")).toBeVisible();
+  await reconciliation.getByRole("button", { name: "Hide checks" }).click();
+  await expect(reconciliation.getByText("No discrepancies found.")).toHaveCount(0);
+});
+
 test("Owner can open the audit log while Seller only sees activity", async ({ page }, testInfo) => {
   await page.goto("/");
   await page.getByRole("button", { name: "All activity" }).click();
   const ownerDialog = page.getByRole("dialog", { name: "Audit log" });
   await expect(ownerDialog.getByLabel("Actor")).toBeVisible();
   await expect(ownerDialog.getByText("No audit events match this filter.")).toBeVisible();
+  await expect(ownerDialog.getByRole("button", { name: "Previous" })).toBeDisabled();
+  await expect(ownerDialog.getByRole("button", { name: "Next" })).toBeDisabled();
   await ownerDialog.getByRole("button", { name: "Close" }).click();
 
   if (testInfo.project.name === "mobile") {
     await page.getByRole("button", { name: "Switch to Seller preview" }).click();
   } else {
-    await page.getByRole("button", { name: "Seller", exact: true }).click();
+    await page.getByRole("banner").getByRole("button", { name: "Seller", exact: true }).click();
   }
   await page.getByRole("button", { name: "All activity" }).click();
   await expect(page.getByRole("dialog", { name: "Activity" })).toBeVisible();
@@ -117,7 +216,7 @@ test("Seller sales-summary boundary remains compact in each supported viewport",
   if (testInfo.project.name === "mobile") {
     await page.getByRole("button", { name: "Switch to Seller preview" }).click();
   } else {
-    await page.getByRole("button", { name: "Seller", exact: true }).click();
+    await page.getByRole("banner").getByRole("button", { name: "Seller", exact: true }).click();
   }
   const summary = page.getByRole("region", { name: "Sales summary" });
   await expect(summary).toBeVisible();

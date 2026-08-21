@@ -1,15 +1,17 @@
 # План запуска Zebra Retail — Clothing Pilot
 
-Обновлено: 2026-08-16
+Обновлено: 2026-08-22
 
-Текущий этап: operational readiness — restore rehearsal
+Текущий этап: Owner walkthrough remediation
 
-Текущий шаг: 14 из 24 — TASK-082 (`IN PROGRESS`)
+Текущий шаг: TASK-165 (`NEXT`) — consolidated staging and physical acceptance gate
 
-Команда для продолжения: `Выполни TASK-082`
+Команда для продолжения: `Выполни TASK-165`
 
-Кодовый Clothing Pilot RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`.
-GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
+Исторический pre-remediation RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`;
+GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates. Текущий
+candidate — consolidated TASK-191 commit; он становится новым RC только после
+TASK-165 staging/device acceptance и TASK-149 Go/No-Go.
 
 Этот файл полностью заменяет старый поэтапный roadmap. История выполненной работы
 сохранена в `docs/tasks/TASK-NNN.md`, git и `CHANGELOG.md`; завершённые функции не
@@ -58,14 +60,13 @@ GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
 
 ### Уже реализовано и имеет evidence
 
-- 115 task-файлов имеют статус `COMPLETED`.
-- На текущем commit локально проходят 80 Vitest files / 187 unit и component tests.
+- 161 task-файл имеет статус `COMPLETED` / legacy `completed`.
+- На consolidated remediation tree проходят 90 Vitest files / 243 tests.
 - Demo и live production builds проходят TypeScript/build validation.
-- Есть 19 Playwright сценариев, запускаемых в desktop/tablet/mobile: два
-  последовательных полных прогона проходят 57/57 без retry.
+- Full Playwright gate проходит 78/78 desktop/tablet/mobile checks без retry.
 - Non-interactive ESLint CLI проходит с 0 errors и включён в frontend CI job;
-  24 существующих warnings остаются видимыми.
-- Есть 29 migrations и 14 pgTAP файлов с 175 SQL assertions.
+  26 non-blocking warnings остаются видимыми.
+- Fresh local reset применяет 37 migrations; 20 pgTAP files / 214 assertions проходят.
 - Есть concurrency harness для sale/sale, sale/adjustment и sale/exchange conflicts.
 - Основные sale, receipt, image, auth, Seller status, cancellation и exchange flows уже
   имеют staging evidence; PWA подтверждена на Android/iOS.
@@ -76,7 +77,9 @@ GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates.
 - TASK-118 закрыта: Owner-approved fixture archived с сохранением history;
   server-side receipt canonicalization и 13 audited colour updates применены
   на staging, rollback path и reconciliation записаны.
-- Production Supabase/Vercel, SMTP, monitoring, backup/restore и pilot ещё не созданы.
+- Empty production Supabase/Vercel/schema, SMTP configuration и backup/restore
+  preparation существуют; application deploy, monitoring acceptance, real data и
+  pilot ещё не выполнены.
 
 ## 4. Единая последовательность задач до запуска
 
@@ -106,14 +109,54 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 10 | DONE | TASK-038 | Owner staging UI подтвердил Active → Blocked → Active с восстановлением доступа; mobile Seller dialog без horizontal overflow |
 | 11 | DONE | TASK-118 | Fixture archived через Owner flow, 13 variants canonicalized и audited; staging reconciliation зелёная |
 | 12 | DONE | TASK-147 | Full Owner/Seller staging evidence consolidated; four approved test sales cancelled through Owner audit flow, reconciliation has no P0/P1 error |
-| 13 | **IN PROGRESS** | TASK-081 | Plan B выбран: encrypted daily DB + `product-images` archive на Owner VPS; ожидаются dedicated access, secrets и first-run evidence |
-| 14 | WAITING | TASK-082 | Изолированный restore rehearsal и rollback plan доказаны |
-| 15 | WAITING | TASK-148 | Security, authorization, rate-limit и pilot-capacity smoke не находят release blockers |
-| 16 | WAITING | TASK-083 | Изолированные production Supabase и Vercel созданы без реальных данных |
-| 17 | WAITING | TASK-084 | Production SMTP, redirects и Magic Link matrix проверены |
-| 18 | WAITING | TASK-085 | Production-like migration rehearsal, bootstrap и recovery проходят с нуля |
-| 19 | WAITING | TASK-086 | Owner/Seller runbooks и обучение пяти pilot devices завершены |
-| 20 | WAITING | TASK-149 | Формальный Go/No-Go: release tag, approvals, rollback owner и launch window зафиксированы |
+| 13 | DONE | TASK-081 | Encrypted daily DB + `product-images` archive создан, перенесён на Owner VPS, checksum сверена и artifact расшифрован настоящим `age` key |
+| 14 | DONE | TASK-082 | Изолированный restore rehearsal: 43/43 tables и 16/16 images reconciled; Owner/Seller RPC smoke и rollback plan с принятым RPO 24 часа зафиксированы |
+| 15 | DONE | TASK-148 | Local HTTP RLS/authorization, rate-limit, five-user burst (323 ms slowest <5s), idempotency/reconciliation и staging Preview Owner smoke зелёные; smoke включён в CI |
+| 16 | DONE | TASK-083 | Empty production Supabase (`eu-central-1`, Data API on, auto-exposure off, automatic RLS on) и Vercel project без Git/deployment созданы отдельно от staging |
+| 17 | PARTIAL | TASK-084 | SMTP, exact redirect boundary и EN/TR template configured; delivery matrix выполняется после controlled identity/callback до TASK-150 |
+| 18 | DONE | TASK-085 | Empty production schema applied through recorded 29-migration CLI chain; local RLS/RPC/recovery evidence зелёное |
+| 19 | DONE | TASK-086 | Bilingual runbooks prepared; Owner walkthrough завершён, feedback сохранён в TASK-152—TASK-163 |
+| 19A | DONE | TASK-156 | Multi-item sale отображается одним ticket с одним total; Owner подтвердил исправление на staging |
+| 19B | DONE | TASK-152 | Постоянная Owner-кнопка архива, EN/TR empty/error states и прямой restore прошли 60/60 desktop/tablet/mobile; deployment ждёт общего remediation Preview |
+| 19C | DONE | TASK-153 | Owner-only Reconciliation открывается по запросу, скрывается, обновляется и полностью локализована; 63/63 browser regression зелёный |
+| 19D | DONE | TASK-154 | Low stock стал компактным on-demand EN/TR view с loading/empty/error states; 66/66 browser regression зелёный |
+| 19E | DONE | TASK-155 | Preview server-only credential добавлен Owner напрямую; safe route diagnostics и локальные regression gates зелёные; invitation acceptance войдёт в общий remediation Preview |
+| 19F | DONE | TASK-157 | Tap закрепляет точную EUR сумму, explicit close, zero/hover/focus и EN/TR labels; 3/3 viewport browser check зелёный |
+| 19G | DONE | TASK-158 | Movement History открывается в центрированном safe-area mobile dialog; короткая история компактна, длинная scrollable, focus/scroll lock сохранены |
+| 19H | DONE | TASK-159 | Audit Log сбрасывает page при любом filter и не позволяет перейти за empty/last/loading/error boundaries |
+| 19I | DONE | TASK-160 | Adjust Stock требует явный size, сбрасывает draft delta при смене и показывает variant-specific confirmation summary |
+| 19J | DONE | TASK-161 | ReportsDashboard полностью локализован EN/TR, включая exports, KPI, dimensions, table и dynamic fallbacks |
+| 19K | DONE | TASK-162 | Owner-only audited Product code correction: UUID/ledger/photos/barcode preserved; EN/TR edit states covered locally |
+| 19L | DONE | TASK-163 | Receive Flow Product code сохраняется при blur/Done/IME; control/invisible suffix blocked with explicit EN/TR validation |
+| 19M | DONE | TASK-164 | Adjust Stock modal overlay fixed; Audit/Seller stale selectors scoped to header; Playwright 75/75 зелёный |
+| 19N | DONE | TASK-166 | Фирменный знак Zebra Boutique заменил `ZB` в navigation и Android/iOS PWA assets; build и manifest checks зелёные |
+| 19O | NEXT | TASK-165 | Publish exact TASK-191 commit to staging and run shared Owner/Seller physical iPhone/Redmi acceptance; Production untouched |
+| 19P | DONE | TASK-167 | Preview block caused only by invalid temporary Git author; no-Git snapshot built live and Ready without settings mutation |
+| 19Q | DONE | TASK-168 | Login использует Zebra Boutique mark; targeted test, demo/live build и Ready Preview safe smoke зелёные |
+| 19R | DONE | TASK-169 | Staging Auth Site URL and exact callback point to consolidated Preview; Owner/Seller Magic Link reaches workspace and logout returns to login |
+| 19S | DONE | TASK-170 | Late Android input after keyboard dismiss is ignored once a controlled field loses focus; Product code, sale price, total price and mixed-payment amount are protected; targeted tests and build passed |
+| 19T | DONE | TASK-171 | Live workspace loads persisted exchanges/payment snapshots after reload; History exposes top-up, 16 UI/model + 37 pgTAP green; physical €100→€170→€70 in TASK-165 |
+| 19U | DONE | TASK-172 | Light-theme Sales Trend uses transparent hit areas, light lavender grid and soft purple hover; 6 targeted tests and demo build passed |
+| 19V | DONE | TASK-173 | Light-theme Receive Flow add-colour action has distinct enabled/disabled and light-theme secondary states; 13 targeted tests passed |
+| 19W | DONE | TASK-174 | Reconciliation distinguishes EUR payments from stock quantities and explains source/meaning/action EN/TR; Vitest 5/5, demo/live builds green |
+| 19X | DONE | TASK-175 | Existing-model identity and supplier are locked in UI and ignored server-side; UI 16/16, clean pgTAP 5/5, demo/live builds green; Redmi recheck in TASK-165 |
+| 19Y | DONE | TASK-176 | Product code success now requires exact server-confirmed value; Owner/RLS/audit pgTAP 11/11 and demo/live builds green; Redmi recheck in TASK-165 |
+| 19Z | DONE | TASK-177 | Owner-only audited model update объединяет name/gender/threshold/current purchase cost; inline threshold removed, targeted UI/pgTAP/build passed |
+| 19AA | DONE | TASK-178 | Owner-only confirmed private photo removal, retry-safe Storage cleanup and carousel swipe; UI/pgTAP/build passed |
+| 19AB | DONE | TASK-179 | Istanbul calendar helper replaces elapsed-24-hour Sales History offset; 15 Vitest + 20/20 pgTAP + demo/live builds green; physical recheck in TASK-165 |
+| 19AC | DONE | TASK-180 | Owner подтвердил штатную Safari Home Screen installation, launch installed PWA и корректную работу; Magic Link acceptance подтверждён в TASK-169 |
+| 19AD | DONE | TASK-181 | Professional EN/TR Arslan Ram attribution is in the responsive workspace footer; no external link or operational-flow impact |
+| 19AE | DONE | TASK-182 | Owner reporting gets display name→approved email fallback; Seller caller cannot receive actor email, and genuine unknown is explained; Vitest 5/5, pgTAP 3/3, demo/live builds green |
+| 19AF | DONE | TASK-183 | Seller Summary now rejects late stale responses and shows successful-update time; Store/My scope remains explicit, physical two-session comparison moves to TASK-165 |
+| 19AG | DONE | TASK-184 | Exchange now uses Product code/barcode → model → colour → available size; atomic/payment flow unchanged, physical check is in TASK-165 |
+| 19AH | DONE | TASK-185 | Turkish greeting says `bol satışlar`; English heading is `Hello {name},` while supporting line retains Zebra Boutique good-sales copy |
+| 19AI | DONE | TASK-186 | Sale Details keeps a private sale-time image snapshot with thumbnail, fallback and fullscreen preview; 8 Sales History tests and build passed |
+| 19AJ | DONE | TASK-187 | Turkish Audit Log maps filters/actions/entities and safe metadata to business copy; raw IDs remain on-demand and sensitive details stay hidden; tests 7/7, demo/live builds green |
+| 19AK | DONE | TASK-188 | Owner-only Cash/Kasa aggregates captured ledger payments by method × currency; CSV/print/XLSX/PDF include a clearly labelled non-physical-cash section; targeted tests and build passed |
+| 19AL | DONE | TASK-189 | Responsive full-value KPI implementation and automated coverage complete; Redmi 14 recheck explicitly moves to TASK-165 |
+| 19AM | DONE | TASK-190 | Owner bug intake closed; TASK-170—TASK-189 order, evidence locations, staging and publication gates fixed |
+| 19AN | DONE | TASK-191 | Full frontend/database gates restored, handoff sources synchronized and consolidated remediation commit created before TASK-165 |
+| 20 | BLOCKED | TASK-149 | NO-GO: нужны TASK-084 Auth acceptance, immutable release tag, shared staging/device evidence, monitoring/roles/window и explicit Owner GO |
 | 21 | WAITING | TASK-150 | Тот же Release Candidate развёрнут в production; auth/data/transaction smoke зелёный |
 | 22 | WAITING | TASK-087 | Реальный clothing catalog/stock загружен и физически reconciled |
 | 23 | WAITING | TASK-088 | Zebra Boutique работает в контролируемом pilot с ежедневной сверкой |
@@ -122,18 +165,31 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 ### Как работать с планом в любом новом чате
 
 1. Owner копирует из `PROJECT_STATUS.md` строку `Команда для продолжения` и пишет,
-   например: `Выполни TASK-081`.
-2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только `TASK-081.md`.
-3. TASK-081 — единственная следующая задача; агент не начинает другой шаг.
-4. После выполнения агент записывает проверки в TASK-081 и меняет статус на `COMPLETED`.
-5. В этой таблице TASK-081 становится `DONE`, следующая задача — единственным `NEXT`.
+   например: `Выполни TASK-084`.
+2. Агент читает `AGENTS.md` → `PROJECT_STATUS.md` → только выбранный `TASK-NNN.md`.
+3. Выбранный `TASK-NNN` — единственная следующая задача; агент не начинает другой шаг.
+4. После выполнения агент записывает проверки в `TASK-NNN` и меняет статус на `COMPLETED`.
+5. В этой таблице завершённый `TASK-NNN` становится `DONE`, следующая задача —
+   единственным `NEXT`.
 6. В `PROJECT_STATUS.md` меняются последняя завершённая TASK, текущий шаг и команда
-   `Выполни TASK-081`.
-7. Финальный ответ заканчивается результатом TASK-081 и приглашением дать точную
-   следующую команду. Агент не начинает TASK-081 самостоятельно.
+   следующей `TASK-NNN`.
+7. Финальный ответ заканчивается результатом `TASK-NNN` и приглашением дать точную
+   следующую команду. Агент не начинает следующую TASK самостоятельно.
 
 Если задача заблокирована, она остаётся текущей, получает статус `BLOCKED` с причиной,
 а указатель не переходит дальше без решения Owner.
+
+### Текущая release sequence
+
+1. `NEXT` TASK-165 — exact consolidated staging Preview и physical Owner/Seller
+   iPhone/Redmi acceptance.
+2. `BLOCKED` TASK-149 — renewed Go/No-Go, immutable tag, monitoring/roles/window,
+   rollback confirmation и explicit Owner `GO`.
+3. TASK-150 — отдельная authorized Production publication.
+4. TASK-087 → TASK-088 → TASK-151 — real inventory, controlled pilot, pilot exit.
+
+Только pointer в начале `PROJECT_STATUS.md` разрешает работу; этот sequence не
+разрешает автоматически начинать следующий шаг.
 
 ## 5. Exit criteria по фазам
 

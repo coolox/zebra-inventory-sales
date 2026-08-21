@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import type { Activity, Product, Sale } from "@/lib/types";
+import { businessDayOffset } from "@/lib/business-date";
 
 type SaleLineRow = {
   id: string;
@@ -9,6 +10,7 @@ type SaleLineRow = {
   unit_price_eur: number | null;
   unit_cost_eur: number;
   currency: Product["currency"] | null;
+  product_image_path: string | null;
 };
 
 type SalePaymentRow = { amount: number; amount_eur: number; currency: Product["currency"] };
@@ -28,17 +30,11 @@ type VariantRow = { id: string; product_model_id: string; size: string };
 type ModelRow = { id: string; model_code: string; name: string };
 type ProfileRow = { id: string; full_name: string };
 
-const dayMs = 24 * 60 * 60 * 1000;
-
-function dayOffset(soldAt: string) {
-  return Math.max(0, Math.floor((Date.now() - new Date(soldAt).getTime()) / dayMs));
-}
-
 export async function loadLiveSales(storeId: string): Promise<{ sales: Sale[]; activities: Activity[] }> {
   const client = createClient();
   const { data, error } = await client
     .from("sales")
-    .select("id, seller_id, status, sold_at, pricing_mode, total_amount_eur, sale_lines(id, variant_id, quantity, unit_price, unit_price_eur, unit_cost_eur, currency), sale_payments(amount, amount_eur, currency)")
+    .select("id, seller_id, status, sold_at, pricing_mode, total_amount_eur, sale_lines(id, variant_id, quantity, unit_price, unit_price_eur, unit_cost_eur, currency, product_image_path), sale_payments(amount, amount_eur, currency)")
     .eq("store_id", storeId)
     .order("sold_at", { ascending: false });
   if (error) throw error;
@@ -47,6 +43,12 @@ export async function loadLiveSales(storeId: string): Promise<{ sales: Sale[]; a
   if (!saleRows.length) return { sales: [], activities: [] };
 
   const saleLines = saleRows.flatMap((sale) => sale.sale_lines ?? []);
+  const imagePaths = [...new Set(saleLines.flatMap((line) => line.product_image_path ? [line.product_image_path] : []))];
+  const signedImages = new Map<string, string>();
+  if (imagePaths.length) {
+    const results = await Promise.all(imagePaths.map(async (path) => ({ path, result: await client.storage.from("product-images").createSignedUrl(path, 60 * 60) })));
+    results.forEach(({ path, result }) => { if (result.data?.signedUrl) signedImages.set(path, result.data.signedUrl); });
+  }
   const variantIds = [...new Set(saleLines.map((line) => line.variant_id))];
   const sellerIds = [...new Set(saleRows.map((sale) => sale.seller_id))];
 
@@ -105,8 +107,9 @@ export async function loadLiveSales(storeId: string): Promise<{ sales: Sale[]; a
         revenueIsAllocated: sale.pricing_mode === "sale_total",
         paymentSnapshot: paymentSnapshot || new Intl.NumberFormat("en", { style: "currency", currency: "EUR", maximumFractionDigits: 2 }).format(Number(sale.total_amount_eur)),
         status: sale.status,
-        dayOffset: dayOffset(sale.sold_at),
+        dayOffset: businessDayOffset(sale.sold_at),
         time: new Date(sale.sold_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }),
+        photoUrl: line.product_image_path ? signedImages.get(line.product_image_path) : undefined,
       };
     });
   });

@@ -1,212 +1,109 @@
 # Статус проекта
 
-Обновлено: 2026-08-16
+Обновлено: 2026-08-22
 
-Текущая фаза: Clothing Pilot operational readiness
+Текущая фаза: consolidated staging and physical acceptance before production Go/No-Go.
 
-## Где мы остановились
+## Единственный указатель продолжения
 
-- Последняя завершённая задача: [TASK-081](tasks/TASK-081.md).
-- Текущий шаг launch plan: **14 из 24**.
-- Текущая задача: [TASK-082](tasks/TASK-082.md) — restore часть выполнена и сверена
-  (43/43 таблицы, 16/16 изображений); rollback описан в
-  [ROLLBACK.md](operations/ROLLBACK.md), но не отрепетирован, так как production ещё
-  не существует. Нужны решения Owner по D-062 и по приёмке RPO 24 часа.
-- Backup automation работает и проверена: artifact создаётся, шифруется, переносится,
-  сверяется checksum и расшифровывается настоящим `age` key. Owner хранит вторую копию
-  ключа вне рабочей станции. Детали — [BACKUP.md](operations/BACKUP.md).
+- Последняя завершённая задача: [TASK-191](tasks/TASK-191.md) — full release gates
+  восстановлены, документация синхронизирована, remediation set сохранён consolidated
+  commit.
+- Следующая задача: [TASK-165](tasks/TASK-165.md) — опубликовать exact consolidated
+  commit в staging и провести общий Owner/Seller walkthrough на physical iPhone и
+  Redmi 14.
+- Команда для продолжения: `Выполни TASK-165`.
 
-TASK-145 зафиксировала и проверила кодовый RC
-`f838f78680b4fb5a18fd5600f194ec5defd335a6`: GitHub Actions run `31822493717`
-зелёный для Frontend и Local Supabase. TASK-079 опубликовала staging Preview из
-`main`: `https://zebra-inventory-sales-51z34xyje-cooloxs-projects.vercel.app`.
-Для актуального staging Preview Supabase Site URL и callback направлены на
-`https://zebra-inventory-sales-fkn819bfk-cooloxs-projects.vercel.app`; production
-resources не настраивались и не изменялись. TASK-146 синхронизировала staging history/schema
-с полным 29-migration RC set; remote dry-run теперь `upToDate`.
+Никакая команда внутри completed task-файла не является текущей. Источник текущей
+команды — только этот раздел.
 
-TASK-080 добавила opt-in provider-neutral observability: redacted structured
-client/server errors, global fallback и безопасный rate-limited endpoint.
-Vercel Preview `https://zebra-inventory-sales-fkn819bfk-cooloxs-projects.vercel.app`
-собран Ready в live mode; synthetic event вернул `204` и подтвердил, что raw email
-и Bearer value редактируются в runtime log. Preview-only observability включён,
-Production не изменялся.
+## Фактический уровень приложения
 
-TASK-022 закрыла fresh product-image acceptance: Owner загрузил JPEG/PNG/WebP
-в private staging flow, carousel сохранился после reload, unsupported MIME и >8 MiB
-отклонены до Storage; ранее подтверждённый cross-store RLS denial остаётся в силе.
+- Clothing MVP для Zebra Boutique функционально реализован как Next.js web/PWA с
+  отдельными demo/live режимами, EN/TR, Light/Dark и responsive layouts.
+- Owner/Seller authorization, store boundaries, Magic Link, private product photos,
+  receipts, sales, mixed payments, cancellation, exchange, audit, reports и
+  reconciliation защищены server-side Supabase RLS/RPC boundaries.
+- Денежные и складские writes атомарны и аудируемы; concurrency, idempotency и
+  signed-JWT authorization имеют local integration evidence.
+- Отдельные production Supabase/Vercel resources и empty schema подготовлены, но
+  production application не опубликован, реальные товары/остатки не загружены и
+  Clothing Pilot не начат.
+- Telegram, AI receipt/labels и multi-store не входят в первый Clothing Pilot.
 
-TASK-038 закрыла Seller status acceptance: Owner staging UI подтвердил
-`Active → Blocked → Active`, а mobile Seller dialog не имеет horizontal overflow.
-Тестовый Seller оставлен `Active`; Production не изменялся.
+## TASK-191 release-gate evidence
 
-TASK-118 завершена: Owner-approved staging fixture `TASK021-FX-BOUNDARY`
-обратимо архивирован с сохранением 4 movements, 2 receipt lines и 2 sale lines.
-Migration `20260815120000` canonicalizes server-side receipt colours и
-нормализовала 13 проверенных legacy variants с audit records. Staging
-reconciliation зелёная: 13/13 colours совпали, active temporary markers = 0;
-Production не изменялся.
-
-TASK-147 завершила full staging acceptance. Owner-approved cancellation
-безопасно перевела четыре test sales (€640, ранее без captured payments) в
-`cancelled` с причиной `TASK-147 staging cleanup`; UI reconciliation теперь
-содержит 0 payment mismatch, 0 missing sale movement и 0 negative balance.
-Owner также принял 11 historical `manual_correction` review rows как ожидаемые
-staging fixtures (D-058); immutable ledger не переписывался. Production не
-изменялся.
-
-## Главное решение по порядку работ
-
-Активная разработка функциональности Clothing MVP завершена. До запуска действует
-feature freeze: выполняются только release-hardening, staging, operational readiness,
-production deployment и pilot tasks из нового [ROADMAP](ROADMAP.md).
-
-AI receipt, Telegram, AI labels и multi-store не входят в критический путь первого
-запуска и не реализуются до завершения Clothing Pilot.
-
-## Что уже реализовано
-
-- Zebra Boutique Clothing MVP с ролями Owner/Seller и server-side store boundaries.
-- Next.js PWA с English/Turkish, Light/Dark и desktop/tablet/mobile layouts.
-- Supabase Auth Magic Link, active membership guard, schema, RLS и audit.
-- Catalog, private photos, receipt/inventory ledger, FX и low-stock controls.
-- Per-item/total sales, mixed payments, atomic stock, cancellation и exchange.
-- Seller invitation/status, inventory adjustment/count, suppliers и archive/restore.
-- Sales History, Seller sales summary, Owner reports/reconciliation и CSV/XLSX/PDF.
-- Demo/live isolation, persistence, stable routes и no-mock live failure boundary.
-- PWA install/standalone flow подтверждён Owner на Android и iOS.
-
-## Повторный test/evidence audit
-
-| Проверка | Фактическое состояние |
+| Gate | Текущий результат |
 |---|---|
-| Vitest | 80 files / 187 tests проходят локально на текущем commit |
-| Demo build | Проходит |
-| Live build | Проходит |
-| TypeScript | Проходит как часть production builds |
-| Playwright | 19 сценариев × 3 viewport = 57; два последовательных полных прогона проходят 57/57 без retry после фикса animation boundary в TASK-142 |
-| Lint | Non-interactive ESLint CLI проходит с 0 errors; 24 существующих warnings остаются видимыми; lint включён в frontend CI job |
-| Database | 29 migrations, 14 pgTAP files, 175 SQL assertions |
-| Concurrency | Harness существует для sale/sale, sale/adjustment, sale/exchange |
-| Current GitHub CI | Run `31822493717` на RC `f838f78680b4fb5a18fd5600f194ec5defd335a6`: Frontend checks и Local Supabase checks зелёные; database job прошёл clean 28 migrations, 13 pgTAP files/169 assertions и concurrency |
-| Последний SQL evidence | TASK-143: clean local `supabase:verify` и concurrency прошли; повторены и подтверждены отдельным зелёным GitHub CI run |
+| Vitest | 90 files / 243 tests passed |
+| ESLint | 0 errors; 26 non-blocking warnings остаются видимыми |
+| Demo build | passed |
+| Live build | passed |
+| Playwright | 78/78 desktop/tablet/mobile checks passed |
+| Fresh migrations | 37 migrations applied by clean local reset |
+| pgTAP / RLS / RPC | 20 files / 214 assertions passed |
+| Concurrency | sale/sale, sale/adjustment, sale/exchange and repeated clean run passed |
+| Security/capacity | 27 authorization/idempotency/reconciliation checks passed; five-user burst slowest 184 ms (<5 s) |
+| Whitespace | `git diff --check` passed before commit |
 
-## Что проверено на staging ранее
+TASK-191 добавила forward migration
+`20260822120000_preserve_receipt_color_canonicalization.sql`: поздний TASK-175
+receipt RPC снова сохраняет canonical colour boundary TASK-118, не ослабляя lock
+существующей model identity.
 
-- Sale одного variant разными EUR/USD lines, mixed payments, FX snapshots и rollback.
-- Sale total из нескольких товаров и payment reconciliation.
-- Receipt Istanbul business-date boundary, idempotency, movements и audit.
-- Private product-images bucket/RPC/RLS, cross-store denial и carousel reload.
-- Owner invitation и Seller membership status backend.
-- Cancellation и exchange atomic flows.
-- Magic Link Owner/Seller/unknown/used-link/logout/mobile matrix.
-- Current RC Preview: `/` → `/login`, live no-mock boundary, protected session
-  middleware и 390 px mobile login smoke подтверждены на
-  `https://zebra-inventory-sales-51z34xyje-cooloxs-projects.vercel.app`.
-- Staging migration chain совпадает с RC: 29 local/remote IDs, code-first/barcode,
-  archive, reporting/reconciliation и Seller summary RPC/RLS проверены; Owner/Seller
-  smoke прошёл, а Seller Owner-only reconciliation отклонён.
+## Что должен закрыть TASK-165
 
-TASK-147 объединила это evidence с fresh Owner reload и финальной reconciliation;
-статус full staging acceptance закрыт.
+1. Опубликовать один reviewed staging Preview именно из consolidated TASK-191 commit;
+   Production не менять.
+2. Проверить live-only environment/no-mock boundary и exact staging Auth callback.
+3. На физических iPhone и Redmi 14 пройти Owner/Seller login/logout, Receive Flow,
+   Product code keyboard dismiss, search/sale, exchange top-up, Adjust Stock,
+   Movement History, Audit Log, Reports/Kasa и responsive KPI.
+4. Сравнить Owner dashboard, Seller Store/My totals, History и Reports на одном
+   store/day snapshot после manual refresh.
+5. Каждый новый defect вынести в отдельную TASK; не исправлять его внутри TASK-165.
 
-## Текущие release blockers
+## Открытые launch gates
 
-1. TASK-081 завершена: backup automation работает end to end и проверена
-   расшифровкой реального artifact. Открытым остаётся restore: пока не выполнен
-   rehearsal (TASK-082), способность восстановиться доказана только на уровне
-   читаемости archive, но не на уровне работающего приложения.
-2. Production resources/SMTP и pilot ещё отсутствуют.
-3. До production Owner должен выбрать monitoring provider, retention и recipients;
-   до этого текущая policy использует Vercel Preview logs.
+- [TASK-084](tasks/TASK-084.md) — `WAITING`: production Auth/SMTP configuration
+  подготовлена, delivery/unknown/expired/reused matrix ждёт production callback.
+- [TASK-165](tasks/TASK-165.md) — `pending`, единственная следующая задача.
+- [TASK-149](tasks/TASK-149.md) — `BLOCKED`: после TASK-165 нужны immutable release
+  tag, monitoring/recipients, launch roles/window, rollback confirmation и явный
+  Owner `GO`.
+- TASK-150 production deploy, TASK-087 initial inventory, TASK-088 pilot и TASK-151
+  pilot exit остаются последовательными следующими launch steps.
 
-## Последовательность до запуска
-
-1. TASK-142 — frontend release gate.
-2. TASK-143 — database CI/RLS/concurrency gate.
-3. TASK-117 — code-first/optional barcode (completed locally; staging application is TASK-146).
-4. TASK-144 — remaining EN/TR pass (completed locally).
-5. TASK-145 — Release Candidate и merge в `main` (completed).
-6. TASK-079 — отдельный staging frontend (completed).
-7. TASK-146 — staging migration synchronization (completed).
-8. TASK-080 — observability (completed).
-9. TASK-022 — fresh product-image smoke (completed).
-10. TASK-038 — Seller status UI staging smoke (completed).
-11. TASK-118 — staging color audit/approved cleanup (completed).
-12. TASK-147 — full staging acceptance (completed).
-13. TASK-081 — backups (completed: artifact verified and decrypted).
-14. TASK-082 — restore/rollback rehearsal (in progress).
-15. TASK-148 — security/pilot-capacity smoke.
-16. TASK-083 — production projects.
-17. TASK-084 — production Auth/SMTP.
-18. TASK-085 — production migration rehearsal.
-19. TASK-086 — runbooks/training.
-20. TASK-149 — Go/No-Go.
-21. TASK-150 — production deployment/smoke.
-22. TASK-087 — initial clothing inventory.
-23. TASK-088 — controlled Clothing Pilot.
-24. TASK-151 — pilot exit и production handoff.
+Production publication запрещена до explicit Owner `GO` в TASK-149 и отдельной
+команды `Выполни TASK-150`.
 
 ## Task accounting
 
-- Всего task-файлов: 151.
-- `COMPLETED`: 117.
-- `IN PROGRESS`: 1.
-- `BLOCKED`: 0.
-- `pending`: 33.
+- Всего task-файлов: 191.
+- `COMPLETED` / legacy `completed`: 161.
+- `pending`: 28, включая готовую к запуску TASK-165 и post-launch backlog.
+- `WAITING`: 1 — TASK-084.
+- `BLOCKED`: 1 — TASK-149.
+- `IN PROGRESS`: 0.
 
-Завершённые ID:
+Завершённые диапазоны:
 
-- TASK-001—TASK-081;
-- TASK-101—TASK-116;
+- TASK-001—TASK-083;
+- TASK-085—TASK-086;
+- TASK-101—TASK-118;
 - TASK-123;
-- TASK-131—TASK-147; TASK-117.
+- TASK-131—TASK-148;
+- TASK-152—TASK-164;
+- TASK-166—TASK-191.
 
-Незавершённые launch-path tasks перечислены в разделе выше. Post-launch pending tasks:
+Post-launch pending scope: TASK-089—TASK-100, TASK-119—TASK-122 и TASK-124—TASK-130.
 
-- TASK-089—TASK-100;
-- TASK-119—TASK-122;
-- TASK-124—TASK-130.
+## Безопасные границы продолжения
 
-## Границы и известные риски
-
-- Production не изменялся и реальные данные ещё не загружались.
-- Каждый новый Vercel Preview получает уникальный URL. Supabase staging Site URL и
-  callback сейчас направлены на Preview `fkn819bfk`; перед следующим Preview-based
-  authenticated manual smoke их нужно переключить на выбранный актуальный URL.
-- TASK-146 оставила schema-only rollback checkpoint; полноценные managed backup и
-  restore rehearsal ещё обязательны в TASK-081/TASK-082.
-- TASK-118 завершена: staging fixture model
-  `6d3763de-f554-4bcd-92da-6fea5dac74ed` обратимо archived, не deleted; 13
-  colour variants канонизированы migration `20260815120000` и reconciled.
-  Rollback archive остаётся Owner-only restore; 13 audit records сохраняют
-  исходные цвета для обратной транзакции, если потребуется до новых receipts.
-- TASK-147 завершена: четыре test sales отменены через Owner audited flow;
-  reconciliation не содержит payment mismatch, missing sale movement или
-  negative balance. 11 `manual_correction` review records приняты Owner как
-  ожидаемые staging fixtures (D-058) и остаются audit evidence.
-- TASK-022 завершена; три non-production image fixtures остаются на staging test
-  product `YY22` как evidence свежей проверки. Production data не затронуты.
-- TASK-038 завершена; staging Seller status восстановлен в `Active` после smoke.
-- Кодовый RC `f838f78680b4fb5a18fd5600f194ec5defd335a6` прошёл два GitHub CI jobs;
-  merge в `main` зафиксирован в TASK-145.
-- `app/page.tsx` остаётся большим, но broad refactor отложен после pilot во избежание регрессий.
-- XLSX structural tests существуют; visual open smoke выполняется в live Owner browser.
-- Генерируемые test/visual-QA PDF в `tmp/` остаются локальными, игнорируются git и не удаляются автоматически.
-
-## Следующий шаг
-
-Restore rehearsal выполнен и сверен; `RESTORE.md` и `ROLLBACK.md` написаны. Owner
-принял RPO 24 часа (D-063). Проверка D-062 показала, что миграция для
-`statement_timeout` не нужна: это платформенные значения Supabase.
-
-Для закрытия TASK-082 остаётся одно решение: судьба незаряженной функции
-`rls_auto_enable` на staging — снять её либо полноценно зарегистрировать event
-trigger. Оба варианта вне RC пилота и ничего не ослабляют, поскольку все 21 таблица
-получают RLS явно из миграций.
-
-Репетиция откатов production невозможна до его создания и перенесена в
-TASK-085/TASK-150; иначе TASK-082 блокировала бы TASK-083, от которого сама зависит.
-
-Агент продолжает только TASK-082 и обновляет указатель после её завершения. Он не
-начинает TASK-148 автоматически.
+- Не читать и не записывать secret values в repository/evidence.
+- Не использовать реальные customer/employee identities или данные в staging notes.
+- Не подключать demo к production или legacy VPS.
+- Не применять новую migration к staging/production вне соответствующей TASK и
+  явной команды Owner.
+- Исторические детали находятся в task-файлах, `CHANGELOG.md` и Git; они не должны
+  дублироваться здесь как конкурирующие команды продолжения.

@@ -1,23 +1,24 @@
 import type { SaleHistoryRecord } from "./sale-history";
+import { businessAddDays, businessCalendarDay, businessWeekday } from "@/lib/business-date";
 
 export type SaleHistoryPeriod = "all" | "today" | "week";
 export type SaleHistoryStatus = "all" | "confirmed" | "cancelled";
 export type SaleHistoryFilters = { sellerId: string; status: SaleHistoryStatus; period: SaleHistoryPeriod };
 
 export function wednesdayWeekStart(date: Date) {
-  const result = new Date(date); result.setHours(0, 0, 0, 0);
-  result.setDate(result.getDate() - ((result.getDay() - 3 + 7) % 7));
-  return result;
+  const today = businessCalendarDay(date);
+  const start = businessAddDays(today, -((businessWeekday(today) - 3 + 7) % 7));
+  return new Date(Date.UTC(start.year, start.month - 1, start.day));
 }
 
 export function filterSaleHistory(records: SaleHistoryRecord[], filters: SaleHistoryFilters, now = new Date()) {
-  const start = wednesdayWeekStart(now);
+  const today = businessCalendarDay(now);
+  const daysSinceWednesday = (businessWeekday(today) - 3 + 7) % 7;
   return records.filter((record) => {
     if (filters.sellerId !== "all" && String(record.sellerId) !== filters.sellerId) return false;
     if (filters.status !== "all" && record.status !== filters.status) return false;
     if (filters.period === "all") return true;
-    const date = new Date(now); date.setDate(date.getDate() - record.dayOffset); date.setHours(0, 0, 0, 0);
-    return filters.period === "today" ? record.dayOffset === 0 : date >= start;
+    return filters.period === "today" ? record.dayOffset === 0 : record.dayOffset >= 0 && record.dayOffset <= daysSinceWednesday;
   });
 }
 

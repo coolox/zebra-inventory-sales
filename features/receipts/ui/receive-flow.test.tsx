@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { Product } from "@/lib/types";
@@ -69,6 +69,38 @@ describe("ReceiveFlow localization", () => {
     await waitFor(() => expect(onSave).toHaveBeenCalledWith([expect.objectContaining({ code: "TR07", barcode: "869000700001" })]));
   });
 
+  it("locks existing model identity while receiving an additional color", async () => {
+    const user = userEvent.setup();
+    const onSave = vi.fn();
+    render(<ReceiveFlow locale="en" products={[product]} onCancel={vi.fn()} onSave={onSave} />);
+
+    await user.type(screen.getByRole("textbox", { name: /Product code/ }), "TR07");
+    expect(screen.getByRole("textbox", { name: /Product code/ })).toHaveAttribute("readonly");
+    for (const label of ["Product name", "Brand", "Category", "Supplier", "Model barcode (optional)"]) {
+      expect(screen.getByRole("textbox", { name: label })).toHaveAttribute("readonly");
+    }
+    expect(screen.getByRole("button", { name: "Women" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Men" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Unisex" })).toBeDisabled();
+
+    await user.click(screen.getByRole("button", { name: "Black" }));
+    await user.click(screen.getByRole("button", { name: /^L$/ }));
+    await user.click(screen.getByRole("button", { name: "Receive 1 item" }));
+
+    await waitFor(() => expect(onSave).toHaveBeenCalledWith([expect.objectContaining({ code: "TR07", name: "Dress", brand: "Zebra", category: "Dresses", gender: "women", supplier: "Factory", barcode: "869000700001", color: "Black", size: "L" })]));
+  });
+
+  it("lets the owner explicitly leave the locked model before entering a different product", async () => {
+    const user = userEvent.setup();
+    render(<ReceiveFlow locale="en" products={[product]} onCancel={vi.fn()} onSave={vi.fn()} />);
+
+    await user.type(screen.getByRole("textbox", { name: /Product code/ }), "TR07");
+    await user.click(screen.getByRole("button", { name: "Choose another product" }));
+    const code = screen.getByRole("textbox", { name: /Product code/ });
+    expect(code).not.toHaveAttribute("readonly");
+    expect(code).toHaveValue("");
+  });
+
   it("preserves a leading-zero alphanumeric product code and keeps a variant barcode on its size row", async () => {
     const user = userEvent.setup();
     const onSave = vi.fn();
@@ -86,6 +118,45 @@ describe("ReceiveFlow localization", () => {
     await user.click(screen.getByRole("button", { name: "Receive 1 item" }));
 
     await waitFor(() => expect(onSave).toHaveBeenCalledWith([expect.objectContaining({ code: "0007-Az", variantBarcode: "869000700777", barcode: undefined })]));
+  });
+
+  it("keeps a product code unchanged when mobile keyboard dismissal causes blur or Done", async () => {
+    const user = userEvent.setup();
+    render(<ReceiveFlow locale="en" products={[]} onCancel={vi.fn()} onSave={vi.fn()} />);
+    const code = screen.getByRole("textbox", { name: /Product code/ });
+
+    await user.type(code, "0007-Az");
+    code.blur();
+    fireEvent.change(code, { target: { value: "0007-AzQ" } });
+    expect(code).toHaveValue("0007-Az");
+
+    code.focus();
+    fireEvent.keyDown(code, { key: "Done" });
+    expect(code).toHaveValue("0007-Az");
+    expect(document.activeElement).not.toBe(code);
+  });
+
+  it("commits a Turkish IME composition without adding a suffix", () => {
+    render(<ReceiveFlow locale="tr" products={[]} onCancel={vi.fn()} onSave={vi.fn()} />);
+    const code = screen.getByRole("textbox", { name: /Ürün kodu/ });
+
+    fireEvent.compositionStart(code);
+    fireEvent.change(code, { target: { value: "0007-İz" }, nativeEvent: { isComposing: true } });
+    fireEvent.compositionEnd(code, { data: "z" });
+
+    expect(code).toHaveValue("0007-İz");
+  });
+
+  it("rejects a control-character suffix instead of silently saving a different product code", async () => {
+    const user = userEvent.setup();
+    render(<ReceiveFlow locale="en" products={[]} onCancel={vi.fn()} onSave={vi.fn()} />);
+    const code = screen.getByRole("textbox", { name: /Product code/ });
+
+    await user.type(code, "0007-Az");
+    fireEvent.change(code, { target: { value: "0007-Az\u200B" } });
+
+    expect(code).toHaveValue("0007-Az");
+    expect(screen.getByRole("alert")).toHaveTextContent("Product code contains a non-printing character.");
   });
 
   it("shows only normalized colour suggestions for the selected model", async () => {

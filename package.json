@@ -21,7 +21,8 @@
     "supabase:reset": "npx --yes supabase@2.113.0 db reset --local",
     "supabase:test": "npx --yes supabase@2.113.0 test db --local supabase/tests/database",
     "supabase:verify": "npm run supabase:reset && npm run supabase:test",
-    "supabase:concurrency": "node supabase/tests/concurrency/run.mjs"
+    "supabase:concurrency": "node supabase/tests/concurrency/run.mjs",
+    "supabase:security-smoke": "node supabase/tests/security/pilot-smoke.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",

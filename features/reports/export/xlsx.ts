@@ -9,6 +9,7 @@ export type OwnerReportXlsx = {
   dimension: string;
   metrics: ReportingMetrics;
   breakdowns: ReportingBreakdown[];
+  cashRows?: { method: string; currency: string; count: number; amount: number }[];
 };
 
 const encoder = new TextEncoder();
@@ -69,14 +70,22 @@ export async function createOwnerReportXlsx(report: OwnerReportXlsx): Promise<Bu
     row(5, ["Key", "Label", "Revenue (EUR)", "Cost (EUR)", "Margin (EUR)", "Units"].map((value, index) => inline(`${column(index + 1)}5`, value, 2))),
     ...(report.breakdowns.length ? report.breakdowns.map((item, index) => row(index + 6, [inline(`A${index + 6}`, item.key), inline(`B${index + 6}`, item.label), numeric(`C${index + 6}`, item.revenueEur, 5), numeric(`D${index + 6}`, item.costEur, 5), numeric(`E${index + 6}`, item.marginEur, 5), numeric(`F${index + 6}`, item.units, 6)])) : [row(6, [inline("B6", "No report data for this period.")])]),
   ];
+  const cashRows = [
+    row(1, [inline("A1", "CASH · CAPTURED LEDGER PAYMENTS", 1)]),
+    row(3, [inline("A3", "Store", 2), inline("B3", report.storeName), inline("D3", "Period from", 2), numeric("E3", excelDate(new Date(`${report.from}T00:00:00.000Z`)), 3)]),
+    row(4, [inline("A4", "Period to", 2), numeric("B4", excelDate(new Date(`${report.to}T00:00:00.000Z`)), 3), inline("D4", "Generated at", 2), numeric("E4", excelDate(report.generatedAt), 4)]),
+    row(5, ["Method", "Currency", "Payment count", "Amount"].map((value, index) => inline(`${column(index + 1)}5`, value, 2))),
+    ...((report.cashRows ?? []).length ? (report.cashRows ?? []).map((item, index) => row(index + 6, [inline(`A${index + 6}`, item.method), inline(`B${index + 6}`, item.currency), numeric(`C${index + 6}`, item.count, 6), numeric(`D${index + 6}`, item.amount, 5)])) : [row(6, [inline("B6", "No captured payments for this period.")])]),
+  ];
   const files = {
-    "[Content_Types].xml": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`,
+    "[Content_Types].xml": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet3.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>`,
     "_rels/.rels": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`,
-    "xl/workbook.xml": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Summary" sheetId="1" r:id="rId1"/><sheet name="Breakdown" sheetId="2" r:id="rId2"/></sheets></workbook>`,
-    "xl/_rels/workbook.xml.rels": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`,
+    "xl/workbook.xml": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Summary" sheetId="1" r:id="rId1"/><sheet name="Breakdown" sheetId="2" r:id="rId2"/><sheet name="Cash" sheetId="3" r:id="rId3"/></sheets></workbook>`,
+    "xl/_rels/workbook.xml.rels": `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet3.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>`,
     "xl/styles.xml": styles,
     "xl/worksheets/sheet1.xml": sheetXml(summaryRows, "A1:B15", ["A1:B1"]),
     "xl/worksheets/sheet2.xml": sheetXml(breakdownRows, `A1:F${Math.max(6, report.breakdowns.length + 5)}`, ["A1:F1"], "A5:F5"),
+    "xl/worksheets/sheet3.xml": sheetXml(cashRows, `A1:E${Math.max(6, (report.cashRows ?? []).length + 5)}`, ["A1:E1"], "A5:D5"),
   };
   return zip(files);
 }

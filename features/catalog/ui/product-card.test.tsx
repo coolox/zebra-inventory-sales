@@ -44,15 +44,22 @@ describe("ProductCard", () => {
     expect(screen.queryByText("Total stock")).not.toBeInTheDocument();
   });
 
-  it("confirms a saved low-stock threshold", async () => {
+  it("keeps the threshold out of the ordinary card and saves all model details in Edit Product", async () => {
     const user = userEvent.setup();
-    const onSetLowStockThreshold = vi.fn().mockResolvedValue(undefined);
-    render(<ProductCard locale="en" variants={[product]} onSetLowStockThreshold={onSetLowStockThreshold} />);
+    const onUpdateDetails = vi.fn().mockResolvedValue(undefined);
+    render(<ProductCard locale="en" variants={[product]} canEdit onUpdateDetails={onUpdateDetails} />);
+    expect(screen.queryByLabelText("Low-stock threshold")).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Edit product" }));
+    await user.clear(screen.getByLabelText("Name"));
+    await user.type(screen.getByLabelText("Name"), "Evening dress");
     await user.clear(screen.getByLabelText("Low-stock threshold"));
     await user.type(screen.getByLabelText("Low-stock threshold"), "3");
-    await user.click(screen.getByRole("button", { name: "Save" }));
-    await waitFor(() => expect(onSetLowStockThreshold).toHaveBeenCalledWith(3));
-    expect(screen.getByRole("button", { name: "Saved" })).toBeInTheDocument();
+    await user.clear(screen.getByLabelText("Purchase cost"));
+    await user.type(screen.getByLabelText("Purchase cost"), "55");
+    await user.selectOptions(screen.getByLabelText("Gender"), "unisex");
+    expect(screen.getByText("Applies to all colours and sizes of this Product code; past sales and receipts stay unchanged.")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Save details" }));
+    await waitFor(() => expect(onUpdateDetails).toHaveBeenCalledWith({ name: "Evening dress", gender: "unisex", lowStockThreshold: 3, purchaseCost: 55, purchaseCurrency: "EUR" }));
   });
 
   it("supports keyboard navigation, zoom and close in the viewer", async () => {
@@ -84,6 +91,27 @@ describe("ProductCard", () => {
     expect(screen.getByAltText("Dress, view 2")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Previous photo" }));
     expect(screen.getByAltText("Dress, view 1")).toBeInTheDocument();
+  });
+
+  it("supports horizontal swipe without opening the viewer", () => {
+    render(<ProductCard locale="en" variants={[product]} />);
+    const photo = screen.getByRole("button", { name: "Open photo fullscreen" });
+    fireEvent.pointerDown(photo, { clientX: 180, clientY: 120 });
+    fireEvent.pointerUp(photo, { clientX: 90, clientY: 126 });
+    expect(screen.getByAltText("Dress, view 2")).toBeInTheDocument();
+    expect(screen.queryByRole("dialog", { name: "Photo viewer" })).not.toBeInTheDocument();
+  });
+
+  it("requires confirmation before removing a photo and keeps retry feedback visible", async () => {
+    const user = userEvent.setup();
+    const onRemovePhoto = vi.fn().mockRejectedValue(new Error("Storage temporarily unavailable"));
+    render(<ProductCard locale="en" variants={[{ ...product, photoPaths: ["store/model/front.png", "store/model/angle.png"] }]} onRemovePhoto={onRemovePhoto} />);
+    await user.click(screen.getByRole("button", { name: "Remove this photo" }));
+    expect(onRemovePhoto).not.toHaveBeenCalled();
+    expect(screen.getByText("Remove this photo from this product? This cannot be undone. Historical sale photos remain protected.")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Remove this photo" }));
+    await waitFor(() => expect(onRemovePhoto).toHaveBeenCalledWith("store/model/front.png"));
+    expect(screen.getByRole("alert")).toHaveTextContent("Storage temporarily unavailable");
   });
 
   it("keeps inner viewer interactions open and resets zoom and pan when the photo changes", async () => {
@@ -173,6 +201,35 @@ describe("ProductCard", () => {
     expect(screen.queryByRole("button", { name: "Sell this product" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Restore product" }));
     expect(onSetArchived).toHaveBeenCalledWith(false);
+  });
+
+  it("lets an Owner correct only the product code and keeps the barcode out of the editor", async () => {
+    const user = userEvent.setup();
+    const onUpdateCode = vi.fn().mockResolvedValue(undefined);
+    render(<ProductCard locale="en" variants={[product]} canEdit onUpdateCode={onUpdateCode} />);
+
+    await user.click(screen.getByRole("button", { name: "Edit product code" }));
+    const codeInput = screen.getByRole("textbox", { name: "Product code" });
+    expect(codeInput).toHaveValue("TR07");
+    expect(screen.getByText("Barcode is not changed here.")).toBeInTheDocument();
+    await user.clear(codeInput);
+    await user.type(codeInput, "0007-AZ");
+    await user.click(screen.getByRole("button", { name: "Save code" }));
+
+    await waitFor(() => expect(onUpdateCode).toHaveBeenCalledWith("0007-AZ"));
+    expect(screen.getByText("Product code updated.")).toBeInTheDocument();
+  });
+
+  it("hides product-code editing from a Seller and localizes a duplicate-code error", async () => {
+    const user = userEvent.setup();
+    const onUpdateCode = vi.fn().mockRejectedValue(new Error('Product code "0007-AZ" is already used in this store'));
+    const { rerender } = render(<ProductCard locale="en" variants={[product]} />);
+    expect(screen.queryByRole("button", { name: "Edit product" })).not.toBeInTheDocument();
+
+    rerender(<ProductCard locale="tr" variants={[product]} canEdit onUpdateCode={onUpdateCode} />);
+    await user.click(screen.getByRole("button", { name: "Ürün kodunu düzenle" }));
+    await user.click(screen.getByRole("button", { name: "Kodu kaydet" }));
+    await waitFor(() => expect(screen.getByText("Bu ürün kodu bu mağazada zaten kullanılıyor.")).toBeInTheDocument());
   });
 
   it("sends the selected size variant to movement history", async () => {

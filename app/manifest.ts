@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Zebra Retail",
+    name: "Zebra Boutique",
     short_name: "Zebra",
-    description: "Inventory and sales workspace for Zebra Retail.",
+    description: "Inventory and sales workspace for Zebra Boutique.",
     start_url: "/",
     scope: "/",
     display: "standalone",

@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { ArrowRight, CheckCircle2, Mail, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 import { isLiveMode } from "@/features/workspace/model/app-mode";
 import { createClient } from "@/lib/supabase/client";
 import { authCopy, persistLocale, readStoredLocale, type Locale } from "@/lib/i18n";
@@ -70,8 +71,8 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-[#09090b] px-4 py-8 text-zinc-100">
       <section className="w-full max-w-md overflow-hidden rounded-3xl border border-zinc-800 bg-[#111114] shadow-2xl">
         <div className="border-b border-zinc-800/80 px-6 py-7 sm:px-8">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-600 text-sm font-black tracking-tighter text-white shadow-[0_0_32px_rgba(124,58,237,.35)]">ZB</div>
-          <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400">Zebra Retail</p>
+          <Image src="/icons/zebra-192.png" alt="Zebra Boutique" width={44} height={44} className="h-11 w-11 rounded-xl object-cover shadow-[0_0_32px_rgba(124,58,237,.2)]" priority />
+          <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.2em] text-violet-400">Zebra Boutique</p>
           <div className="mt-5 flex items-center justify-between gap-3"><h1 className="text-2xl font-semibold tracking-tight text-zinc-50">{text.signIn}</h1><div aria-label={text.language} className="flex rounded-lg border border-zinc-800 p-0.5 text-[10px]"><button type="button" onClick={() => changeLocale("en")} className={`rounded-md px-2 py-1 ${locale === "en" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>EN</button><button type="button" onClick={() => changeLocale("tr")} className={`rounded-md px-2 py-1 ${locale === "tr" ? "bg-zinc-800 text-white" : "text-zinc-500"}`}>TR</button></div></div>
           <p className="mt-2 text-sm leading-6 text-zinc-500">{text.signInDescription}</p>
         </div>

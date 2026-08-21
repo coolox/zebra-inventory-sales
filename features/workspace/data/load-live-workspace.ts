@@ -1,5 +1,6 @@
 import { loadLiveCatalog } from "@/features/catalog/data/load-live-catalog";
 import { loadLiveSales } from "@/features/sales/data/load-live-sales";
+import { loadLiveExchanges } from "@/features/exchanges/data/load-live-exchanges";
 import { createClient } from "@/lib/supabase/client";
 import type { Seller } from "@/lib/types";
 import type { WorkspaceData } from "../model/workspace-data";
@@ -45,10 +46,11 @@ async function loadLiveSellers(storeId: string): Promise<Seller[]> {
 }
 
 export async function loadLiveWorkspace(storeId: string): Promise<WorkspaceData> {
-  const [products, salesData, sellers] = await Promise.all([
+  const [products, salesData, sellers, exchanges] = await Promise.all([
     loadLiveCatalog(storeId),
     loadLiveSales(storeId),
     loadLiveSellers(storeId),
+    loadLiveExchanges(storeId),
   ]);
 
   return toWorkspaceSnapshot({
@@ -56,6 +58,6 @@ export async function loadLiveWorkspace(storeId: string): Promise<WorkspaceData>
     sales: salesData.sales,
     sellers,
     activities: salesData.activities,
-    exchanges: [],
+    exchanges,
   });
 }

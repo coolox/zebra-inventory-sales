@@ -3,10 +3,10 @@ import type { ReportingBreakdown, ReportingDimension } from "../data/load-breakd
 import type { InventoryReportRow } from "../data/load-inventory-report";
 import type { ReportingMetrics } from "../data/load-metrics";
 import type { ReportPeriod } from "./period";
+import { businessDateDaysAgo } from "@/lib/business-date";
 
 const saleId = (value: Sale["id"]) => String(value).split(":")[0];
-const isoDaysAgo = (amount: number, now: Date) => { const date = new Date(now); date.setDate(date.getDate() - amount); return date.toISOString().slice(0, 10); };
-const inPeriod = (dayOffset: number, period: ReportPeriod, now: Date) => { const day = isoDaysAgo(dayOffset, now); return day >= period.from && day <= period.to; };
+const inPeriod = (dayOffset: number, period: ReportPeriod, now: Date) => { const day = businessDateDaysAgo(dayOffset, now); return day >= period.from && day <= period.to; };
 const round = (value: number) => Math.round((value + Number.EPSILON) * 100) / 100;
 
 export function demoReportData({ sales, products, exchanges, period, dimension, now = new Date() }: { sales: Sale[]; products: Product[]; exchanges: SaleExchange[]; period: ReportPeriod; dimension: ReportingDimension; now?: Date }): { metrics: ReportingMetrics; breakdowns: ReportingBreakdown[]; inventory: InventoryReportRow[] } {

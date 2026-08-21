@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { SellerSalesSummary } from "./seller-sales-summary";
 
@@ -36,5 +36,18 @@ describe("SellerSalesSummary", () => {
   it("does not replace missing live data with demo calculations", () => {
     render(<SellerSalesSummary role="seller" live={false} locale="tr" load={vi.fn()} />);
     expect(screen.getByText("Canlı satış özetiniz güvenli girişten sonra görünecek.")).toBeInTheDocument();
+  });
+
+  it("keeps the newest requested snapshot when an earlier request resolves late", async () => {
+    let resolveFirst: ((value: typeof summary) => void) | undefined;
+    const first = new Promise<typeof summary>((resolve) => { resolveFirst = resolve; });
+    const newer = { ...summary, store_today: { revenueEur: 223, units: 4 } };
+    const load = vi.fn().mockReturnValueOnce(first).mockResolvedValueOnce(newer);
+    const { rerender } = render(<SellerSalesSummary role="seller" live storeId="store" locale="en" refreshKey="before" load={load} />);
+    rerender(<SellerSalesSummary role="seller" live storeId="store" locale="en" refreshKey="after" load={load} />);
+    expect(await screen.findByText("€223")).toBeInTheDocument();
+    await act(async () => { resolveFirst?.(summary); });
+    expect(screen.getByText("€223")).toBeInTheDocument();
+    expect(screen.queryByText("€140")).not.toBeInTheDocument();
   });
 });

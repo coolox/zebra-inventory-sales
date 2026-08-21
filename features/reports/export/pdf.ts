@@ -10,6 +10,7 @@ export type OwnerReportPdf = {
   dimension: string;
   metrics: ReportingMetrics;
   breakdowns: ReportingBreakdown[];
+  cashRows?: { method: string; currency: string; count: number; amount: number }[];
 };
 
 const pageWidth = 841.89;
@@ -75,6 +76,21 @@ function tableRow(page: PDFPage, regular: PDFFont, row: ReportingBreakdown, y: n
   page.drawLine({ start: { x: margin, y: y - 6 }, end: { x: pageWidth - margin, y: y - 6 }, thickness: 0.35, color: line });
 }
 
+function cashTableHeader(page: PDFPage, bold: PDFFont) {
+  text(page, bold, "Captured ledger payments (not a physical cash count)", margin, tableTop + 22, 10, muted);
+  page.drawLine({ start: { x: margin, y: tableTop + 3 }, end: { x: pageWidth - margin, y: tableTop + 3 }, thickness: 0.8, color: line });
+  ["Method", "Currency", "Payment count", "Amount"].forEach((value, index) => text(page, bold, value, columns[index], tableTop - 12, 8, muted));
+  page.drawLine({ start: { x: margin, y: tableTop - 18 }, end: { x: pageWidth - margin, y: tableTop - 18 }, thickness: 0.8, color: line });
+}
+
+function cashTableRow(page: PDFPage, regular: PDFFont, row: NonNullable<OwnerReportPdf["cashRows"]>[number], y: number) {
+  text(page, regular, row.method, columns[0], y, 9);
+  text(page, regular, row.currency, columns[1], y, 9);
+  text(page, regular, number(row.count), columns[2], y, 9);
+  text(page, regular, new Intl.NumberFormat("en-IE", { style: "currency", currency: row.currency, maximumFractionDigits: 2 }).format(row.amount), columns[3], y, 9);
+  page.drawLine({ start: { x: margin, y: y - 6 }, end: { x: pageWidth - margin, y: y - 6 }, thickness: 0.35, color: line });
+}
+
 /** Produces a compact, paginated Owner report; it deliberately has no receipt semantics. */
 export async function createOwnerReportPdf(report: OwnerReportPdf) {
   const document = await PDFDocument.create();
@@ -98,6 +114,23 @@ export async function createOwnerReportPdf(report: OwnerReportPdf) {
     }
     tableRow(page, regular, row, y);
     y -= rowHeight;
+  }
+  if (report.cashRows) {
+    page = document.addPage([pageWidth, pageHeight]);
+    reportHeader(page, regular, bold, report, true);
+    cashTableHeader(page, bold);
+    y = tableTop - 35;
+    if (!report.cashRows.length) text(page, regular, "No captured payments for this period.", margin, y, 10, muted);
+    for (const cashRow of report.cashRows) {
+      if (y - rowHeight < tableBottom) {
+        page = document.addPage([pageWidth, pageHeight]);
+        reportHeader(page, regular, bold, report, true);
+        cashTableHeader(page, bold);
+        y = tableTop - 35;
+      }
+      cashTableRow(page, regular, cashRow, y);
+      y -= rowHeight;
+    }
   }
   return document.save();
 }

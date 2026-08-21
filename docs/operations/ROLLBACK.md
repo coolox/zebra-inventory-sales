@@ -77,3 +77,25 @@ Agent не выполняет откат production и не переключае
 - Promote предыдущего Vercel deployment ни разу не выполнялся: production не
   существует. Проверяется в TASK-085/TASK-150.
 - Компенсирующая миграция не репетировалась на реальном дефекте.
+
+## TASK-177 — baseline и откат model-level Purchase cost
+
+Зафиксировано до начала реализации 2026-08-21:
+
+- В `product_models` нет текущей model-level purchase cost. Catalog показывает
+  последнюю `purchase_receipt_lines.unit_cost` отдельно для каждого variant.
+- `confirm_sale` сохраняет historical `sale_lines.unit_cost_eur`, выбирая последнюю
+  receipt line данного variant. Уже записанные sale/receipt/FX/ledger строки
+  immutable и не являются целью TASK-177.
+- Low-stock threshold сохраняется отдельным Owner-only RPC
+  `set_low_stock_threshold`; обычная Product Details карточка показывает inline
+  control.
+
+Планируемое изменение добавит текущую стоимость модели (amount, currency и
+зафиксированный EUR equivalent) и Owner-only audited edit. Оно применяется ко всем
+текущим цветам/размерам одного Product code только для будущих sales/exchanges.
+
+Если изменение окажется неверным, не переписывать receipts/sales/ledger. Выпустить
+компенсирующую forward migration: вернуть `confirm_sale`/exchange cost lookup к
+последней receipt line и скрыть новый edit control; model-level values оставить как
+audit-preserving inactive data. Production rollback требует отдельного Owner GO.

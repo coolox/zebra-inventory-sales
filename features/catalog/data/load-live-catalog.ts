@@ -11,6 +11,8 @@ type ModelRow = {
   gender: Product["gender"];
   is_active: boolean;
   low_stock_threshold: number | null;
+  current_purchase_cost: number | null;
+  current_purchase_currency: Product["currency"] | null;
   barcode: string | null;
   suppliers: { name: string } | { name: string }[] | null;
 };
@@ -24,7 +26,7 @@ export async function loadLiveCatalog(storeId: string): Promise<Product[]> {
   const client = createClient();
   const { data: modelData, error: modelsError } = await client
     .from("product_models")
-    .select("id, model_code, barcode, name, brand, category, gender, is_active, low_stock_threshold, suppliers(name)")
+    .select("id, model_code, barcode, name, brand, category, gender, is_active, low_stock_threshold, current_purchase_cost, current_purchase_currency, suppliers(name)")
     .eq("store_id", storeId)
     .order("created_at", { ascending: false });
 
@@ -109,11 +111,12 @@ export async function loadLiveCatalog(storeId: string): Promise<Product[]> {
       gender: model.gender,
       color: variant.color,
       size: variant.size,
-      cost: Number(latestCost?.unit_cost ?? 0),
-      currency: latestCost?.currency ?? "EUR",
+      cost: Number(model.current_purchase_cost ?? latestCost?.unit_cost ?? 0),
+      currency: model.current_purchase_currency ?? latestCost?.currency ?? "EUR",
       stock: stockByVariant.get(variant.id) ?? 0,
       supplier: (Array.isArray(model.suppliers) ? model.suppliers[0]?.name : model.suppliers?.name) ?? "—",
       photos: (imagesByModel.get(model.id) ?? []).flatMap((path) => signedUrls.get(path) ? [signedUrls.get(path)!] : []),
+      photoPaths: imagesByModel.get(model.id) ?? [],
       store: "clothing",
       updated: "Live data",
     }];

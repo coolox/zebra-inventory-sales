@@ -1,6 +1,6 @@
 # TASK-082 — Провести restore rehearsal и rollback plan
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 ## Цель
 
@@ -112,8 +112,8 @@ by migrations.
 
 [ROLLBACK.md](../operations/ROLLBACK.md) documents deploy rollback via Vercel promote,
 compensating forward migrations for the forward-only chain, and Storage-only recovery.
-It records **RPO up to 24 hours** from the `20 1 * * *` UTC schedule, which Owner has
-not yet accepted.
+It records **RPO up to 24 hours** from the `20 1 * * *` UTC schedule, accepted by
+Owner in D-063.
 
 ### Not proven
 
@@ -122,3 +122,14 @@ not yet accepted.
 - Vercel promote of a previous deployment: production does not exist yet.
 - A compensating migration has not been rehearsed against a real defect.
 
+## Результат
+
+TASK-082 завершена. Restore выполнен в изолированном local Supabase environment;
+catalog, ledger, payments, audit и private Storage сверены по строкам, связности и
+sha256. Owner/Seller application data-path smoke прошёл через RPC под RLS. План
+rollback задокументирован и соотнесён с принятым Owner RPO 24 часа (D-063).
+
+Hosted restore, Vercel promote и rehearsal компенсирующей migration невозможны до
+создания production и остаются в границах TASK-085/TASK-150. `rls_auto_enable` не
+включается в RC: D-062 фиксирует её как отдельную незаряженную safety-net функцию;
+все 21 текущие таблицы получают RLS явными migrations.

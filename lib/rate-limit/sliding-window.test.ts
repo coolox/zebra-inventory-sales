@@ -1,6 +1,5 @@
-import { describe, expect, it } from "vitest";
 import { beforeEach, describe, expect, it } from "vitest";
-import { checkRateLimit, rateLimitKey, resetRateLimits } from "./sliding-window";
+import { checkRateLimit, rateLimitKey, rateLimitPolicies, resetRateLimits } from "./sliding-window";
 
 describe("checkRateLimit", () => {
   beforeEach(resetRateLimits);
@@ -9,5 +8,13 @@ describe("checkRateLimit", () => {
     const request = new Request("https://zebra.test", { headers: { "x-forwarded-for": "fallback", "x-vercel-forwarded-for": "platform" } });
     expect(rateLimitKey(request, "invite")).toBe("invite:platform");
     expect(rateLimitKey(request, "status")).toBe("status:platform");
+  });
+
+  it("keeps pilot normal-flow limits above a single user action", () => {
+    expect(rateLimitPolicies.sellerInvite.limit).toBe(5);
+    expect(rateLimitPolicies.sellerStatus.limit).toBe(20);
+    expect(rateLimitPolicies.session.limit).toBe(60);
+    expect(rateLimitPolicies.observability.limit).toBe(30);
+    expect(Object.values(rateLimitPolicies).every((policy) => policy.windowMs === 60_000)).toBe(true);
   });
 });

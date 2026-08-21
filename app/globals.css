@@ -218,7 +218,34 @@ html:not([data-theme="light"]) textarea {
 }
 
 html[data-theme="light"] .chart-grid {
-  background-image: linear-gradient(to bottom, rgba(30, 24, 35, 0.08) 1px, transparent 1px);
+  background-color: transparent;
+  background-image: linear-gradient(to bottom, rgba(124, 58, 237, 0.055) 1px, transparent 1px);
+  background-size: 100% 25%;
+}
+
+.sales-trend-bar-hitarea:hover {
+  background-color: rgba(39, 39, 42, 0.55);
+}
+
+html[data-theme="light"] .sales-trend-bar-hitarea {
+  background-color: transparent;
+}
+
+html[data-theme="light"] .sales-trend-bar-hitarea:hover {
+  background-color: rgba(124, 58, 237, 0.07);
+}
+
+html[data-theme="light"] .receipt-add-color:not(:disabled) {
+  border-color: rgba(109, 40, 217, 0.52);
+  background: rgba(124, 58, 237, 0.11);
+  color: #4c1d95;
+  box-shadow: inset 0 0 0 1px rgba(124, 58, 237, 0.08);
+}
+
+html[data-theme="light"] .receipt-add-color:not(:disabled):hover,
+html[data-theme="light"] .receipt-add-color:not(:disabled):active {
+  background: rgba(124, 58, 237, 0.18);
+  border-color: #6d28d9;
 }
 
 html[data-theme="light"] .theme-selected {

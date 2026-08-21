@@ -13,4 +13,12 @@ describe("seller status API validation", () => {
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({ error: "Request data is invalid.", code: "invalid_request" });
   });
+
+  it("rate limits Seller administration before parsing the next body", async () => {
+    for (let attempt = 0; attempt < 20; attempt += 1) expect((await POST(request("null"))).status).toBe(400);
+    const response = await POST(request("null"));
+    expect(response.status).toBe(429);
+    expect(response.headers.get("Retry-After")).toBeTruthy();
+    expect(await response.json()).toEqual({ error: "Too many requests. Try again later.", code: "rate_limited" });
+  });
 });

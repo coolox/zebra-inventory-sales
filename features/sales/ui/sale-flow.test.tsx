@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { demoPaymentRates } from "../model/payments";
@@ -34,6 +34,25 @@ async function addProduct(user: ReturnType<typeof userEvent.setup>, price = "100
 }
 
 describe("SaleFlow", () => {
+  it("ignores a late Android keyboard-dismiss input for product code and sale price", async () => {
+    const user = userEvent.setup();
+    renderFlow();
+    await user.click(screen.getByRole("button", { name: /Per-item price/ }));
+    const code = screen.getByLabelText(/Product code or barcode/);
+    await user.type(code, "TR07");
+    code.blur();
+    fireEvent.change(code, { target: { value: "TR07Q" } });
+    expect(code).toHaveValue("TR07");
+
+    await user.click(screen.getByRole("button", { name: "Black" }));
+    await user.click(screen.getByRole("button", { name: /L\s*3/ }));
+    const price = screen.getByLabelText(/Actual sale price/);
+    await user.type(price, "100");
+    price.blur();
+    fireEvent.change(price, { target: { value: "1004" } });
+    expect(price).toHaveValue(100);
+  });
+
   it("starts with Price type and places per-item Mixed payment before the price", async () => {
     const user = userEvent.setup();
     renderFlow();

@@ -8,8 +8,10 @@ const product = { id: "new", store: "clothing" as const, stock: 2, name: "New dr
 const rates = { EUR: 1, USD: 1, TRY: 0.03, RUB: 0.01, GBP: 1.2 };
 
 async function fillBase(user: ReturnType<typeof userEvent.setup>, price: string) {
-  await user.selectOptions(screen.getByLabelText("Replacement variant"), "new");
-  await user.type(screen.getByLabelText("Replacement price"), price);
+  await user.type(screen.getByLabelText(/Product code or barcode/), "NEW");
+  await user.click(screen.getByRole("button", { name: "Blue" }));
+  await user.click(screen.getByRole("button", { name: /L 2/ }));
+  await user.type(screen.getByLabelText(/Replacement price/), price);
   await user.type(screen.getByLabelText("Exchange reason"), "Size change");
 }
 
@@ -27,8 +29,7 @@ describe("ExchangeFlow", () => {
     const user = userEvent.setup();
     render(<ExchangeFlow locale="en" source={source} products={[product]} rates={rates} onComplete={async () => undefined} />);
     await fillBase(user, "130");
-    const options = Array.from(screen.getByLabelText("Payment amount").querySelectorAll("option")).map((option) => option.textContent);
-    expect(options).toEqual(["30.00 EUR", "30.00 USD", "1000.00 TRY", "3000.00 RUB", "25.00 GBP"]);
+    expect(screen.getByText("Payment amount: 30.00 EUR")).toBeInTheDocument();
   });
 
   it("explains that equal price creates no refund", async () => {

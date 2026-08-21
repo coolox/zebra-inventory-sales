@@ -27,6 +27,7 @@ export type Product = {
   stock: number;
   supplier: string;
   photos?: string[];
+  photoPaths?: string[];
   store: StoreId;
   updated: string;
 };
@@ -51,6 +52,8 @@ export type Sale = {
   status?: "confirmed" | "cancelled";
   dayOffset: number;
   time: string;
+  /** Signed, sale-time private image reference when available. */
+  photoUrl?: string;
 };
 
 /** Immutable demo snapshot of an exchange applied to an existing sale line. */

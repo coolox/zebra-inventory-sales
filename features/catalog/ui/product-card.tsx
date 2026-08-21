@@ -1,17 +1,17 @@
 "use client";
 
-import { ArchiveRestore, Check, ChevronLeft, ChevronRight, History, ImageOff, Maximize2, Minus, Package, Plus, Settings2, Shirt, ShoppingBag, Upload, X } from "lucide-react";
+import { ArchiveRestore, ChevronLeft, ChevronRight, History, ImageOff, Maximize2, Minus, Package, Pencil, Plus, Settings2, Shirt, ShoppingBag, Trash2, Upload, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { useDialogFocus } from "@/components/ui/use-dialog-focus";
 import type { Product } from "@/lib/types";
 import type { Locale } from "@/lib/i18n";
-import { catalogCopy, productArchiveErrorMessage, productCardErrorMessage } from "@/features/catalog/model/catalog-copy";
+import { catalogCopy, productArchiveErrorMessage, productCardErrorMessage, productCodeErrorMessage } from "@/features/catalog/model/catalog-copy";
 
 function unique(values: string[]) {
   return [...new Set(values.filter(Boolean))];
 }
 
-export function ProductCard({ locale, variants, onUploadPhotos, onSell, canManageArchive = false, isArchived = false, onSetArchived, onViewHistory, onAdjust, onSetLowStockThreshold }: { locale: Locale; variants: Product[]; onUploadPhotos?: (files: File[]) => Promise<void>; onSell?: (code: string) => void; canManageArchive?: boolean; isArchived?: boolean; onSetArchived?: (archived: boolean) => Promise<void>; onViewHistory?: (variant: Product) => void; onAdjust?: (variant: Product) => void; onSetLowStockThreshold?: (threshold: number) => Promise<void> }) {
+export function ProductCard({ locale, variants, onUploadPhotos, onRemovePhoto, onSell, canManageArchive = false, isArchived = false, onSetArchived, canEdit = false, onUpdateCode, onUpdateDetails, onViewHistory, onAdjust }: { locale: Locale; variants: Product[]; onUploadPhotos?: (files: File[]) => Promise<void>; onRemovePhoto?: (path: string) => Promise<void>; onSell?: (code: string) => void; canManageArchive?: boolean; isArchived?: boolean; onSetArchived?: (archived: boolean) => Promise<void>; canEdit?: boolean; onUpdateCode?: (code: string) => Promise<void>; onUpdateDetails?: (details: { name: string; gender: Product["gender"]; lowStockThreshold: number; purchaseCost: number; purchaseCurrency: Product["currency"] }) => Promise<void>; onViewHistory?: (variant: Product) => void; onAdjust?: (variant: Product) => void }) {
   const text = catalogCopy[locale];
   const model = variants[0];
   const photos = model?.photos ?? [];
@@ -21,16 +21,24 @@ export function ProductCard({ locale, variants, onUploadPhotos, onSell, canManag
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [removeConfirmationOpen, setRemoveConfirmationOpen] = useState(false);
+  const [removeSaving, setRemoveSaving] = useState(false);
+  const [removeError, setRemoveError] = useState("");
   const [archiveConfirmationOpen, setArchiveConfirmationOpen] = useState(false);
   const [archiveSaving, setArchiveSaving] = useState(false);
   const [archiveError, setArchiveError] = useState("");
-  const [threshold, setThreshold] = useState(String(model?.lowStockThreshold ?? 2));
-  const [thresholdError, setThresholdError] = useState("");
-  const [thresholdSaving, setThresholdSaving] = useState(false);
-  const [thresholdSaved, setThresholdSaved] = useState(false);
+  const [editingCode, setEditingCode] = useState(false);
+  const [code, setCode] = useState(model?.code ?? "");
+  const [codeSaving, setCodeSaving] = useState(false);
+  const [codeError, setCodeError] = useState("");
+  const [codeSaved, setCodeSaved] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false); const [detailsSaving, setDetailsSaving] = useState(false); const [detailsError, setDetailsError] = useState("");
+  const [detailName, setDetailName] = useState(model?.name ?? ""); const [detailGender, setDetailGender] = useState<Product["gender"]>(model?.gender ?? "unisex"); const [detailThreshold, setDetailThreshold] = useState(String(model?.lowStockThreshold ?? 2)); const [detailCost, setDetailCost] = useState(String(model?.cost ?? 0)); const [detailCurrency, setDetailCurrency] = useState<Product["currency"]>(model?.currency ?? "EUR");
   const fileInput = useRef<HTMLInputElement>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
+  const carouselSwipe = useRef<{ x: number; y: number } | null>(null);
+  const carouselDidSwipe = useRef(false);
   const [color, setColor] = useState(model?.color ?? "");
   const [selectedVariantId, setSelectedVariantId] = useState(model?.id);
   useDialogFocus(viewerOpen, viewerRef);
@@ -42,6 +50,10 @@ export function ProductCard({ locale, variants, onUploadPhotos, onSell, canManag
   useEffect(() => {
     setSelectedVariantId(colorVariants[0]?.id);
   }, [color]);
+
+  useEffect(() => {
+    setCode(model?.code ?? "");
+  }, [model?.code]);
 
   useEffect(() => {
     if (!viewerOpen) return;
@@ -77,6 +89,29 @@ export function ProductCard({ locale, variants, onUploadPhotos, onSell, canManag
     setZoom(1);
     setPan({ x: 0, y: 0 });
     setViewerOpen(true);
+  };
+
+  const startCarouselSwipe = (event: PointerEvent<HTMLButtonElement>) => {
+    carouselSwipe.current = { x: event.clientX, y: event.clientY };
+  };
+
+  const endCarouselSwipe = (event: PointerEvent<HTMLButtonElement>) => {
+    const start = carouselSwipe.current;
+    carouselSwipe.current = null;
+    if (!start) return;
+    const x = event.clientX - start.x;
+    const y = event.clientY - start.y;
+    if (Math.abs(x) < 40 || Math.abs(x) <= Math.abs(y)) return;
+    carouselDidSwipe.current = true;
+    movePhoto(x < 0 ? 1 : -1);
+  };
+
+  const openViewerOrKeepSwipe = () => {
+    if (carouselDidSwipe.current) {
+      carouselDidSwipe.current = false;
+      return;
+    }
+    openViewer();
   };
 
   const changeZoom = (delta: number) => {
@@ -124,6 +159,22 @@ export function ProductCard({ locale, variants, onUploadPhotos, onSell, canManag
     }
   };
 
+  const removePhoto = async () => {
+    const path = model.photoPaths?.[photoIndex];
+    if (!path || !onRemovePhoto || removeSaving) return;
+    setRemoveSaving(true);
+    setRemoveError("");
+    try {
+      await onRemovePhoto(path);
+      setRemoveConfirmationOpen(false);
+      setPhotoIndex((current) => Math.max(0, Math.min(current, photos.length - 2)));
+    } catch (error) {
+      setRemoveError(error instanceof Error ? error.message : text.removePhotoError);
+    } finally {
+      setRemoveSaving(false);
+    }
+  };
+
   const setArchived = async (archived: boolean) => {
     if (!onSetArchived || archiveSaving) return;
     setArchiveSaving(true);
@@ -138,33 +189,35 @@ export function ProductCard({ locale, variants, onUploadPhotos, onSell, canManag
     }
   };
 
-  const saveThreshold = async () => {
-    const value = Number(threshold);
-    if (!Number.isInteger(value) || value < 0) {
-      setThresholdSaved(false);
-      setThresholdError("Enter a whole number of 0 or more.");
+  const saveCode = async () => {
+    const nextCode = code.trim();
+    if (!nextCode) {
+      setCodeSaved(false);
+      setCodeError(text.codeRequired);
       return;
     }
-    if (!onSetLowStockThreshold || thresholdSaving) return;
-    setThresholdSaving(true);
-    setThresholdSaved(false);
-    setThresholdError("");
+    if (!onUpdateCode || codeSaving) return;
+    setCodeSaving(true);
+    setCodeSaved(false);
+    setCodeError("");
     try {
-      await onSetLowStockThreshold(value);
-      setThresholdSaved(true);
+      await onUpdateCode(nextCode);
+      setEditingCode(false);
+      setCodeSaved(true);
     } catch (error) {
-      setThresholdError(error instanceof Error ? error.message : "Unable to save threshold.");
+      setCodeError(error instanceof Error ? error.message : "");
     } finally {
-      setThresholdSaving(false);
+      setCodeSaving(false);
     }
   };
+  const saveDetails = async () => { const threshold = Number(detailThreshold); const cost = Number(detailCost); if (!onUpdateDetails || !detailName.trim() || !Number.isInteger(threshold) || threshold < 0 || !Number.isFinite(cost) || cost < 0) { setDetailsError(text.detailsValidation); return; } setDetailsSaving(true); setDetailsError(""); try { await onUpdateDetails({ name: detailName.trim(), gender: detailGender, lowStockThreshold: threshold, purchaseCost: cost, purchaseCurrency: detailCurrency }); setDetailsOpen(false); } catch (error) { setDetailsError(error instanceof Error ? error.message : text.detailsGenericError); } finally { setDetailsSaving(false); } };
 
   return (
     <div className="grid lg:grid-cols-[1.05fr_.95fr]">
       <div className="border-b border-zinc-800 p-4 sm:p-6 lg:border-b-0 lg:border-r">
         <div className="relative aspect-square overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-950">
           {photos.length ? (
-            <button type="button" onClick={openViewer} className="group h-full w-full cursor-zoom-in" aria-label={text.openPhotoFullscreen}><img src={photos[photoIndex]} alt={text.photoAlt(model.name, photoIndex + 1)} className="h-full w-full object-contain" /><span className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur transition group-hover:opacity-100"><Maximize2 size={17} /></span></button>
+            <button type="button" onPointerDown={startCarouselSwipe} onPointerUp={endCarouselSwipe} onPointerCancel={() => { carouselSwipe.current = null; }} onClick={openViewerOrKeepSwipe} className="group h-full w-full cursor-zoom-in touch-pan-y" aria-label={text.openPhotoFullscreen}><img src={photos[photoIndex]} alt={text.photoAlt(model.name, photoIndex + 1)} className="h-full w-full object-contain" /><span className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-black/55 text-white opacity-0 backdrop-blur transition group-hover:opacity-100"><Maximize2 size={17} /></span></button>
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-3 text-zinc-700"><ImageOff size={30} /><span className="text-xs">{text.noPhotos}</span></div>
           )}
@@ -175,6 +228,7 @@ export function ProductCard({ locale, variants, onUploadPhotos, onSell, canManag
           </>}
         </div>
         {photos.length > 1 && <div className="mt-3 grid grid-cols-3 gap-2">{photos.map((photo, index) => <button key={photo} type="button" onClick={() => setPhotoIndex(index)} className={`aspect-[4/3] overflow-hidden rounded-lg border ${index === photoIndex ? "border-violet-500 ring-1 ring-violet-500/30" : "border-zinc-800 opacity-55 hover:opacity-100"}`}><img src={photo} alt="" className="h-full w-full object-cover" /></button>)}</div>}
+        {onRemovePhoto && model.photoPaths?.[photoIndex] && (removeConfirmationOpen ? <div className="mt-3 rounded-xl border border-red-500/30 bg-red-500/[0.06] p-3"><p className="text-xs leading-relaxed text-red-100">{text.removePhotoConfirm}</p>{removeError && <p role="alert" className="mt-2 text-[11px] text-red-300">{removeError}</p>}<div className="mt-3 flex gap-2"><button type="button" disabled={removeSaving} onClick={() => void removePhoto()} className="flex h-10 flex-1 items-center justify-center rounded-lg bg-red-500 px-3 text-xs font-semibold text-white disabled:opacity-50">{removeSaving ? text.removingPhoto : text.removePhoto}</button><button type="button" disabled={removeSaving} onClick={() => { setRemoveConfirmationOpen(false); setRemoveError(""); }} className="h-10 rounded-lg border border-zinc-700 px-3 text-xs text-zinc-200">{text.cancelEdit}</button></div></div> : <button type="button" onClick={() => { setRemoveConfirmationOpen(true); setRemoveError(""); }} className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-red-500/30 text-xs font-semibold text-red-300"><Trash2 size={15} />{text.removePhoto}</button>)}
         {onUploadPhotos && <div className="mt-3"><input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" multiple className="sr-only" onChange={(event) => void uploadPhotos(event.target.files)} /><button type="button" disabled={uploading} onClick={() => fileInput.current?.click()} className="flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 text-xs font-semibold text-violet-300 transition hover:bg-violet-500/15 disabled:cursor-not-allowed disabled:opacity-50"><Upload size={15} />{uploading ? text.uploadingPhotos : text.addPhotos}</button>{uploadError && <p className="mt-2 text-[11px] text-red-300">{productCardErrorMessage(uploadError, locale)}</p>}<p className="mt-2 text-[10px] text-zinc-600">{text.uploadHint}</p></div>}
       </div>
 
@@ -193,10 +247,13 @@ export function ProductCard({ locale, variants, onUploadPhotos, onSell, canManag
 
         <div className="mt-6"><div className="flex items-center justify-between"><p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">{text.availableSizes}</p><span className="text-[10px] text-zinc-600">{text.stockByVariant}</span></div><div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">{colorVariants.map((variant) => <button key={variant.id} type="button" onClick={() => setSelectedVariantId(variant.id)} className={`rounded-xl border p-3 text-left transition ${selectedVariant?.id === variant.id ? "border-violet-500 ring-1 ring-violet-500/25" : ""} ${variant.stock > 0 ? "border-zinc-800 bg-zinc-900/70" : "border-amber-500/20 bg-amber-500/[0.06]"}`}><div className="flex items-center justify-between gap-2"><span className="text-sm font-semibold text-zinc-200">{variant.size}</span><span className={`text-[10px] font-medium ${variant.stock > 2 ? "text-emerald-400" : "text-amber-400"}`}>{text.pieces(variant.stock)}</span></div></button>)}</div></div>
 
-        <div className="mt-6 space-y-2 border-t border-zinc-800 pt-5 text-xs"><div className="flex items-center justify-between"><span className="text-zinc-600">{text.supplier}</span><span className="text-zinc-300">{model.supplier}</span></div>{model.barcode && <div className="flex items-center justify-between gap-3"><span className="text-zinc-600">{text.barcode}</span><span className="truncate font-mono text-zinc-300">{model.barcode}</span></div>}<div className="flex items-center justify-between"><span className="text-zinc-600">{text.gender}</span><span className="text-zinc-300">{text.genderNames[model.gender]}</span></div><div className="flex items-center justify-between"><span className="text-zinc-600">{text.variants}</span><span className="flex items-center gap-1.5 text-zinc-300"><Package size={13} /> {variants.length}</span></div>{onSetLowStockThreshold && <form className="flex flex-wrap items-center justify-between gap-3 pt-2" onSubmit={(event) => { event.preventDefault(); void saveThreshold(); }}><span className="text-zinc-600">Low-stock threshold</span><span className="flex items-center gap-2"><input aria-label="Low-stock threshold" inputMode="numeric" value={threshold} onChange={(event) => { setThreshold(event.target.value); setThresholdSaved(false); }} className="h-8 w-12 rounded-md border border-zinc-800 bg-zinc-900 px-2 text-center text-xs text-zinc-100 outline-none focus:border-violet-500" /><button type="submit" disabled={thresholdSaving} className={`flex h-8 min-w-16 items-center justify-center gap-1 rounded-md border px-2 text-[10px] transition disabled:opacity-50 ${thresholdSaved ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300" : "border-zinc-700 text-zinc-300"}`}>{thresholdSaving ? "Saving…" : thresholdSaved ? <><Check size={12} /> Saved</> : "Save"}</button></span></form>}{thresholdError && <p role="alert" className="text-[11px] text-red-300">{thresholdError}</p>}</div>
+        <div className="mt-6 space-y-2 border-t border-zinc-800 pt-5 text-xs"><div className="flex items-center justify-between"><span className="text-zinc-600">{text.supplier}</span><span className="text-zinc-300">{model.supplier}</span></div>{model.barcode && <div className="flex items-center justify-between gap-3"><span className="text-zinc-600">{text.barcode}</span><span className="truncate font-mono text-zinc-300">{model.barcode}</span></div>}<div className="flex items-center justify-between"><span className="text-zinc-600">{text.gender}</span><span className="text-zinc-300">{text.genderNames[model.gender]}</span></div><div className="flex items-center justify-between"><span className="text-zinc-600">{text.variants}</span><span className="flex items-center gap-1.5 text-zinc-300"><Package size={13} /> {variants.length}</span></div></div>
         <div className="mt-6 space-y-3">
+          {canEdit && onUpdateDetails && (detailsOpen ? <form className="rounded-xl border border-violet-500/30 bg-violet-500/[0.06] p-3" onSubmit={(event) => { event.preventDefault(); void saveDetails(); }}><p className="text-xs font-semibold text-violet-200">{text.productDetails}</p><label className="mt-3 block text-xs">{text.productName}<input aria-label={text.productName} value={detailName} onChange={(event) => setDetailName(event.target.value)} className="mt-1 h-10 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3" /></label><div className="mt-3 grid grid-cols-2 gap-2"><label className="text-xs">{text.gender}<select aria-label={text.gender} value={detailGender} onChange={(event) => setDetailGender(event.target.value as Product["gender"])} className="mt-1 h-10 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2">{(["women", "men", "unisex"] as const).map((item) => <option key={item} value={item}>{text.genderNames[item]}</option>)}</select></label><label className="text-xs">{text.lowStockThreshold}<input aria-label={text.lowStockThreshold} inputMode="numeric" value={detailThreshold} onChange={(event) => setDetailThreshold(event.target.value)} className="mt-1 h-10 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3" /></label></div><div className="mt-3 grid grid-cols-[1fr_88px] gap-2"><label className="text-xs">{text.purchaseCost}<input aria-label={text.purchaseCost} inputMode="decimal" value={detailCost} onChange={(event) => setDetailCost(event.target.value)} className="mt-1 h-10 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3" /></label><label className="text-xs">{text.purchaseCurrency}<select aria-label={text.purchaseCurrency} value={detailCurrency} onChange={(event) => setDetailCurrency(event.target.value as Product["currency"])} className="mt-1 h-10 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-2">{["EUR", "USD", "TRY", "RUB", "GBP"].map((item) => <option key={item}>{item}</option>)}</select></label></div><p className="mt-2 text-[10px] text-zinc-500">{text.detailsScope}</p>{detailsError && <p role="alert" className="mt-2 text-[11px] text-red-300">{detailsError}</p>}<div className="mt-3 flex gap-2"><button type="submit" disabled={detailsSaving} className="h-9 flex-1 rounded-lg bg-violet-600 text-xs font-semibold text-white">{detailsSaving ? text.savingDetails : text.saveDetails}</button><button type="button" onClick={() => setDetailsOpen(false)} className="h-9 rounded-lg border border-zinc-700 px-3 text-xs">{text.cancelEdit}</button></div></form> : <button type="button" onClick={() => { setDetailsOpen(true); setDetailsError(""); }} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-300"><Pencil size={16} /> {text.editProduct}</button>)}
+          {canEdit && onUpdateCode && (editingCode ? <form className="rounded-xl border border-violet-500/30 bg-violet-500/[0.06] p-3" onSubmit={(event) => { event.preventDefault(); void saveCode(); }}><label className="block text-[10px] font-semibold uppercase tracking-[0.15em] text-violet-200" htmlFor="product-code">{text.productCode}</label><input id="product-code" aria-label={text.productCode} value={code} onChange={(event) => { setCode(event.target.value); setCodeError(""); setCodeSaved(false); }} autoComplete="off" className="mt-2 h-10 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 font-mono text-sm text-zinc-100 outline-none focus:border-violet-500" /><p className="mt-2 text-[10px] text-zinc-500">{text.barcodeUnchanged}</p>{codeError && <p role="alert" className="mt-2 text-[11px] text-red-300">{codeError === text.codeRequired ? codeError : productCodeErrorMessage(codeError, locale)}</p>}<div className="mt-3 flex gap-2"><button type="submit" disabled={codeSaving} className="flex h-9 flex-1 items-center justify-center rounded-lg bg-violet-600 px-3 text-xs font-semibold text-white disabled:opacity-50">{codeSaving ? text.savingCode : text.saveCode}</button><button type="button" disabled={codeSaving} onClick={() => { setEditingCode(false); setCode(model.code); setCodeError(""); }} className="h-9 rounded-lg border border-zinc-700 px-3 text-xs font-medium text-zinc-300">{text.cancelEdit}</button></div></form> : <button type="button" onClick={() => { setEditingCode(true); setCode(model.code); setCodeError(""); setCodeSaved(false); }} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-violet-200"><Pencil size={16} /> {text.editProductCode}</button>)}
+          {codeSaved && <p className="text-[11px] text-emerald-300">{text.codeSaved}</p>}
           {onSell && !isArchived && <button type="button" onClick={() => onSell(model.code)} className="purple-shadow flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-violet-600 text-sm font-semibold text-white transition hover:bg-violet-500"><ShoppingBag size={17} /> {text.sellThisProduct}</button>}
-          {onViewHistory && selectedVariant && <button type="button" onClick={() => onViewHistory(selectedVariant)} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-violet-200"><History size={16} /> {locale === "tr" ? "Hareket geçmişi" : "Movement history"}</button>}
+          {onViewHistory && selectedVariant && <button id={`movement-history-${selectedVariant.id}`} type="button" onClick={() => onViewHistory(selectedVariant)} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-violet-200"><History size={16} /> {locale === "tr" ? "Hareket geçmişi" : "Movement history"}</button>}
           {onAdjust && selectedVariant && !isArchived && <button type="button" onClick={() => onAdjust(selectedVariant)} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-violet-200"><Settings2 size={16} /> {locale === "tr" ? "Stok düzelt" : "Adjust stock"}</button>}
           {canManageArchive && onSetArchived && (isArchived ? <button type="button" disabled={archiveSaving} onClick={() => void setArchived(false)} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-violet-500/35 bg-violet-500/10 text-xs font-semibold text-violet-200 transition hover:bg-violet-500/15 disabled:cursor-not-allowed disabled:opacity-50"><ArchiveRestore size={16} /> {archiveSaving ? text.archivingProduct : text.restoreProduct}</button> : archiveConfirmationOpen ? <div className="rounded-xl border border-amber-500/25 bg-amber-500/[0.06] p-3"><p className="text-xs leading-relaxed text-amber-100">{text.archiveConfirm}</p><div className="mt-3 flex gap-2"><button type="button" disabled={archiveSaving} onClick={() => void setArchived(true)} className="flex h-9 flex-1 items-center justify-center rounded-lg bg-amber-500 px-3 text-xs font-semibold text-zinc-950 disabled:opacity-50">{archiveSaving ? text.archivingProduct : text.archiveConfirmAction}</button><button type="button" disabled={archiveSaving} onClick={() => setArchiveConfirmationOpen(false)} className="h-9 rounded-lg border border-zinc-700 px-3 text-xs font-medium text-zinc-300">{text.cancelArchive}</button></div></div> : <button type="button" onClick={() => setArchiveConfirmationOpen(true)} className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-zinc-700 bg-zinc-900 text-xs font-semibold text-zinc-300 transition hover:border-amber-500/50 hover:text-amber-200"><ArchiveRestore size={16} /> {text.archiveProduct}</button>)}
           {archiveError && <p className="text-[11px] text-red-300">{productArchiveErrorMessage(archiveError, locale)}</p>}

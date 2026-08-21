@@ -1,7 +1,7 @@
 "use client";
 
 import { Check, PackagePlus, Plus, Search, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ChangeEvent, type CompositionEvent, type FormEvent, type KeyboardEvent } from "react";
 import type { Product } from "@/lib/types";
 import type { Locale } from "@/lib/i18n";
 import type { ReceiptDraft } from "@/features/receipts/model/types";
@@ -9,6 +9,8 @@ import { receiptErrorMessage } from "@/features/receipts/model/receipt-errors";
 import { receiptCopy } from "@/features/receipts/model/receipt-copy";
 import { productMatchesCatalogSearch, resolveProductLookup } from "@/features/catalog/model/catalog-search";
 import { colorOptions } from "@/features/catalog/model/colors";
+import { hasForbiddenProductCodeCharacter, isProductCodeKeyboardTerminator } from "@/features/receipts/model/product-code-input";
+import { acceptsFocusedInput } from "@/features/sales/model/mobile-input";
 
 type Currency = Product["currency"];
 type Gender = Product["gender"];
@@ -37,8 +39,10 @@ export function ReceiveFlow({ locale, products, onCancel, onSave }: Props) {
   const [customSize, setCustomSize] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const [codeInputError, setCodeInputError] = useState("");
 
   const matchingModel = useMemo(() => resolveProductLookup(clothing, form.code), [clothing, form.code]);
+  const isExistingModel = matchingModel.length > 0;
   const codeSuggestions = unique(clothing.filter((product) => productMatchesCatalogSearch(product, form.code)).map((product) => product.code)).slice(0, 6);
   const colorSuggestions = colorOptions((matchingModel.length ? matchingModel : clothing).map((product) => product.color), locale);
   const knownSizes = unique([...(matchingModel.length ? matchingModel.filter((product) => !form.color || product.color === form.color).map((product) => product.size) : []), ...standardSizes]);
@@ -57,6 +61,54 @@ export function ReceiveFlow({ locale, products, onCancel, onSave }: Props) {
     setSizeQuantities({});
     setSizeBarcodes({});
     setSaveError("");
+  };
+  const chooseAnotherProduct = () => {
+    setForm(emptyForm);
+    setSizeQuantities({});
+    setSizeBarcodes({});
+    setCodeInputError("");
+    setSaveError("");
+  };
+  const rejectInvalidCode = () => setCodeInputError(text.modelCodeInvalidCharacters);
+  const updateComposingCode = (code: string) => {
+    setForm((current) => ({ ...current, code }));
+    setCodeInputError("");
+    setSaveError("");
+  };
+  const handleCodeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!acceptsFocusedInput(event)) return;
+    const code = event.target.value;
+    if (hasForbiddenProductCodeCharacter(code)) {
+      rejectInvalidCode();
+      return;
+    }
+    if ((event.nativeEvent as InputEvent).isComposing) {
+      updateComposingCode(code);
+      return;
+    }
+    setCodeInputError("");
+    chooseCode(code);
+  };
+  const handleCodeCompositionEnd = (event: CompositionEvent<HTMLInputElement>) => {
+    const code = event.currentTarget.value;
+    if (hasForbiddenProductCodeCharacter(code)) {
+      rejectInvalidCode();
+      return;
+    }
+    setCodeInputError("");
+    chooseCode(code);
+  };
+  const handleCodeBeforeInput = (event: FormEvent<HTMLInputElement>) => {
+    const nativeEvent = event.nativeEvent as InputEvent;
+    if (nativeEvent.inputType === "insertLineBreak" || nativeEvent.inputType === "insertParagraph" || (nativeEvent.data && hasForbiddenProductCodeCharacter(nativeEvent.data))) {
+      event.preventDefault();
+      rejectInvalidCode();
+    }
+  };
+  const handleCodeKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if ((event.nativeEvent as globalThis.KeyboardEvent).isComposing || !isProductCodeKeyboardTerminator(event.key)) return;
+    event.preventDefault();
+    event.currentTarget.blur();
   };
 
   const toggleSize = (size: string) => {
@@ -101,11 +153,11 @@ export function ReceiveFlow({ locale, products, onCancel, onSave }: Props) {
   return <div className="p-5 sm:p-7">
     <div className="flex gap-3 rounded-xl border border-violet-500/20 bg-violet-500/[0.06] p-4"><PackagePlus size={18} className="mt-0.5 shrink-0 text-violet-400" /><div><p className="text-xs font-medium text-zinc-200">{text.introTitle}</p><p className="mt-1 text-[11px] leading-relaxed text-zinc-500">{text.introDescription}</p></div></div>
 
-    <div className="mt-6"><label className={labelClass}>{text.modelCode}</label><div className="relative"><Search size={15} className="pointer-events-none absolute left-3 top-[27px] text-zinc-600" /><input aria-label={text.modelCode} value={form.code} onChange={(event) => chooseCode(event.target.value)} placeholder={text.modelCodePlaceholder} className={`${inputClass} pl-9 font-mono uppercase tracking-wide`} autoFocus /></div>{codeSuggestions.length > 0 && form.code && !matchingModel.length && <Chips values={codeSuggestions} onSelect={chooseCode} />}{matchingModel.length > 0 && <p className="mt-2 flex items-center gap-1.5 text-[10px] text-emerald-400"><Check size={12} /> {text.existingModel}</p>}</div>
+    <div className="mt-6"><label className={labelClass}>{text.modelCode}</label><div className="relative"><Search size={15} className="pointer-events-none absolute left-3 top-[27px] text-zinc-600" /><input aria-label={text.modelCode} value={form.code} readOnly={isExistingModel} onBeforeInput={handleCodeBeforeInput} onChange={handleCodeChange} onCompositionEnd={handleCodeCompositionEnd} onKeyDown={handleCodeKeyDown} placeholder={text.modelCodePlaceholder} className={`${inputClass} pl-9 font-mono uppercase tracking-wide ${isExistingModel ? "cursor-not-allowed border-emerald-500/35 text-zinc-300" : ""}`} autoFocus /></div>{codeInputError && <p role="alert" className="mt-2 text-[11px] text-amber-300">{codeInputError}</p>}{codeSuggestions.length > 0 && form.code && !isExistingModel && <Chips values={codeSuggestions} onSelect={chooseCode} />}{isExistingModel && <div className="mt-2 flex flex-wrap items-center gap-2"><p className="flex items-center gap-1.5 text-[10px] text-emerald-400"><Check size={12} /> {text.existingModel}</p><button type="button" onClick={chooseAnotherProduct} className="text-[10px] font-semibold text-violet-300 underline underline-offset-2">{text.changeModel}</button></div>}</div>
 
-    <div className="mt-5 grid gap-4 sm:grid-cols-2"><label><span className={labelClass}>{text.productName}</span><input value={form.name} onChange={(event) => set("name", event.target.value)} placeholder={text.productNamePlaceholder} className={inputClass} /></label><label><span className={labelClass}>{text.brand}</span><input list="brands" value={form.brand} onChange={(event) => set("brand", event.target.value)} placeholder={text.brandPlaceholder} className={inputClass} /><datalist id="brands">{unique(clothing.map((p) => p.brand)).map((value) => <option key={value} value={value} />)}</datalist></label><label><span className={labelClass}>{text.category}</span><input list="categories" value={form.category} onChange={(event) => set("category", event.target.value)} placeholder={text.categoryPlaceholder} className={inputClass} /><datalist id="categories">{unique(clothing.map((p) => p.category)).map((value) => <option key={value} value={value} />)}</datalist></label><label><span className={labelClass}>{text.supplier}</span><input list="suppliers" value={form.supplier} onChange={(event) => set("supplier", event.target.value)} placeholder={text.supplierPlaceholder} className={inputClass} /><datalist id="suppliers">{unique(clothing.map((p) => p.supplier)).map((value) => <option key={value} value={value} />)}</datalist></label><label><span className={labelClass}>{text.barcode}</span><input value={form.barcode} onChange={(event) => set("barcode", event.target.value)} placeholder={text.barcodePlaceholder} className={`${inputClass} font-mono tracking-wide`} /></label></div>
+    <div className="mt-5 grid gap-4 sm:grid-cols-2"><label><span className={labelClass}>{text.productName}</span><input value={form.name} readOnly={isExistingModel} onChange={(event) => set("name", event.target.value)} placeholder={text.productNamePlaceholder} className={`${inputClass} ${isExistingModel ? "cursor-not-allowed text-zinc-400" : ""}`} /></label><label><span className={labelClass}>{text.brand}</span><input list={isExistingModel ? undefined : "brands"} value={form.brand} readOnly={isExistingModel} onChange={(event) => set("brand", event.target.value)} placeholder={text.brandPlaceholder} className={`${inputClass} ${isExistingModel ? "cursor-not-allowed text-zinc-400" : ""}`} /><datalist id="brands">{unique(clothing.map((p) => p.brand)).map((value) => <option key={value} value={value} />)}</datalist></label><label><span className={labelClass}>{text.category}</span><input list={isExistingModel ? undefined : "categories"} value={form.category} readOnly={isExistingModel} onChange={(event) => set("category", event.target.value)} placeholder={text.categoryPlaceholder} className={`${inputClass} ${isExistingModel ? "cursor-not-allowed text-zinc-400" : ""}`} /><datalist id="categories">{unique(clothing.map((p) => p.category)).map((value) => <option key={value} value={value} />)}</datalist></label><label><span className={labelClass}>{text.supplier}</span><input list={isExistingModel ? undefined : "suppliers"} value={form.supplier} readOnly={isExistingModel} onChange={(event) => set("supplier", event.target.value)} placeholder={text.supplierPlaceholder} className={`${inputClass} ${isExistingModel ? "cursor-not-allowed text-zinc-400" : ""}`} /><datalist id="suppliers">{unique(clothing.map((p) => p.supplier)).map((value) => <option key={value} value={value} />)}</datalist></label><label><span className={labelClass}>{text.barcode}</span><input value={form.barcode} readOnly={isExistingModel} onChange={(event) => set("barcode", event.target.value)} placeholder={text.barcodePlaceholder} className={`${inputClass} font-mono tracking-wide ${isExistingModel ? "cursor-not-allowed text-zinc-400" : ""}`} /></label></div>
 
-    <div className="mt-5"><p className={labelClass}>{text.gender}</p><div className="mt-2 flex gap-2">{genders.map((value) => <button key={value} type="button" onClick={() => set("gender", value)} className={`rounded-lg border px-3 py-2 text-[11px] ${form.gender === value ? "theme-selected border-violet-500 bg-violet-500/15 text-violet-200" : "border-zinc-800 bg-zinc-900 text-zinc-500"}`}>{text.genderNames[value]}</button>)}</div></div>
+    <div className="mt-5"><p className={labelClass}>{text.gender}</p><div className="mt-2 flex gap-2">{genders.map((value) => <button key={value} type="button" disabled={isExistingModel} onClick={() => set("gender", value)} className={`rounded-lg border px-3 py-2 text-[11px] disabled:cursor-not-allowed disabled:opacity-70 ${form.gender === value ? "theme-selected border-violet-500 bg-violet-500/15 text-violet-200" : "border-zinc-800 bg-zinc-900 text-zinc-500"}`}>{text.genderNames[value]}</button>)}</div></div>
 
     <div className="mt-5 grid gap-4 sm:grid-cols-[1fr_1fr_130px]"><label><span className={labelClass}>{text.purchaseCost}</span><input type="number" min="0.01" step="0.01" value={form.cost} onChange={(event) => set("cost", event.target.value)} placeholder="0.00" className={inputClass} /></label><label><span className={labelClass}>{text.currency}</span><select value={form.currency} onChange={(event) => set("currency", event.target.value)} className={inputClass}>{currencies.map((value) => <option key={value}>{value}</option>)}</select></label></div>
 
@@ -116,7 +168,7 @@ export function ReceiveFlow({ locale, products, onCancel, onSave }: Props) {
     </div>
 
     {needsRequiredFields && <p className="mt-4 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2.5 text-xs text-amber-300">{text.requiredFieldsHelp}</p>}
-    <button type="button" disabled={!matrixLines.length} onClick={addColor} className="mt-4 flex h-10 items-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 px-4 text-xs font-semibold text-violet-300 disabled:cursor-not-allowed disabled:opacity-30"><Plus size={15} /> {text.saveColor}</button>
+    <button type="button" disabled={!matrixLines.length} onClick={addColor} className="receipt-add-color mt-4 flex h-10 items-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 px-4 text-xs font-semibold text-violet-300 disabled:cursor-not-allowed disabled:opacity-30"><Plus size={15} /> {text.saveColor}</button>
 
     {draft.length > 0 && <div className="mt-5 overflow-hidden rounded-xl border border-zinc-800"><div className="border-b border-zinc-800 bg-zinc-900/60 px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">{text.draftHeading(draft.length)}</div><div className="divide-y divide-zinc-800/70">{draft.map((line, index) => <div key={`${line.code}-${line.color}-${line.size}-${index}`} className="flex items-center gap-3 px-4 py-3"><div className="min-w-0 flex-1"><p className="truncate text-xs text-zinc-200">{text.draftLine(line.color, line.size)}</p><p className="mt-1 text-[10px] text-zinc-600">{line.code} · {text.pieces(line.stock)}</p></div><button type="button" onClick={() => setDraft((current) => current.filter((_, itemIndex) => itemIndex !== index))} className="p-2 text-zinc-700 hover:text-red-400" aria-label={text.removeDraftLine(line.color, line.size)}><Trash2 size={14} /></button></div>)}</div></div>}
 

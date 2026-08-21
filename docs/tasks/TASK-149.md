@@ -1,6 +1,6 @@
 # TASK-149 — Провести production Go/No-Go review
 
-Статус: pending
+Статус: BLOCKED
 
 ## Цель
 
@@ -24,3 +24,14 @@ TASK-082, TASK-084, TASK-085, TASK-086, TASK-148.
 - Release checklist walkthrough.
 - Environment/secrets isolation review.
 - Dry-run deploy/rollback command review без production mutation.
+
+## Review result — 2026-08-20
+
+**NO-GO.** Release review is documented in
+[`GO_NO_GO.md`](../operations/GO_NO_GO.md). No production project, identity,
+deployment, migration or secret was changed.
+
+The task is blocked by the incomplete TASK-084 production Auth acceptance, missing
+immutable release tag/final migration approval, untriaged current browser-regression
+failures, missing shared staging/device evidence, unselected monitoring/alert policy,
+unassigned launch roles/window/rollback confirmation, and absent explicit Owner `GO`.

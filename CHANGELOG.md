@@ -1,7 +1,377 @@
 # Changelog
 
+## 2026-08-22
+
+- TASK-191 completed: consolidated remediation release gates are green (Vitest
+  243/243, Playwright 78/78, demo/live builds, lint 0 errors, fresh pgTAP 214/214,
+  concurrency and 27 security/capacity checks). Cash export route mocks and the
+  mobile drawer locator were corrected. Forward migration `20260822120000` restores
+  canonical receipt colours without weakening existing-model identity lock.
+  Handoff guides now use only `PROJECT_STATUS.md`; TASK-165 is the sole next gate.
+
+- Synchronized completed TASK-173 and TASK-181: the light-theme Receive Flow
+  add-colour action has its implemented enabled/disabled affordance (13 targeted
+  tests passed), and the existing responsive EN/TR Arslan Ram footer attribution is
+  now recorded with its approved no-external-link boundary.
+
+- Corrected the project pointer: TASK-186 was already completed with historical
+  private sale-image snapshots, Sale Details thumbnail/fullscreen fallback and
+  Sales History 8/8. All TASK-170—TASK-189 are now recorded complete; TASK-165 is
+  the consolidated acceptance gate.
+
+- TASK-172 completed: light-theme Sales Trend no longer uses heavy grey empty bar
+  backgrounds. Transparent hit areas, a subtle lavender grid and soft purple hover
+  preserve dark-theme hover plus tap, keyboard focus and pinned-value behavior;
+  6 targeted tests and demo build passed.
+
+## 2026-08-21
+
+- TASK-178 completed: Owner can confirm, cancel and retry private product-photo
+  removal; horizontal carousel swipe preserves vertical scroll, keyboard controls
+  and viewer gestures. The Owner/store-scoped audit RPC protects historical sale
+  image snapshots. UI tests 17/17, pgTAP 8/8 and demo build passed.
+
+- TASK-177 completed: Owner Edit Product now centrally updates model name, gender,
+  low-stock threshold and current purchase cost/currency. The server-side RPC is
+  Owner/store-scoped and audited; historical receipt, sale, FX and ledger evidence
+  remains immutable. UI tests 15/15, pgTAP 8/8 and demo build passed.
+
+- TASK-189 completed: dashboard KPI values no longer truncate money or sale counts
+  at supported 320–430 px widths or 150% text zoom. Targeted Vitest, mobile
+  Playwright regression and build passed; Redmi evidence is consolidated in TASK-165.
+
+- TASK-165 remains in progress: Owner confirmed the iPhone Safari/PWA install path
+  in TASK-180. The final shared Owner/Seller device walkthrough is intentionally
+  held for a reviewed consolidated Preview after the remaining remediation tasks.
+
+- TASK-180 completed: Owner confirmed supported Safari Home Screen installation,
+  installed-PWA launch and working iPhone flow. PWA manifest and login branding use
+  Zebra Boutique,
+  while standalone scope/start URL and approved icons remain intact. Invalid or
+  expired Magic Links have covered EN/TR recovery states. A Ready live Preview was published at
+  `https://zebra-inventory-sales-kb56dzquv-cooloxs-projects.vercel.app`; staging
+  Auth Site URL and one exact callback were updated to it, retaining eight exact
+  redirect URLs and leaving Production unchanged.
+
+- TASK-169 completed: staging Auth Site URL and exact callback now point to the
+  consolidated Preview. Owner and Seller each completed the fresh same-browser
+  Magic Link path to workspace and logout back to login; no sensitive link data
+  was recorded.
+
+- TASK-185 refined: English Seller headline is now `Hello {name},`, while the
+  supporting `Zebra Boutique · good sales!` line remains. Turkish greeting stays
+  `Merhaba {name}, bol satışlar!`.
+
+- Consolidated staging Preview published: reviewed non-secret snapshot built in
+  live mode and deployment `dpl_zyGtZsejdKXsc8JFRnD5egVYNXX9` is Ready at
+  `https://zebra-inventory-sales-eli6hmy56-cooloxs-projects.vercel.app`.
+  Public login smoke confirmed Zebra Boutique and Magic Link without creating a
+  session or changing staging data, Auth configuration, Supabase or Production.
+
+- TASK-170 completed: controlled Product code and sale amount fields now ignore a
+  late Android input event after keyboard dismissal, while preserving normal IME
+  composition. The boundary covers Receive/Sale code, item and total price, and
+  mixed-payment amount. Targeted Receive/Sale tests passed 24/24 and the demo
+  build passed.
+
+- TASK-188 completed: Owner Reports now has a Cash/Kasa tab showing captured
+  ledger payments by method and original currency, with period, count, CSV and
+  print. The server-side Owner-only report excludes cancelled/reversed sales and
+  labels the result as non-physical cash; XLSX/PDF exports include a Cash section.
+  Cash pgTAP passed 4/4, report/export tests passed 6/6, and the demo build passed.
+
+- TASK-187 completed: Turkish Audit Log now renders business labels for filters,
+  actions, entities and safe metadata. Raw IDs remain only in closed technical
+  reference; email, tokens and other sensitive metadata remain hidden. Targeted
+  Audit tests (7/7) and demo/live builds passed; physical Owner verification is
+  in TASK-165.
+
+- TASK-174 completed: Reconciliation now distinguishes EUR payment comparisons
+  from stock quantities. Owner sees source-specific labels, meaning and a safe
+  review action on EN/TR; manual adjustments no longer display as €1/€3. Ledger,
+  payments, calculations, audit, RLS and RPC were unchanged. Targeted Vitest
+  (5/5) and demo/live builds passed; physical Owner verification is in TASK-165.
+
+- TASK-182 completed: Owner Seller reports now use display name, then approved
+  account email, before a clearly explained genuine historical unknown fallback.
+  The reporting RPC never returns another actor's email to a Seller caller.
+  Targeted Vitest (5/5), clean local pgTAP (3/3), and demo/live builds passed;
+  physical Owner verification is batched into TASK-165.
+
+- TASK-171 completed: exchange writes already preserved top-ups atomically, but the
+  live workspace discarded persisted exchanges on reload. It now loads exchange,
+  source/replacement and payment snapshots, so Sales History exposes the linked
+  top-up and final ticket total. Targeted tests (16/16), exchange/report pgTAP
+  (37/37), and live build passed; physical €100→€170→€70 evidence is in TASK-165.
+
+- TASK-175 completed: adding a colour now locks existing Product code, name, brand,
+  category, supplier, shared barcode and gender; only variant/receipt fields remain
+  editable. A new receipt migration also ignores tampered existing-model payload
+  fields and supplier data server-side. UI tests (16/16), clean pgTAP (5/5), and
+  demo/live builds passed; Redmi validation is batched into TASK-165.
+
+- TASK-176 completed: Edit Product now reports success only after the audited
+  Product code RPC returns the exact requested value. Empty/mismatched responses
+  remain an explicit error; all variants retain their model UUID, barcode, photos
+  and ledger/history. UI tests (15/15), pgTAP authorization/audit tests (11/11),
+  and demo/live builds passed; Redmi confirmation is batched into TASK-165.
+
+- TASK-183 completed: Owner KPIs and Seller Summary use distinct, server-authorized
+  read models; Seller cards keep Store/My scope explicit. A late summary response
+  could overwrite a newer post-sale snapshot, so the newest request now wins and
+  successful-update time is visible. Targeted UI/model tests (8/8) and demo/live
+  builds passed; the controlled two-session staging comparison remains in TASK-165.
+
+- TASK-179 completed: live Sales History used elapsed 24-hour offsets, so Istanbul
+  `23:40` and `00:11` sales could both appear as Today. A shared Istanbul business
+  calendar now drives live sales, History filters, demo Reports and Audit date
+  filtering. Targeted Vitest passed 15/15, local Seller Summary pgTAP passed 20/20,
+  and demo/live builds passed; physical Redmi 14 midnight acceptance remains in the
+  consolidated TASK-165 walkthrough.
+
+- TASK-190 completed: Owner closed bug intake. TASK-170—TASK-189 are now a fixed
+  remediation scope with an explicit data-first dependency order, per-task evidence
+  locations, one consolidated staging Preview, physical iPhone/Redmi acceptance,
+  renewed Go/No-Go and separate Production authorization. TASK-169 is deferred to
+  the consolidated Preview; TASK-179 is the only next task.
+
+- Recorded TASK-189 from Owner's Redmi 14 dashboard screenshot: large KPI values are
+  truncated as `€10.4…` and `101 a…`. The P1 responsive presentation follow-up will
+  show full currency/count values without altering calculations or TASK-183 scope;
+  no design or code change starts during bug intake.
+
+- Recorded TASK-188: Owner requested an Owner-only `Kasa`/Cash Reports dimension
+  for cash and transfer receipts by currency, period and print/export. The later
+  read-only financial design will distinguish ledger-derived payments from physical
+  cash count; no database/API/export/code change starts during bug intake.
+
+- Recorded TASK-187 from Owner's Turkish Audit Log screenshots: filters still show
+  English and rows expose raw entity/action and metadata identifiers. The P1
+  follow-up will add readable business-copy mapping while preserving immutable audit
+  evidence, filters and pagination; no copy/mapping/code change starts during bug
+  intake.
+
+- Recorded TASK-186: Owner requested a compact thumbnail for every sold item in Sale
+  Details, with a fullscreen preview. The later work will preserve private/RLS access
+  and prevent historical sale photos breaking after current-gallery deletion; no data
+  strategy, design or code change starts during bug intake.
+
+- Recorded TASK-185: Owner requested replacing the Turkish dashboard greeting's
+  fixed shift-open time with `Merhaba {name}, bol satışlar!`; the later localized
+  presentation update will not change user/session logic. No copy or code change
+  starts during bug intake.
+
+- Recorded TASK-184 from the mobile Exchange Flow walkthrough: the native list of
+  all store variants is unclear. The P1 follow-up will use Product code lookup, then
+  model colour and available size selection, while preserving atomic exchange and the
+  separate TASK-171 payment-difference boundary; no code change starts during bug
+  intake.
+
+- TASK-183 evidence upgraded to a confirmed P1 mismatch: after one new sale and
+  refresh, same-minute mobile screenshots show €2,002/16 and €2,085/17 — exactly
+  €83 and one sale apart. The cause is not yet assumed; live data/scope/role
+  diagnosis waits for the Owner to finish bug intake.
+
+- Recorded TASK-183 from Owner's revenue comparison: screenshots show €1,802/15 at
+  13:39 and €1,885/16 at 13:57, so one later €83 sale can explain the difference;
+  the page described as Seller also exposes Owner controls. The P1 follow-up will
+  verify role, scope and same-snapshot freshness before changing calculation; no
+  diagnosis or code change starts during bug intake.
+
+- Recorded TASK-182 from the Reports walkthrough: Owner's own sales appear as
+  `Unknown seller` in Seller dimension. The P1 follow-up will use display name, then
+  approved email, with an explained genuine-unknown fallback and Owner-only privacy
+  boundaries; no diagnosis or code change starts during bug intake.
+
+- Recorded TASK-181: Owner requested a professional, unobtrusive Arslan Ram creator
+  attribution in the web app and installed PWA. The later presentation follow-up
+  will use approved EN/TR copy and placement without unapproved links or impact on
+  retail operations; no design or code change starts during bug intake.
+
+- Recorded TASK-180 from the Owner iPhone install attempt: a third-party Shortcut
+  does not support downloading the staging site and displayed a safe `otp_expired`
+  Auth summary. This does not prove a Safari PWA failure; the later follow-up will
+  verify the supported Safari Home Screen path and fresh/expired same-browser Magic
+  Link recovery. No Auth setting or code changes start during bug intake.
+
+- Recorded TASK-179 from the physical Sales History walkthrough: the Turkish
+  `Bugün` filter mixes before-midnight sales with safe `00:11`/`00:27` sales, while
+  the latter were treated as the previous day. The P1 follow-up will align Istanbul
+  business-date handling in sale creation, history, reports and audit; no diagnosis
+  or code change starts during bug intake.
+
+- Recorded TASK-176—TASK-178 from the physical Product Details walkthrough:
+  Edit Product cannot save a changed Product code; Owner wants threshold moved from
+  the ordinary card into an audited Edit Product flow alongside gender/name/purchase
+  cost; and mistaken private product photos must be removable safely. The findings
+  remain split across code-save regression, data-edit scope and Storage/RLS deletion;
+  no diagnosis or code change starts during bug intake.
+
+- Recorded TASK-175 from the physical Receive Flow walkthrough: “Add colour” still
+  permits changing an existing model's gender, Product code, name and brand. The P1
+  follow-up will lock model identity and validate it server-side while allowing only
+  an eligible new colour/receipt variant; no diagnosis or code change starts during
+  bug intake.
+
+- Recorded TASK-174 from Owner's Turkish Reconciliation screenshot: labels
+  `Beklenen` / `Gerçekleşen` and €1/€3 values do not explain the source, meaning or
+  required Owner action. The later read-only presentation follow-up will clarify
+  financial context without changing calculations; no code change starts during bug
+  intake.
+
+- Recorded TASK-173 from the physical walkthrough: the enabled light-theme Receive
+  Flow action “save this item and add another colour” looks disabled. The later
+  presentation fix will make its enabled state clearly actionable while retaining
+  the primary Save hierarchy; no code change starts during bug intake.
+
+- Recorded TASK-172 from Owner's mobile light-theme screenshot: the prominent grey
+  background of Sales Trend bars visually competes with the purple revenue values.
+  The presentation-only follow-up will modernize that surface while retaining
+  TASK-157 accessibility/interaction; no design or code change starts during bug
+  intake.
+
+- Recorded TASK-171 from the physical walkthrough: after a safe €100 sale is
+  exchanged for a €170 item, Sales History shows €170 but does not explicitly show
+  the €70 top-up. The P1 finding requires later reconciliation of exchange UI,
+  payment/ledger, audit and reports. Per Owner instruction, no diagnosis or fix has
+  started while bug intake continues.
+
+- Recorded TASK-170 from the physical Android walkthrough: on Redmi 14, pressing
+  the system keyboard-dismiss arrow vibrates and appends an unexpected character
+  to the active input (`100` → `1004`; `SS55` → `SS55Q`/`SS55И`). This is a P1
+  regression finding linked to TASK-163 and blocks TASK-165 device acceptance.
+  Per Owner instruction, no diagnosis or fix has started while bug intake continues.
+
+## 2026-08-20
+
+- TASK-165 physical finding: Owner Magic Link from the Ready Preview returned to
+  login. The Ready Preview origin is not the documented exact staging Supabase Auth
+  callback; TASK-169 owns the isolated staging-only redirect update. No email,
+  token, full link, Production or secret was recorded/changed.
+
+- TASK-168 completed: replaced the final unauthenticated login `ZB` tile with the
+  existing Zebra Boutique PWA mark and added a targeted asset assertion. Targeted
+  login test, demo/live builds and the Ready live Preview safe smoke pass; no Magic
+  Link, Production, Supabase, Auth URL, Vercel configuration or secret was changed.
+
+- TASK-167 completed: Vercel blocked the first staging Preview only because its
+  temporary local snapshot used invalid artificial Git author metadata. Republishing
+  the same reviewed files without `.git` metadata required no Vercel settings change;
+  the live-mode Preview is Ready and shows the Magic Link login. Safe smoke found an
+  unauthenticated login `ZB` brand remnant, tracked separately in TASK-168.
+
+- TASK-165: approved non-secret remediation snapshot created a separate staging
+  Preview, but Vercel blocked it before build/runtime; public URL confirms the
+  block and request logs are empty. No Production/Supabase/Auth URL/secret mutation
+  occurred. Follow-up TASK-167 owns the external deployment blocker; no device
+  walkthrough was started.
+
+- TASK-166 completed: replaced the former `ZB` navigation mark and Android/iOS PWA
+  install icons with a Zebra Boutique zebra mark based on the Owner-provided logo.
+  Manifest/navigation tests (3/3), demo production build and whitespace check pass;
+  staging and production were not changed.
+
+- TASK-164 completed: fixed the Adjust Stock modal stack so Product Details no
+  longer intercepts selected-size interaction, and scoped two stale desktop/tablet
+  `Seller` smoke selectors to the header role control after Reports introduced its
+  own Seller dimension. The seven reproduced failures are closed: targeted
+  Playwright 9/9, targeted Vitest 13/13, repeated full Playwright 75/75 and demo
+  production build pass.
+
+- TASK-163 completed: Receive Flow now preserves Product code through blur and
+  Enter/Done/Go keyboard dismissal, commits IME input only after composition ends,
+  and rejects control/invisible suffixes with explicit EN/TR validation instead of
+  silently rewriting identity. Targeted tests passed 14/14 and demo production build
+  passed. Receive Flow browser smoke passed in all supported viewports; physical
+  iPhone/Android evidence remains for the shared staging Preview walkthrough.
+
+- TASK-162 completed: Product Details now exposes an Owner-only EN/TR edit action
+  limited to Product code. The new atomic audited Supabase RPC preserves model and
+  variant UUIDs, barcode, photos and the receipt/sale/inventory ledger, rejects
+  Seller/cross-store/blank/duplicate requests, and records old/new code. Targeted
+  ProductCard Vitest passed 13/13 and the demo production build passed. The local
+  clean reset applied 30 migrations; the existing pgTAP harness remains blocked
+  before assertions by its stale Auth test schema. Staging and Production were not
+  changed.
+
+## 2026-08-18
+
+- TASK-161 completed: ReportsDashboard now fully localizes EN/TR title, export actions, KPI, dimensions, table, loading/empty/error states and dynamic fallback labels. Locale switching preserves report period, dimension and loaded data. Full Vitest passed 214 tests and demo/live builds passed.
+
+- TASK-160 completed: Adjust Stock now requires an explicit product/colour size selection, clears a draft delta when the size changes, and previews before/delta/after for the chosen variant. Existing Owner-only atomic RPC, RLS and audit protections remain unchanged. Full Vitest passed 213 tests and demo/live builds passed.
+
+- TASK-159 completed: Audit Log resets to page 1 for category, actor, entity and date changes. Pagination is disabled outside ready non-empty boundaries, and stale page responses cannot replace a newer filter result. Full Vitest passed 211 tests, demo/live builds passed, and targeted Audit Log browser smoke passed 3/3 viewports.
+
+- TASK-158 completed: Movement History now uses a centered safe-area mobile dialog with viewport-capped internal scrolling for long lists. Background scroll is locked/restored and focus returns to the selected variant’s History trigger. Full Vitest passed 208 tests, demo/live builds passed, and targeted browser layout smoke passed across desktop, tablet and mobile.
+
+- TASK-157 completed: Sales Trend bars are accessible touch/keyboard controls. Tap pins the exact daily EUR revenue in a compact value row with explicit close; €0, hover, focus and EN/TR accessible labels are covered. Full Vitest passed 203 tests, demo/live builds passed, and targeted Playwright passed 3/3 viewports. Manual devices remain part of shared Preview acceptance.
+
+- TASK-155 completed: Owner added the staging server-only `SUPABASE_SERVICE_ROLE_KEY` directly to Vercel Preview (value was not read); the invitation route now records a redacted diagnostic stage without exposing configuration to the client. Controlled invitation acceptance remains part of the shared remediation Preview.
+
+- TASK-154 completed: Reports Low stock now shows a compact summary by default and
+  an explicit on-demand full list. Responsive cards replace the long table, while
+  EN/TR loading, empty, error and retry states keep an error distinct from an
+  all-clear state. Full Vitest passed 200/200, ESLint has 0 errors, demo/live builds
+  passed, and Playwright passed 66/66. Deployment remains batched for shared staging
+  acceptance; Production was not changed.
+- TASK-153 completed: Owner Reconciliation is now an on-demand, read-only
+  reconciliation check rather than a default long table. It does not call the RPC
+  until opened, supports refresh/hide, uses responsive cards and fully localized
+  EN/TR copy; manual corrections are explicitly marked for review, not proven errors.
+  Full Vitest passed 198/198, ESLint has 0 errors, demo/live builds passed, and
+  Playwright passed 63/63. Deployment remains batched for shared staging acceptance;
+  Production was not changed.
+- TASK-152 completed: Owner Inventory now always exposes an `Archived products` /
+  `Arşivlenmiş ürünler` control with a model count. The responsive archive view has
+  explanatory empty, success and error states plus explicit open and restore actions;
+  failed restore requests cannot present a false success. Full Vitest passed 196/196,
+  ESLint has 0 errors, demo/live builds passed, and Playwright passed 60/60 across
+  desktop, tablet and mobile. Deployment remains batched for the next shared staging
+  acceptance cycle; Production was not changed.
+
+## 2026-08-17
+
+- TASK-156 completed: Sales History now groups all lines of one sale into a single
+  ticket, shows one sale-level total and exposes exact line totals in details.
+  Unit/integration, TypeScript, lint, demo/live builds and Playwright 57/57 passed;
+  the Owner confirmed the fix on the updated staging Preview. Staging Supabase Auth
+  points to that Preview, while Production remained unchanged.
+- Owner requested batching the remaining walkthrough fixes before the next manual
+  Magic Link verification because email delivery is limited. Remediation will still
+  follow the one-task workflow, beginning with TASK-152, then publish a combined
+  staging candidate for acceptance.
+
 ## 2026-08-16
 
+- TASK-085 completed: owner-linked empty production database received all 29 tracked
+  migrations through Supabase CLI after an exact dry-run; final remote dry-run is
+  `upToDate`. Fresh local reset passed 14 pgTAP files/175 assertions; concurrency and
+  26-case security/capacity smoke passed (361 ms slowest five-user sale). Added
+  `MIGRATION_REHEARSAL.md`, production CLI guardrails and UUID-free initial Owner /
+  Zebra Boutique bootstrap. No seed, Auth user, catalog, stock, deployment or secret
+  was introduced.
+- TASK-083 completed: Owner-approved cleanup removed the unrelated paused Supabase
+  project and freed the Free slot. Created separate empty production Supabase in
+  `eu-central-1` with Data API enabled, automatic table exposure disabled and
+  automatic RLS enabled; its initial health check is clean with no migrations or
+  requests. Created a separate empty Vercel project with Git/environment variables/
+  Preview/Production deployments intentionally absent. Added `PRODUCTION_SETUP.md`
+  and kept all refs, URLs, database passwords and keys out of Git.
+- TASK-148 completed: added the repeatable `supabase:security-smoke` and Local
+  Supabase CI gate. Signed-JWT PostgREST probes denied anonymous, unknown, blocked,
+  forged-token and cross-store access; Seller direct writes and Owner-only RPCs were
+  refused, while permitted Seller/Owner paths remained available. Five concurrent
+  sales completed with a 317 ms median and 323 ms slowest time (<5 s threshold),
+  idempotency created no duplicates and ledger reconciliation stayed clean. Session
+  and Seller administration rate-limit tests now verify normal-flow allowance and
+  `429`/`Retry-After`; staging Preview Owner smoke loaded protected live data without
+  a write.
+- TASK-082 completed: the verified staging backup was restored into an isolated local
+  Supabase stack. All 43 `auth` + `public` tables and 16 private images reconciled;
+  Owner/Seller RLS RPC smoke passed and the documented rollback plan now carries the
+  Owner-accepted 24-hour RPO (D-063). Hosted recovery and production rollback remain
+  deliberately deferred to TASK-085/TASK-150; D-062 records `rls_auto_enable` as a
+  non-blocking, unregistered safety net outside the RC.
 - TASK-082: restore rehearsal executed against the verified
   `staging-2026-08-15.tar.gz.age` artifact in an isolated local stack. All 43 `auth`
   and `public` tables reconciled with zero mismatches, 16 images restored with zero

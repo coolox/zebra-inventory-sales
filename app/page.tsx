@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Activity,
+  ArchiveRestore,
   ArrowDownRight,
   ArrowUpRight,
   Bell,
@@ -38,7 +39,11 @@ import { AppHeader } from "@/components/layout/app-header";
 import { AppNav } from "@/components/layout/app-nav";
 import { Overview } from "@/features/overview/ui/overview";
 import { ProductCard } from "@/features/catalog/ui/product-card";
+import { ArchivedProducts } from "@/features/catalog/ui/archived-products";
 import { setProductModelArchived } from "@/features/catalog/data/archive-product";
+import { updateProductModelCode } from "@/features/catalog/data/update-product-code";
+import { updateProductModelDetails } from "@/features/catalog/data/update-product-model-details";
+import { removeProductImage } from "@/features/catalog/data/remove-product-image";
 import { catalogCopy } from "@/features/catalog/model/catalog-copy";
 import { ReceiveFlow } from "@/features/receipts/ui/receive-flow";
 import { confirmLiveReceipt } from "@/features/receipts/data/confirm-live-receipt";
@@ -57,14 +62,13 @@ import { SaleFlow } from "@/features/sales/ui/sale-flow";
 import { SaleHistory } from "@/features/sales/ui/sale-history";
 import { SellerSalesSummary } from "@/features/sales/ui/seller-sales-summary";
 import { toSaleHistory } from "@/features/sales/model/sale-history";
-import type { SaleHistoryRecord } from "@/features/sales/model/sale-history";
+import type { SaleHistoryLine } from "@/features/sales/model/sale-history";
 import { SellerGoalCard } from "@/features/seller-goals/ui/seller-goal-card";
 import { FxRateManager } from "@/features/exchange-rates/ui/fx-rate-manager";
 import { loadMovementHistory } from "@/features/inventory/data/load-movement-history";
 import { MovementHistory } from "@/features/inventory/ui/movement-history";
 import { AdjustmentForm } from "@/features/inventory/ui/adjustment-form";
 import { confirmInventoryAdjustment } from "@/features/inventory/data/confirm-adjustment";
-import { setLowStockThreshold } from "@/features/inventory/data/set-low-stock-threshold";
 import { confirmInventoryCount } from "@/features/inventory-counts/data/confirm-inventory-count";
 import { InventoryCountForm } from "@/features/inventory-counts/ui/inventory-count-form";
 import { loadSuppliers, saveSupplier, setSupplierArchived } from "@/features/suppliers/data/suppliers";
@@ -324,6 +328,10 @@ export default function Home() {
     () => products.filter((product) => product.store === roleStore && product.isActive === false),
     [products, roleStore],
   );
+  const archivedProductCount = useMemo(
+    () => new Set(archivedProducts.map((product) => product.code)).size,
+    [archivedProducts],
+  );
   const inventoryPageSize = 10;
   const { page: safeInventoryPage, pageCount: inventoryPageCount, items: paginatedProducts } = paginateInventoryProducts(visibleProducts, inventoryPage, inventoryPageSize);
 
@@ -412,7 +420,7 @@ export default function Home() {
     notify(locale === "tr" ? "Satış iptal edildi ve stok geri yüklendi" : "Sale cancelled and stock restored");
   };
 
-  const completeExchange = async (source: SaleHistoryRecord, input: { replacement: Product; price: number; currency: Product["currency"]; reason: string; method: "cash" | "card" | "bank_transfer"; topUpEur: number; paymentCurrency: Product["currency"]; paymentAmount: number }) => {
+  const completeExchange = async (source: SaleHistoryLine, input: { replacement: Product; price: number; currency: Product["currency"]; reason: string; method: "cash" | "card" | "bank_transfer"; topUpEur: number; paymentCurrency: Product["currency"]; paymentAmount: number }) => {
     if (isLiveMode) {
       if (!source.sourceSaleLineId) throw new Error("Source sale line is unavailable.");
       await confirmExchange({ storeId: activeStoreId ?? "", sourceSaleLineId: source.sourceSaleLineId, replacementVariantId: String(input.replacement.id), quantity: source.quantity, replacementUnitPrice: input.price, replacementCurrency: input.currency, payments: input.topUpEur > 0 ? [{ method: input.method, amount: input.paymentAmount, currency: input.paymentCurrency }] : [], reason: input.reason, idempotencyKey: crypto.randomUUID(), locale });
@@ -455,23 +463,58 @@ export default function Home() {
     await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
     notify(locale === "tr" ? "Fotoğraflar eklendi" : "Photos added to the product card");
   };
+  const deleteProductPhoto = async (path: string) => { const model=selectedProductVariants[0]; if(!activeStoreId||!model?.modelId) throw new Error("Product image is unavailable."); await removeProductImage(activeStoreId,model.modelId,path); await refreshLiveWorkspace(); };
 
-  const setSelectedProductArchived = async (archived: boolean) => {
-    const model = selectedProductVariants[0];
+  const setProductArchived = async (model: Product, archived: boolean) => {
     if (!model) throw new Error("Product model is unavailable.");
     if (isLiveMode) {
       if (!activeStoreId || !model.modelId) throw new Error("Product model is unavailable.");
       await setProductModelArchived({ storeId: activeStoreId, modelId: model.modelId, archived });
-      await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
-    } else {
-      setProducts((current) => current.map((product) => product.code === model.code ? { ...product, isActive: !archived } : product));
     }
+    setProducts((current) => current.map((product) => product.store === model.store && product.code === model.code ? { ...product, isActive: !archived } : product));
+    if (isLiveMode) await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
     notify(locale === "tr" ? (archived ? "Ürün arşivlendi" : "Ürün geri yüklendi") : (archived ? "Product archived" : "Product restored"));
   };
 
-  const saveAdjustment = async (delta: number, reason: string) => {
-    const variant = adjustmentVariant;
-    if (!variant) return;
+  const setSelectedProductArchived = async (archived: boolean) => {
+    const model = selectedProductVariants[0];
+    if (!model) throw new Error("Product model is unavailable.");
+    await setProductArchived(model, archived);
+  };
+
+  const updateSelectedProductCode = async (nextCode: string) => {
+    const model = selectedProductVariants[0];
+    const normalizedCode = nextCode.trim();
+    if (!model || !normalizedCode) throw new Error("Product code is required.");
+    if (isLiveMode) {
+      if (!activeStoreId || !model.modelId) throw new Error("Product model is unavailable.");
+      const confirmedCode = await updateProductModelCode({ storeId: activeStoreId, modelId: model.modelId, modelCode: normalizedCode });
+      setProducts((current) => current.map((product) => product.store === model.store && product.modelId === model.modelId ? { ...product, code: confirmedCode } : product));
+      setSelectedProductCode(confirmedCode);
+      await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
+    } else if (products.some((product) => product.store === model.store && product.code.trim().toLowerCase() === normalizedCode.toLowerCase() && product.code !== model.code)) {
+      throw new Error(`Product code "${normalizedCode}" is already used in this store`);
+    } else {
+      setProducts((current) => current.map((product) => product.store === model.store && product.code === model.code ? { ...product, code: normalizedCode } : product));
+      setSelectedProductCode(normalizedCode);
+    }
+    notify(locale === "tr" ? "Ürün kodu güncellendi" : "Product code updated");
+  };
+
+  const updateSelectedProductDetails = async (details: { name: string; gender: Product["gender"]; lowStockThreshold: number; purchaseCost: number; purchaseCurrency: Product["currency"] }) => {
+    const model = selectedProductVariants[0];
+    if (!model) throw new Error("Product model is unavailable.");
+    const rate = paymentRates[details.purchaseCurrency];
+    if (!rate) throw new Error("Exchange rate is unavailable.");
+    if (isLiveMode) {
+      if (!activeStoreId || !model.modelId) throw new Error("Product model is unavailable.");
+      await updateProductModelDetails({ storeId: activeStoreId, modelId: model.modelId, ...details, purchaseCostEur: Number((details.purchaseCost * rate).toFixed(2)) });
+      await refreshLiveWorkspace();
+    } else setProducts((current) => current.map((product) => product.code === model.code ? { ...product, ...details, cost: details.purchaseCost, currency: details.purchaseCurrency } : product));
+    notify(locale === "tr" ? "Ürün bilgileri güncellendi" : "Product details updated");
+  };
+
+  const saveAdjustment = async (variant: Product, delta: number, reason: string) => {
     if (isLiveMode) {
       if (!activeStoreId || !variant.variantId) throw new Error("Variant is unavailable.");
       await confirmInventoryAdjustment({ storeId: activeStoreId, variantId: variant.variantId, quantityDelta: delta, reason, locale });
@@ -525,14 +568,6 @@ export default function Home() {
     }
     setSellers((current) => current.map((item) => item.id === seller.id ? { ...item, membershipStatus: status } : item));
   };
-  const saveLowStockThreshold = async (threshold: number) => {
-    const model = selectedProductVariants[0];
-    if (!model) return;
-    if (isLiveMode) { if (!activeStoreId || !model.modelId) throw new Error("Product model is unavailable."); await setLowStockThreshold(activeStoreId, model.modelId, threshold); await refreshLiveWorkspace(); }
-    else setProducts((current) => current.map((product) => product.code === model.code ? { ...product, lowStockThreshold: threshold } : product));
-    notify(locale === "tr" ? "Düşük stok eşiği kaydedildi" : "Low-stock threshold saved");
-  };
-
   const resetDemoData = () => {
     const workspace = resetDemoWorkspace();
     setProducts(workspace.products);
@@ -567,7 +602,7 @@ export default function Home() {
     { id: "overview", label: text.overview, Icon: LayoutDashboard },
     { id: "inventory", label: text.inventory, Icon: Boxes },
     { id: "sales", label: text.sales, Icon: CircleDollarSign },
-    ...(role === "owner" ? [{ id: "reports", label: "Reports", Icon: BarChart3 }, { id: "team", label: text.team, Icon: Users }] : [{ id: "goal", label: text.myGoal, Icon: Target }]),
+    ...(role === "owner" ? [{ id: "reports", label: locale === "tr" ? "Raporlar" : "Reports", Icon: BarChart3 }, { id: "team", label: text.team, Icon: Users }] : [{ id: "goal", label: text.myGoal, Icon: Target }]),
   ];
 
   const displayName = isLiveMode ? authenticatedName || "Zebra team member" : role === "owner" ? "Arslan Zengin" : currentSeller.name;
@@ -615,7 +650,7 @@ export default function Home() {
                   <span className="h-px w-5 bg-violet-500" />
                   {role === "owner" ? text.networkControl : text.personalShift}
                 </div>
-                <h1 className="mt-2 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">{role === "owner" ? text.businessPulse : [text.goodDay, displayName.split(" ")[0]].join(", ")}</h1>
+                <h1 className="mt-2 text-2xl font-semibold tracking-[-0.035em] sm:text-3xl">{role === "owner" ? text.businessPulse : locale === "tr" ? `Merhaba ${displayName.split(" ")[0] || "Zebra"}, bol satışlar!` : `Hello ${displayName.split(" ")[0] || "Zebra"},`}</h1>
                 <p className="mt-1 text-sm text-zinc-600">{role === "owner" ? text.ownerSubtitle : text.sellerSubtitle}</p>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -647,7 +682,7 @@ export default function Home() {
           </section>
 
           <section className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,.75fr)]">
-            <InventoryList products={products} store={roleStore} onSelect={setSelectedProductCode} labels={{ title: text.stock, search: text.search, empty: text.noResults, units: text.units, unitsShort: text.unitsShort, sku: text.sku, purchase: text.purchase, noPhoto: text.noPhoto }} actions={role === "owner" ? <><button type="button" onClick={() => { void refreshSuppliers(); setModal("suppliers"); }} className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-[10px] font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-white"><Store size={13} /> {text.suppliers}</button><button type="button" onClick={() => setModal("count")} className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-[10px] font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-white"><Boxes size={14} /> {text.stockCount}</button></> : undefined} />
+            <InventoryList products={products} store={roleStore} onSelect={setSelectedProductCode} labels={{ title: text.stock, search: text.search, empty: text.noResults, units: text.units, unitsShort: text.unitsShort, sku: text.sku, purchase: text.purchase, noPhoto: text.noPhoto }} actions={role === "owner" ? <><button type="button" onClick={() => { void refreshSuppliers(); setModal("suppliers"); }} className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-[10px] font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-white"><Store size={13} /> {text.suppliers}</button><button type="button" onClick={() => setModal("count")} className="flex h-9 items-center justify-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900 px-3 text-[10px] font-semibold text-zinc-300 transition hover:border-violet-500/50 hover:text-white"><Boxes size={14} /> {text.stockCount}</button><button type="button" onClick={() => setModal("archived")} className="col-span-2 flex h-10 items-center justify-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 px-3 text-xs font-semibold text-violet-200 transition hover:bg-violet-500/15 sm:col-auto sm:h-9"><ArchiveRestore size={14} /> {locale === "tr" ? "Arşivlenmiş ürünler" : "Archived products"}<span className="rounded-md bg-violet-400/15 px-1.5 py-0.5 text-[10px]">{archivedProductCount}</span></button></> : undefined} />
             {false && <article id="inventory" className="panel min-w-0 scroll-mt-24 overflow-hidden rounded-2xl">
               <div className="flex flex-col gap-4 border-b border-zinc-800/80 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
                 <div>
@@ -702,7 +737,7 @@ export default function Home() {
 
           <footer className="mt-8 flex flex-col gap-2 border-t border-zinc-900 py-5 text-[10px] text-zinc-700 sm:flex-row sm:items-center sm:justify-between">
             <p>{isLiveMode ? text.liveWorkspace : text.localDemo}</p>
-            <div className="flex items-center gap-3"><p>{isLiveMode ? text.liveNotice : text.mockNotice}</p>{!isLiveMode && <button type="button" onClick={resetDemoData} className="font-semibold text-zinc-500 underline-offset-2 transition hover:text-violet-300 hover:underline">{locale === "tr" ? "Demo verisini sıfırla" : "Reset demo data"}</button>}</div>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1"><p>{isLiveMode ? text.liveNotice : text.mockNotice}</p><span aria-label={locale === "tr" ? "Uygulama oluşturucusu" : "Application creator"} className="text-zinc-600">{locale === "tr" ? "Arslan Ram tarafından oluşturuldu" : "Created by Arslan Ram"}</span>{!isLiveMode && <button type="button" onClick={resetDemoData} className="font-semibold text-zinc-500 underline-offset-2 transition hover:text-violet-300 hover:underline">{locale === "tr" ? "Demo verisini sıfırla" : "Reset demo data"}</button>}</div>
           </footer>
         </main>
 
@@ -736,14 +771,14 @@ export default function Home() {
       )}
 
       {historyVariant && (
-        <Modal title={locale === "tr" ? "Stok hareketleri" : "Stock movements"} eyebrow={`${historyVariant.name} · ${historyVariant.color} / ${historyVariant.size}`} onClose={() => { setSelectedProductCode(historyVariant.code); setHistoryVariant(null); }}>
+        <Modal title={locale === "tr" ? "Stok hareketleri" : "Stock movements"} eyebrow={`${historyVariant.name} · ${historyVariant.color} / ${historyVariant.size}`} onClose={() => { setSelectedProductCode(historyVariant.code); setHistoryVariant(null); }} mobilePlacement="centered" returnFocusId={`movement-history-${historyVariant.id}`}>
           <MovementHistory locale={locale} loadHistory={() => isLiveMode && activeStoreId && historyVariant.variantId ? loadMovementHistory({ storeId: activeStoreId, variantId: historyVariant.variantId }) : Promise.resolve([])} />
         </Modal>
       )}
 
       {adjustmentVariant && role === "owner" && (
-        <Modal title={locale === "tr" ? "Stok düzeltme" : "Stock adjustment"} eyebrow={`${adjustmentVariant.name} · ${adjustmentVariant.color} / ${adjustmentVariant.size}`} onClose={() => setAdjustmentVariant(null)}>
-          <AdjustmentForm locale={locale} currentStock={adjustmentVariant.stock} onConfirm={saveAdjustment} />
+        <Modal title={locale === "tr" ? "Stok düzeltme" : "Stock adjustment"} eyebrow={`${adjustmentVariant.name} · ${adjustmentVariant.color}`} onClose={() => setAdjustmentVariant(null)}>
+          <AdjustmentForm locale={locale} productName={adjustmentVariant.name} color={adjustmentVariant.color} variants={products.filter((variant) => variant.store === adjustmentVariant.store && variant.code === adjustmentVariant.code && variant.color === adjustmentVariant.color)} onConfirm={saveAdjustment} />
         </Modal>
       )}
 
@@ -766,14 +801,14 @@ export default function Home() {
       )}
 
       {modal === "archived" && role === "owner" && (
-        <Modal title={locale === "tr" ? "Arşivlenen ürünler" : "Archived products"} eyebrow={catalogCopy[locale].productDetails} onClose={() => setModal(null)}>
-          <div className="divide-y divide-zinc-800/70 p-5 sm:p-7">{archivedProducts.length ? [...new Map(archivedProducts.map((product) => [product.code, product])).values()].map((product) => <button key={product.code} type="button" onClick={() => { setModal(null); setSelectedProductCode(product.code); }} className="flex w-full items-center justify-between gap-4 py-4 text-left first:pt-0 last:pb-0"><span><span className="block text-xs font-medium text-zinc-200">{product.name}</span><span className="mt-1 block font-mono text-[10px] text-zinc-600">{product.brand} · {product.code}</span></span><span className="rounded-md border border-violet-500/25 bg-violet-500/10 px-2 py-1 text-[10px] font-semibold text-violet-200">{locale === "tr" ? "Geri yükle" : "Restore"}</span></button>) : <p className="py-8 text-center text-xs text-zinc-600">{locale === "tr" ? "Arşivlenen ürün yok." : "No archived products."}</p>}</div>
+        <Modal title={locale === "tr" ? "Arşivlenmiş ürünler" : "Archived products"} eyebrow={catalogCopy[locale].productDetails} onClose={() => setModal(null)} closeLabel={text.close} wide>
+          <ArchivedProducts locale={locale} products={archivedProducts} onOpen={(product) => { setModal(null); setSelectedProductCode(product.code); }} onRestore={(product) => setProductArchived(product, false)} />
         </Modal>
       )}
 
       {selectedProductVariants.length > 0 && (
         <Modal title={selectedProductVariants[0].name} eyebrow={catalogCopy[locale].productDetails} onClose={() => setSelectedProductCode(null)} wide>
-        <ProductCard locale={locale} variants={selectedProductVariants} onUploadPhotos={isLiveMode ? addProductPhotos : undefined} onSell={sellProductFromCard} canManageArchive={role === "owner"} isArchived={selectedProductVariants[0].isActive === false} onSetArchived={setSelectedProductArchived} onViewHistory={(variant) => { setHistoryVariant(variant); setSelectedProductCode(null); }} onAdjust={role === "owner" ? (variant) => { setAdjustmentVariant(variant); setSelectedProductCode(null); } : undefined} onSetLowStockThreshold={role === "owner" ? saveLowStockThreshold : undefined} />
+        <ProductCard locale={locale} variants={selectedProductVariants} onUploadPhotos={isLiveMode ? addProductPhotos : undefined} onRemovePhoto={role === "owner" && isLiveMode ? deleteProductPhoto : undefined} onSell={sellProductFromCard} canManageArchive={role === "owner"} isArchived={selectedProductVariants[0].isActive === false} onSetArchived={setSelectedProductArchived} canEdit={role === "owner"} onUpdateCode={role === "owner" ? updateSelectedProductCode : undefined} onUpdateDetails={role === "owner" ? updateSelectedProductDetails : undefined} onViewHistory={(variant) => { setHistoryVariant(variant); setSelectedProductCode(null); }} onAdjust={role === "owner" ? (variant) => { setSelectedProductCode(null); setAdjustmentVariant(variant); } : undefined} />
         </Modal>
       )}
 

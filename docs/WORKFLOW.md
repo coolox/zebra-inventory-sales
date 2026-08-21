@@ -7,10 +7,10 @@
 Режим задаётся только явной переменной `NEXT_PUBLIC_APP_MODE`; наличие Supabase variables само по себе не включает live. Это сохраняет один и тот же первый HTML tree для SSR и client hydration.
 
 ```bash
-# Demo: http://localhost:3000, artifacts в .next-demo
+# Demo: http://localhost:3000
 npm run dev:demo
 
-# Live: http://localhost:3001, artifacts в .next-live
+# Live: http://localhost:3001
 npm run dev:live
 ```
 
@@ -29,6 +29,8 @@ Chrome debugging banner и extension UI не являются hydration error. �
 
 Owner запускает работу короткой командой: `Выполни TASK-NNN`. Номер должен совпадать
 с `Текущая задача` и `Команда для продолжения` в `PROJECT_STATUS.md`.
+Команды и поля «Следующая задача» внутри completed task-файлов — исторические и не
+могут переопределять `PROJECT_STATUS.md`.
 
 ## 2. Планирование задачи
 

@@ -16,7 +16,7 @@ describe("report PDF API", () => {
 
   it("returns a compact PDF for an active Owner", async () => {
     getUser.mockResolvedValue({ data: { user: { id: "owner" } } }); maybeSingle.mockResolvedValue({ data: { role: "owner", stores: { name: "Zebra Boutique" } } });
-    rpc.mockResolvedValueOnce({ data: [{ revenue_eur: 100, cost_eur: 40, margin_eur: 60, sale_count: 1, units: 2, average_ticket_eur: 100 }], error: null }).mockResolvedValueOnce({ data: [{ dimension_key: "seller", dimension_label: "Elif", revenue_eur: 100, cost_eur: 40, margin_eur: 60, units: 2 }], error: null });
+    rpc.mockResolvedValueOnce({ data: [{ revenue_eur: 100, cost_eur: 40, margin_eur: 60, sale_count: 1, units: 2, average_ticket_eur: 100 }], error: null }).mockResolvedValueOnce({ data: [{ dimension_key: "seller", dimension_label: "Elif", revenue_eur: 100, cost_eur: 40, margin_eur: 60, units: 2 }], error: null }).mockResolvedValueOnce({ data: [{ payment_method: "cash", currency: "EUR", payment_count: 1, amount: 100 }], error: null });
     const response = await GET(request());
     expect(response.status).toBe(200); expect(response.headers.get("content-type")).toContain("application/pdf"); expect((await response.arrayBuffer()).byteLength).toBeGreaterThan(1000);
   });

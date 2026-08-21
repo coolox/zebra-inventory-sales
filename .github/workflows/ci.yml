@@ -78,3 +78,9 @@ jobs:
 
       - name: Run concurrent inventory transactions
         run: npm run supabase:concurrency
+
+      - name: Recreate clean database for security and pilot-capacity smoke
+        run: npm run supabase:reset
+
+      - name: Run HTTP authorization and five-user pilot smoke
+        run: npm run supabase:security-smoke

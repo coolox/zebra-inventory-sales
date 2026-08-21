@@ -12,7 +12,7 @@ function pngSize(filename: string) {
 describe("PWA manifest", () => {
   it("declares standalone scope and explicit Android install icons", () => {
     const value = manifest();
-    expect(value).toMatchObject({ name: "Zebra Retail", short_name: "Zebra", start_url: "/", scope: "/", display: "standalone", background_color: "#09090b", theme_color: "#09090b" });
+    expect(value).toMatchObject({ name: "Zebra Boutique", short_name: "Zebra", start_url: "/", scope: "/", display: "standalone", background_color: "#09090b", theme_color: "#09090b" });
     expect(value.icons).toEqual([
       { src: "/icons/zebra-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/icons/zebra-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
