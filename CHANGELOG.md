@@ -805,3 +805,9 @@
 - Completed TASK-193: light-theme secondary actions now have explicit readable
   enabled, disabled and hover states across reports, Sale Flow and Owner catalog
   actions; targeted tests (17/17) and demo build passed.
+- Completed TASK-194: selected Audit Log category chips now retain a readable,
+  visually strongest violet treatment in light theme; 6 targeted tests and demo
+  build passed.
+- Completed TASK-195: duplicate/out-of-stock warning preserves its status and
+  reservation semantics while becoming readable in light theme; 11 targeted tests
+  and demo build passed.

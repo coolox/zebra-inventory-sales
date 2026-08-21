@@ -275,6 +275,24 @@ html[data-theme="light"] .secondary-action:disabled {
   opacity: 1 !important;
 }
 
+html[data-theme="light"] .audit-category-chip.is-selected {
+  border-color: #6d28d9 !important;
+  background-color: rgba(124, 58, 237, 0.16) !important;
+  color: #3b0764 !important;
+  box-shadow: inset 0 0 0 1px rgba(109, 40, 217, 0.14);
+}
+
+html[data-theme="light"] .audit-category-chip.is-selected:hover {
+  background-color: rgba(124, 58, 237, 0.23) !important;
+}
+
+html[data-theme="light"] .sale-stock-warning {
+  border-color: #c56b08 !important;
+  background-color: #fff1d9 !important;
+  color: #7a3500 !important;
+  box-shadow: inset 0 0 0 1px rgba(197, 107, 8, 0.08);
+}
+
 .subtle-grid {
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),

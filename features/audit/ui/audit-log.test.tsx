@@ -59,6 +59,7 @@ describe("AuditLog localization", () => {
     await user.type(screen.getByLabelText("Date"), "08/13/2026");
     expect(screen.getByText("1", { exact: true })).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Sale" }));
+    expect(screen.getByRole("button", { name: "Sale" })).toHaveClass("audit-category-chip", "is-selected");
     await waitFor(() => expect(load).toHaveBeenLastCalledWith(1, "sale"));
 
     fireEvent.change(screen.getByLabelText("Date"), { target: { value: "2026-08-14" } });

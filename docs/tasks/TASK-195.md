@@ -1,6 +1,6 @@
 # TASK-195 — Сделать Sale Flow warning readable в light theme
 
-Статус: pending
+Статус: COMPLETED
 
 Приоритет: P1 — важное stock/duplicate warning почти не видно.
 
@@ -39,3 +39,11 @@ of-stock condition и readable EN/TR copy.
 Не начинать implementation до прямой команды Owner после закрытия renewed visual
 intake.
 
+## Реализация и evidence
+
+- Duplicate/out-of-stock status keeps its `role="status"` and business logic, and
+  now has a light-theme amber surface/border with dark `#7a3500` foreground.
+- The duplicate reservation test asserts the warning treatment while preserving
+  cart quantity and successful sale behaviour.
+- `npm test -- --run features/sales/ui/sale-flow.test.tsx` — 11/11 passed.
+- `npm run build` — demo build passed (only existing warnings).

@@ -1,6 +1,6 @@
 # TASK-196 — Сделать Sale Details photo-first для продавца и Owner
 
-Статус: pending
+Статус: IN PROGRESS
 
 Приоритет: P1 — продавец не может надёжно идентифицировать проданный товар только
 по Product code/name/size.
@@ -56,4 +56,3 @@ deletion boundary сохраняются.
 
 Не начинать implementation до прямой команды Owner после закрытия renewed visual
 intake.
-

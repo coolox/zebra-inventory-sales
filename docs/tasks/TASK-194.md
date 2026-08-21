@@ -1,6 +1,6 @@
 # TASK-194 — Восстановить контраст selected category в light-theme Audit Log
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 Приоритет: P1 — active Audit category не читается и не выглядит выбранной.
 
@@ -36,3 +36,13 @@ foreground, distinct selected surface/border и visible keyboard focus.
 
 Не начинать implementation до прямой команды Owner после закрытия renewed visual
 intake.
+
+## Реализация и evidence
+
+- Active category chips now carry `audit-category-chip is-selected`; light theme
+  uses `#3b0764` text, strong violet border/surface and hover while unselected
+  chips keep their neutral treatment.
+- Filtering/pagination state and category keys are unchanged; test now asserts the
+  active Sale chip class.
+- `npm test -- --run features/audit/ui/audit-log.test.tsx` — 6/6 passed.
+- `npm run build` — demo build passed (only existing warnings).

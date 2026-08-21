@@ -160,9 +160,9 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19AN | DONE | TASK-191 | Full frontend/database gates restored, handoff sources synchronized and consolidated remediation commit created before TASK-165 |
 | 19AO | DONE | TASK-192 | Turkish greeting heading now ends after the name; demo build passed |
 | 19AP | DONE | TASK-193 | Light-theme secondary actions have readable enabled/disabled/hover contrast; targeted tests and demo build passed |
-| 19AQ | IN PROGRESS | TASK-194 | Light-theme Audit Log selected category contrast correction |
-| 19AR | PAUSED | TASK-195 | Light-theme Sale Flow duplicate/out-of-stock warning contrast correction |
-| 19AS | PAUSED | TASK-196 | Sale Details photo-first thumbnail/fullscreen acceptance, including local demo fixture coverage |
+| 19AQ | DONE | TASK-194 | Active Audit Log category chip has readable light-theme contrast; 6 targeted tests and demo build passed |
+| 19AR | DONE | TASK-195 | Sale Flow duplicate/out-of-stock warning has readable light-theme amber contrast; 11 targeted tests and demo build passed |
+| 19AS | IN PROGRESS | TASK-196 | Sale Details photo-first thumbnail/fullscreen acceptance, including local demo fixture coverage |
 | 19AT | PAUSED | TASK-197 | Unified Owner Product edit dialog and Sell-first Product Details action hierarchy |
 | 19AU | PAUSED | TASK-198 | Owner can visibly remove a mistaken saved product photo in demo and live without weakening TASK-178 safeguards |
 | 20 | BLOCKED | TASK-149 | NO-GO: нужны TASK-084 Auth acceptance, immutable release tag, shared staging/device evidence, monitoring/roles/window и explicit Owner GO |

@@ -215,7 +215,7 @@ describe("SaleFlow", () => {
     await addProduct(user);
     await chooseProduct(user);
 
-    expect(screen.getByText("This size is already in the sale and no more units are available.")).toBeInTheDocument();
+    expect(screen.getByText("This size is already in the sale and no more units are available.")).toHaveClass("sale-stock-warning");
     expect(screen.getByRole("button", { name: "Sell 1 item" })).toBeEnabled();
     await user.click(screen.getByRole("button", { name: "Sell 1 item" }));
     await waitFor(() => expect(onComplete).toHaveBeenCalledTimes(1));

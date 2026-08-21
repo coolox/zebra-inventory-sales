@@ -62,8 +62,8 @@ export function AuditLog({ load, locale }: { load: (page: number, category?: Aud
 
   return <div className="space-y-4 p-5 sm:p-7">
     <div className="flex flex-wrap gap-2" aria-label="Audit category">
-      <button type="button" onClick={() => changeCategory()} className={`rounded-lg border px-3 py-2 text-[10px] ${!category ? "border-violet-500 bg-violet-500/10 text-violet-200" : "border-zinc-800 text-zinc-500"}`}>{text.auditAll}</button>
-      {categories.map((item) => <button type="button" key={item} onClick={() => changeCategory(item)} className={`rounded-lg border px-3 py-2 text-[10px] ${category === item ? "border-violet-500 bg-violet-500/10 text-violet-200" : "border-zinc-800 text-zinc-500"}`}>{text.auditCategories[item]}</button>)}
+      <button type="button" onClick={() => changeCategory()} className={`audit-category-chip rounded-lg border px-3 py-2 text-[10px] ${!category ? "is-selected border-violet-500 bg-violet-500/10 text-violet-200" : "border-zinc-800 text-zinc-500"}`}>{text.auditAll}</button>
+      {categories.map((item) => <button type="button" key={item} onClick={() => changeCategory(item)} className={`audit-category-chip rounded-lg border px-3 py-2 text-[10px] ${category === item ? "is-selected border-violet-500 bg-violet-500/10 text-violet-200" : "border-zinc-800 text-zinc-500"}`}>{text.auditCategories[item]}</button>)}
     </div>
     <div className="grid gap-2 sm:grid-cols-3">
       <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500">{labels.actor}<select aria-label={labels.actor} value={actor} onChange={(event) => { setActor(event.target.value); resetPage(); }} className="mt-1 h-9 w-full rounded-lg border border-zinc-800 bg-zinc-950 px-2 text-xs text-zinc-200"><option value="all">{labels.allActors}</option>{actors.map((name) => <option key={name} value={name}>{name}</option>)}</select></label>

@@ -309,7 +309,7 @@ export function SaleFlow({ products, sellerName, locale, paymentRates, initialCo
             <label><span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">5 · {text.price}</span><input type="number" min="0.01" step="0.01" value={price} onChange={(event) => handleFocusedValueChange(event, setPrice)} onKeyDown={dismissKeyboard} placeholder="0.00" className="h-11 w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 text-sm text-zinc-100 outline-none focus:border-violet-500" /></label>
             <label><span className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.14em] text-zinc-500">{text.currency}</span><select value={currency ?? "EUR"} onChange={(event) => setCurrency(event.target.value as SaleDraftLine["currency"])} className="h-11 w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 text-xs text-zinc-200 outline-none focus:border-violet-500">{currencies.map((item) => <option key={item}>{item}</option>)}</select></label>
           </div>
-          {Number(price) > 0 && !selectedHasStock && <p role="status" className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">{text.reserved}</p>}
+          {Number(price) > 0 && !selectedHasStock && <p role="status" className="sale-stock-warning mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">{text.reserved}</p>}
         </div>
       )}
 
