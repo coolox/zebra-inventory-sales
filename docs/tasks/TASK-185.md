@@ -44,3 +44,15 @@ Request только зафиксирован. Copy и код не менять,
   supporting line remains `Zebra Boutique · good sales!`, so greeting copy no
   longer repeats the sales wish.
 - User/session, role, schedule, sales and notification logic were unchanged.
+
+## Follow-up visual regression — 2026-08-22
+
+- Owner local-demo screenshot confirms the current Turkish heading still renders
+  `Merhaba Elif, bol satışlar!`, while the supporting line already correctly uses
+  `Zebra Boutique · bol satışlar!`.
+- Owner clarified that the heading must be only `Merhaba Elif,`; the sales wish
+  belongs exclusively to the supporting line. The correction is isolated in
+  [TASK-192](TASK-192.md).
+- TASK-185 remains historical completion evidence for the original copy change;
+  TASK-192 is a new regression and must not be implemented until Owner closes the
+  current visual intake.

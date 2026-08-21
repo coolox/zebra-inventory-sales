@@ -2,11 +2,12 @@
 
 Обновлено: 2026-08-22
 
-Текущий этап: Owner walkthrough remediation
+Текущий этап: Owner visual intake pause before final staging acceptance
 
-Текущий шаг: TASK-165 (`NEXT`) — consolidated staging and physical acceptance gate
+Текущий шаг: Owner visual intake (`PAUSED`) — implementation не начинать до
+явного закрытия intake
 
-Команда для продолжения: `Выполни TASK-165`
+Команда для продолжения: ожидать явную команду Owner после завершения intake
 
 Исторический pre-remediation RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`;
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates. Текущий
@@ -94,6 +95,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 - `WAITING` — ожидает предыдущие шаги;
 - `PARTIAL` — часть уже сделана, но launch criteria ещё не закрыты;
 - `BLOCKED` — продолжение невозможно без решения или внешнего изменения.
+- `PAUSED` — Owner временно собирает feedback; implementation не авторизована.
 
 | Шаг | Статус | Task | Результат / gate |
 |---:|---|---|---|
@@ -130,7 +132,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19L | DONE | TASK-163 | Receive Flow Product code сохраняется при blur/Done/IME; control/invisible suffix blocked with explicit EN/TR validation |
 | 19M | DONE | TASK-164 | Adjust Stock modal overlay fixed; Audit/Seller stale selectors scoped to header; Playwright 75/75 зелёный |
 | 19N | DONE | TASK-166 | Фирменный знак Zebra Boutique заменил `ZB` в navigation и Android/iOS PWA assets; build и manifest checks зелёные |
-| 19O | NEXT | TASK-165 | Publish exact TASK-191 commit to staging and run shared Owner/Seller physical iPhone/Redmi acceptance; Production untouched |
+| 19O | WAITING | TASK-165 | Publish the post-intake reviewed commit to staging and run shared Owner/Seller physical iPhone/Redmi acceptance; Production untouched |
 | 19P | DONE | TASK-167 | Preview block caused only by invalid temporary Git author; no-Git snapshot built live and Ready without settings mutation |
 | 19Q | DONE | TASK-168 | Login использует Zebra Boutique mark; targeted test, demo/live build и Ready Preview safe smoke зелёные |
 | 19R | DONE | TASK-169 | Staging Auth Site URL and exact callback point to consolidated Preview; Owner/Seller Magic Link reaches workspace and logout returns to login |
@@ -156,6 +158,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19AL | DONE | TASK-189 | Responsive full-value KPI implementation and automated coverage complete; Redmi 14 recheck explicitly moves to TASK-165 |
 | 19AM | DONE | TASK-190 | Owner bug intake closed; TASK-170—TASK-189 order, evidence locations, staging and publication gates fixed |
 | 19AN | DONE | TASK-191 | Full frontend/database gates restored, handoff sources synchronized and consolidated remediation commit created before TASK-165 |
+| 19AO | PAUSED | TASK-192 | Turkish greeting copy correction; implementation waits for Owner to close renewed visual intake |
 | 20 | BLOCKED | TASK-149 | NO-GO: нужны TASK-084 Auth acceptance, immutable release tag, shared staging/device evidence, monitoring/roles/window и explicit Owner GO |
 | 21 | WAITING | TASK-150 | Тот же Release Candidate развёрнут в production; auth/data/transaction smoke зелёный |
 | 22 | WAITING | TASK-087 | Реальный clothing catalog/stock загружен и физически reconciled |

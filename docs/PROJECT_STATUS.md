@@ -9,13 +9,20 @@
 - Последняя завершённая задача: [TASK-191](tasks/TASK-191.md) — full release gates
   восстановлены, документация синхронизирована, remediation set сохранён consolidated
   commit.
-- Следующая задача: [TASK-165](tasks/TASK-165.md) — опубликовать exact consolidated
-  commit в staging и провести общий Owner/Seller walkthrough на physical iPhone и
-  Redmi 14.
-- Команда для продолжения: `Выполни TASK-165`.
+- Следующий release gate после закрытия Owner intake: [TASK-165](tasks/TASK-165.md)
+  — опубликовать post-intake reviewed commit в staging и провести общий Owner/Seller
+  walkthrough на physical iPhone и Redmi 14.
+- Команда для продолжения: ожидать явную команду Owner после завершения visual intake.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
+
+## Временная пауза Owner visual intake
+
+Owner снова собирает локальные visual/copy observations. [TASK-192](tasks/TASK-192.md)
+записана для Turkish greeting, но implementation не авторизована до прямого сообщения
+Owner, что intake завершён. До этого не начинать TASK-192 или TASK-165 и не менять
+staging/production.
 
 ## Фактический уровень приложения
 
@@ -79,10 +86,10 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 
 ## Task accounting
 
-- Всего task-файлов: 191.
+- Всего task-файлов: 192.
 - `COMPLETED` / legacy `completed`: 161.
-- `pending`: 28, включая готовую к запуску TASK-165 и post-launch backlog.
-- `WAITING`: 1 — TASK-084.
+- `pending`: 29, включая TASK-192 и post-launch backlog.
+- `WAITING`: 2 — TASK-084 и TASK-165.
 - `BLOCKED`: 1 — TASK-149.
 - `IN PROGRESS`: 0.
 

@@ -2,6 +2,11 @@
 
 ## 2026-08-22
 
+- Recorded TASK-192 from Owner local-demo visual intake: Turkish greeting must be
+  `Merhaba {name},` while `Zebra Boutique · bol satışlar!` remains the only sales
+  wish. No code, staging or production change is authorized until Owner closes
+  the renewed intake.
+
 - TASK-191 completed: consolidated remediation release gates are green (Vitest
   243/243, Playwright 78/78, demo/live builds, lint 0 errors, fresh pgTAP 214/214,
   concurrency and 27 security/capacity checks). Cash export route mocks and the
