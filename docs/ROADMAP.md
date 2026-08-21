@@ -159,6 +159,9 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19AM | DONE | TASK-190 | Owner bug intake closed; TASK-170—TASK-189 order, evidence locations, staging and publication gates fixed |
 | 19AN | DONE | TASK-191 | Full frontend/database gates restored, handoff sources synchronized and consolidated remediation commit created before TASK-165 |
 | 19AO | PAUSED | TASK-192 | Turkish greeting copy correction; implementation waits for Owner to close renewed visual intake |
+| 19AP | PAUSED | TASK-193 | Light-theme action controls need readable, distinct enabled/disabled/loading states |
+| 19AQ | PAUSED | TASK-194 | Light-theme Audit Log selected category contrast correction |
+| 19AR | PAUSED | TASK-195 | Light-theme Sale Flow duplicate/out-of-stock warning contrast correction |
 | 20 | BLOCKED | TASK-149 | NO-GO: нужны TASK-084 Auth acceptance, immutable release tag, shared staging/device evidence, monitoring/roles/window и explicit Owner GO |
 | 21 | WAITING | TASK-150 | Тот же Release Candidate развёрнут в production; auth/data/transaction smoke зелёный |
 | 22 | WAITING | TASK-087 | Реальный clothing catalog/stock загружен и физически reconciled |

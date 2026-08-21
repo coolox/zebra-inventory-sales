@@ -20,8 +20,10 @@
 ## Временная пауза Owner visual intake
 
 Owner снова собирает локальные visual/copy observations. [TASK-192](tasks/TASK-192.md)
-записана для Turkish greeting, но implementation не авторизована до прямого сообщения
-Owner, что intake завершён. До этого не начинать TASK-192 или TASK-165 и не менять
+фиксирует Turkish greeting; [TASK-193](tasks/TASK-193.md),
+[TASK-194](tasks/TASK-194.md) и [TASK-195](tasks/TASK-195.md) фиксируют light-theme
+contrast findings. Implementation не авторизована до прямого сообщения Owner, что
+intake завершён. До этого не начинать эти задачи или TASK-165 и не менять
 staging/production.
 
 ## Фактический уровень приложения
@@ -86,9 +88,9 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 
 ## Task accounting
 
-- Всего task-файлов: 192.
+- Всего task-файлов: 195.
 - `COMPLETED` / legacy `completed`: 161.
-- `pending`: 29, включая TASK-192 и post-launch backlog.
+- `pending`: 32, включая TASK-192—TASK-195 и post-launch backlog.
 - `WAITING`: 2 — TASK-084 и TASK-165.
 - `BLOCKED`: 1 — TASK-149.
 - `IN PROGRESS`: 0.

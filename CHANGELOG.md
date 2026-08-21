@@ -7,6 +7,12 @@
   wish. No code, staging or production change is authorized until Owner closes
   the renewed intake.
 
+- Recorded TASK-193—TASK-195 from Owner light-theme screenshots: action controls
+  blur enabled/disabled/loading meaning, selected Audit categories lose readable
+  foreground, and the Sale Flow duplicate/out-of-stock warning is nearly invisible.
+  These are isolated presentation tasks; no code or staging/production change is
+  authorized until Owner closes the renewed intake.
+
 - TASK-191 completed: consolidated remediation release gates are green (Vitest
   243/243, Playwright 78/78, demo/live builds, lint 0 errors, fresh pgTAP 214/214,
   concurrency and 27 security/capacity checks). Cash export route mocks and the
