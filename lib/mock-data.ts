@@ -34,12 +34,12 @@ export const initialSellers: Seller[] = [
 ];
 
 export const initialSales: Sale[] = [
-  { id: 1, productId: 1, sellerId: 1, seller: "Elif Demir", store: "clothing", product: "Silk Midi Dress", code: "KM-9902", size: "0", quantity: 1, revenueEur: 250, marginEur: 181, dayOffset: 0, time: "12:48" },
+  { id: 1, productId: 1, sellerId: 1, seller: "Elif Demir", store: "clothing", product: "Silk Midi Dress", code: "KM-9902", size: "0", quantity: 1, revenueEur: 250, marginEur: 181, dayOffset: 0, time: "12:48", photoUrl: "/products/km-9902/front.png" },
   { id: 2, productId: 9, sellerId: 3, seller: "Selin Akın", store: "bags", product: "Ophidia Mini", code: "GG-OPH-M", size: "Mini", quantity: 1, revenueEur: 520, marginEur: 210, dayOffset: 0, time: "12:21" },
   { id: 3, productId: 6, sellerId: 2, seller: "Mert Kaya", store: "shoes", product: "Air Max Pulse", code: "NK-AIR24", size: "39", quantity: 1, revenueEur: 145, marginEur: 57, dayOffset: 0, time: "11:56" },
-  { id: 4, productId: 2, sellerId: 4, seller: "Ayşe Yılmaz", store: "clothing", product: "Structured Jacket", code: "TR-07", size: "M", quantity: 1, revenueEur: 240, marginEur: 120, dayOffset: 0, time: "10:44" },
+  { id: 4, productId: 2, sellerId: 4, seller: "Ayşe Yılmaz", store: "clothing", product: "Structured Jacket", code: "TR-07", size: "M", quantity: 1, revenueEur: 240, marginEur: 120, dayOffset: 0, time: "10:44", photoUrl: "/products/tr-07/front.png" },
   { id: 5, productId: 11, sellerId: 3, seller: "Selin Akın", store: "bags", product: "Mercer Tote", code: "MK-MRC32", size: "Medium", quantity: 1, revenueEur: 215, marginEur: 126, dayOffset: 0, time: "09:32" },
-  { id: 6, productId: 3, sellerId: 1, seller: "Elif Demir", store: "clothing", product: "Stone Tee", code: "AD26T8332", size: "M", quantity: 2, revenueEur: 95, marginEur: 62, dayOffset: 1, time: "18:03" },
+  { id: 6, productId: 3, sellerId: 1, seller: "Elif Demir", store: "clothing", product: "Stone Tee", code: "AD26T8332", size: "M", quantity: 2, revenueEur: 95, marginEur: 62, dayOffset: 1, time: "18:03", photoUrl: "/products/ad26t8332/front.png" },
   { id: 7, productId: 7, sellerId: 2, seller: "Mert Kaya", store: "shoes", product: "530 Silver", code: "NB-530SG", size: "40", quantity: 1, revenueEur: 138, marginEur: 66, dayOffset: 2, time: "16:26" },
   { id: 8, productId: 10, sellerId: 3, seller: "Selin Akın", store: "bags", product: "Re-Nylon 2000", code: "PR-RNY20", size: "One size", quantity: 1, revenueEur: 490, marginEur: 220, dayOffset: 3, time: "14:40" },
   { id: 9, productId: 5, sellerId: 4, seller: "Ayşe Yılmaz", store: "clothing", product: "Sculpted Knit", code: "MM-621", size: "S", quantity: 1, revenueEur: 175, marginEur: 112, dayOffset: 5, time: "11:15" },

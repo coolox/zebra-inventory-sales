@@ -162,7 +162,8 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19AP | DONE | TASK-193 | Light-theme secondary actions have readable enabled/disabled/hover contrast; targeted tests and demo build passed |
 | 19AQ | DONE | TASK-194 | Active Audit Log category chip has readable light-theme contrast; 6 targeted tests and demo build passed |
 | 19AR | DONE | TASK-195 | Sale Flow duplicate/out-of-stock warning has readable light-theme amber contrast; 11 targeted tests and demo build passed |
-| 19AS | IN PROGRESS | TASK-196 | Sale Details photo-first thumbnail/fullscreen acceptance, including local demo fixture coverage |
+| 19AS | DONE | TASK-196 | Photo-first local demo fixture restores thumbnail/fullscreen; 12 targeted tests and demo build passed |
+| 19AT | NEXT | TASK-197 | Unified Owner Product edit dialog and Sell-first Product Details action hierarchy |
 | 19AT | PAUSED | TASK-197 | Unified Owner Product edit dialog and Sell-first Product Details action hierarchy |
 | 19AU | PAUSED | TASK-198 | Owner can visibly remove a mistaken saved product photo in demo and live without weakening TASK-178 safeguards |
 | 20 | BLOCKED | TASK-149 | NO-GO: нужны TASK-084 Auth acceptance, immutable release tag, shared staging/device evidence, monitoring/roles/window и explicit Owner GO |

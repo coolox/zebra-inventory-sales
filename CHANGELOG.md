@@ -811,3 +811,6 @@
 - Completed TASK-195: duplicate/out-of-stock warning preserves its status and
   reservation semantics while becoming readable in light theme; 11 targeted tests
   and demo build passed.
+- Completed TASK-196: photographed demo sale lines now retain their sale-time
+  photo reference, so Sale Details visibly renders its thumbnail/fullscreen flow;
+  12 targeted tests and demo build passed.

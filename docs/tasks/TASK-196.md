@@ -1,6 +1,6 @@
 # TASK-196 — Сделать Sale Details photo-first для продавца и Owner
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 Приоритет: P1 — продавец не может надёжно идентифицировать проданный товар только
 по Product code/name/size.
@@ -56,3 +56,13 @@ deletion boundary сохраняются.
 
 Не начинать implementation до прямой команды Owner после закрытия renewed visual
 intake.
+
+## Реализация и evidence
+
+- Clothing demo sale fixtures now keep a sale-time `photoUrl` for photographed
+  Silk Midi Dress, Structured Jacket and Stone Tee lines. Sale Details therefore
+  renders its existing thumbnail and fullscreen viewer instead of `—`.
+- Live remains bound to its authorized sale-time private snapshot; legacy/no-photo
+  lines still show the explicit neutral fallback.
+- `npm test -- --run features/sales/ui/sale-history.test.tsx features/sales/model/sale-history.test.ts` — 12/12 passed.
+- `npm run build` — demo build passed (only existing warnings).

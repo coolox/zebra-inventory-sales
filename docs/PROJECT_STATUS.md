@@ -10,10 +10,10 @@
   больше не повторяет пожелание в heading.
 - Последняя завершённая задача: [TASK-194](tasks/TASK-194.md) — active Audit Log
   category chip снова читаем в light theme.
-- Последняя завершённая задача: [TASK-195](tasks/TASK-195.md) — Sale Flow
-  duplicate/out-of-stock warning снова читаем в light theme.
-- Текущая задача: [TASK-196](tasks/TASK-196.md) — вернуть photo-first Sale Details
-  acceptance, включая demo fixture.
+- Последняя завершённая задача: [TASK-196](tasks/TASK-196.md) — Sale Details
+  photo-first demo fixture восстановлен.
+- Текущая задача: [TASK-197](tasks/TASK-197.md) — unified Owner Product edit и
+  Sell-first hierarchy.
 - После текущего согласованного пакета TASK-192—TASK-198: [TASK-165](tasks/TASK-165.md)
   — post-intake staging/device acceptance.
 - Команда Owner: выполнить все зафиксированные visual fixes последовательно до TASK-165.
@@ -96,11 +96,11 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 ## Task accounting
 
 - Всего task-файлов: 198.
-- `COMPLETED` / legacy `completed`: 165.
+- `COMPLETED` / legacy `completed`: 166.
 - `pending`: 30, включая TASK-197—TASK-198 и post-launch backlog.
 - `WAITING`: 2 — TASK-084 и TASK-165.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 1 — TASK-196.
+- `IN PROGRESS`: 0.
 
 Завершённые диапазоны:
 
