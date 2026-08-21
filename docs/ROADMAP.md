@@ -164,7 +164,6 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19AR | DONE | TASK-195 | Sale Flow duplicate/out-of-stock warning has readable light-theme amber contrast; 11 targeted tests and demo build passed |
 | 19AS | DONE | TASK-196 | Photo-first local demo fixture restores thumbnail/fullscreen; 12 targeted tests and demo build passed |
 | 19AT | NEXT | TASK-197 | Unified Owner Product edit dialog and Sell-first Product Details action hierarchy |
-| 19AT | PAUSED | TASK-197 | Unified Owner Product edit dialog and Sell-first Product Details action hierarchy |
 | 19AU | PAUSED | TASK-198 | Owner can visibly remove a mistaken saved product photo in demo and live without weakening TASK-178 safeguards |
 | 20 | BLOCKED | TASK-149 | NO-GO: нужны TASK-084 Auth acceptance, immutable release tag, shared staging/device evidence, monitoring/roles/window и explicit Owner GO |
 | 21 | WAITING | TASK-150 | Тот же Release Candidate развёрнут в production; auth/data/transaction smoke зелёный |
