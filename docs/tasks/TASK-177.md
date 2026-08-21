@@ -73,3 +73,12 @@ Finding только зафиксирован. Product/data design и код н�
 - `supabase/tests/database/036_product_model_details_test.sql` — pgTAP 8/8 passed.
 - `npm run build` — passed (only pre-existing lint warnings).
 - Physical Owner mobile recheck входит в consolidated TASK-165 согласно TASK-190.
+
+## Follow-up interaction hierarchy — 2026-08-22
+
+- Owner requested that the approved model-details fields and Product code appear
+  through one `Edit product` entry point, while `Sell this product` becomes the
+  first visible Product Details action.
+- TASK-177 authorised audited details boundary remains intact; mobile action order
+  and unified dialog composition are isolated in [TASK-197](TASK-197.md). Do not
+  change implementation during visual intake.

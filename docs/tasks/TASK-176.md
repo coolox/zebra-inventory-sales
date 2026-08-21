@@ -66,3 +66,11 @@ code-only edit boundary, но реальная mobile action не выполня
 
 No further code work is required in this task. Confirm the success/error/retry
 states and persistence after reload on the Redmi 14 during TASK-165.
+
+## Follow-up interaction hierarchy — 2026-08-22
+
+- Owner requested one unified `Edit product` entry point instead of separate
+  Product code and model-detail buttons, with the primary Sell action first.
+- TASK-176 server exact-code confirmation/audit boundary remains required inside
+  that unified UI; action ordering and dialog composition are isolated in
+  [TASK-197](TASK-197.md). Do not change implementation during visual intake.

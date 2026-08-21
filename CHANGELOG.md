@@ -18,6 +18,11 @@
   recognition because the line renders only a neutral placeholder. Thumbnail and
   fullscreen acceptance, including demo coverage, are deferred until intake closes.
 
+- Recorded TASK-197 from Owner Product Details screenshot: `Sell this product` must
+  be the first primary action, while Product code and approved model details move
+  into one Owner-only Edit Product entry point below it. Server-side audit and exact
+  confirmation boundaries remain unchanged; implementation waits for intake close.
+
 - TASK-191 completed: consolidated remediation release gates are green (Vitest
   243/243, Playwright 78/78, demo/live builds, lint 0 errors, fresh pgTAP 214/214,
   concurrency and 27 security/capacity checks). Cash export route mocks and the
