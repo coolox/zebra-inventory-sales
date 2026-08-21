@@ -795,3 +795,7 @@
 - Completed desktop/tablet/iPhone/Android viewport QA with no new visual or interaction findings; local production browser console stayed clean and previous Owner physical-device evidence remains valid.
 - Added a store-scoped Sales History view with paginated localized details, seller/status/product information and original-currency payment snapshots without recalculating historical FX.
 - Added an atomic, auditable sale cancellation RPC: Seller store access and mandatory reason are enforced server-side, stock is restored through reversal movements, payment snapshots become reversed, and duplicate requests are idempotent.
+- Recorded TASK-198 from Owner renewed local visual intake: after saving a product,
+  Owner must be able to find and remove a mistakenly uploaded photo. TASK-178's
+  private live deletion safeguards remain required; the local demo must make the
+  scenario verifiable too.
