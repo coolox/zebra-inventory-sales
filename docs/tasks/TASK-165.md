@@ -1,6 +1,6 @@
 # TASK-165 — Собрать shared staging Preview и провести Owner/Seller mobile walkthrough
 
-Статус: pending
+Статус: IN PROGRESS
 
 Источник: Owner-approved remediation path, 2026-08-20.
 
@@ -114,6 +114,19 @@ review.
 - Therefore the remaining Owner/Seller Android and shared-flow rechecks must use a
   reviewed consolidated Preview after those remediation tasks finish. No production
   mutation or secret handling occurred in this task.
+
+## Post-intake publish precheck — 2026-08-22
+
+- Current reviewed local tree is clean at `dd892e3` plus the completed visual-fix
+  commits `1419eda`, `1cfb198`, `b41ce35` and `a22d994`; no secret was read.
+- Existing Vercel staging identity was confirmed read-only as `coolox` using a
+  Node-18-compatible CLI. The current CLI requires Node 20 and was not used for
+  deployment.
+- Preview publication was not performed: the external-action boundary requires an
+  explicit Owner confirmation that this repository may be uploaded to the named
+  Vercel staging account/project. No Vercel, Supabase, Auth or production resource
+  was changed. After that confirmation, deploy only without `--prod`, inspect the
+  resulting URL, and continue the physical checklist below.
 
 ## Safe web precheck — 2026-08-20
 

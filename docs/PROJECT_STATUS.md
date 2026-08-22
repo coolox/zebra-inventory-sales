@@ -16,9 +16,12 @@
   Product Details и единая Owner-точка Product Edit готовы.
 - Последняя завершённая задача: [TASK-198](tasks/TASK-198.md) — Owner photo
   deletion после сохранения проверяемо и в local demo.
-- Следующий release gate: [TASK-165](tasks/TASK-165.md) — post-intake
-  staging/device acceptance.
-- Команда для продолжения: `Выполни TASK-165`.
+- Текущая задача: [TASK-165](tasks/TASK-165.md) — post-intake staging/device
+  acceptance.
+- Блокер: для Preview нужна явная Owner-авторизация отправки current repository в
+  staging Vercel account `coolox`; production не затрагивается.
+- Команда для продолжения после авторизации: продолжить TASK-165, создать только
+  Vercel Preview без `--prod`, затем пройти physical checklist.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
@@ -102,7 +105,7 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 - `pending`: 28, post-launch backlog.
 - `WAITING`: 2 — TASK-084 и TASK-165.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 0.
+- `IN PROGRESS`: 1 — TASK-165.
 
 Завершённые диапазоны:
 
