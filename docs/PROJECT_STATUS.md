@@ -19,12 +19,13 @@
 - Последняя завершённая задача: [TASK-165](tasks/TASK-165.md) — Owner подтвердил
   shared staging/device checklist without new P0/P1 finding.
 - Следующий release decision: [TASK-149](tasks/TASK-149.md) — production Go/No-Go
-  review, `BLOCKED`: local RC/tag and all local gates are green, but GitHub rejected
-  the tag-only push with HTTP 400 and no remote tag exists. No production deploy is
-  authorized until immutable remote-tag verification succeeds.
-- Команда для продолжения: resolve GitHub `git-receive-pack` HTTP 400, verify remote
-  `clothing-pilot-rc.1`, then say `Продолжай TASK-149`; do not deploy while this
-  `NO-GO` remains.
+  review, `BLOCKED`: GitHub tag `clothing-pilot-rc.1` is verified and local RC gates
+  are green, but fresh backup/recovery evidence exists for staging only. No
+  production migration or deploy is authorized until a production checkpoint is
+  configured and verified.
+- Команда для продолжения: Owner decides/sets up the production backup checkpoint
+  outside Git, then says `Продолжай TASK-149`; do not deploy while this `NO-GO`
+  remains.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.

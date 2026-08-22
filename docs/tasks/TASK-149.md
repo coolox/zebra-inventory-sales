@@ -82,3 +82,13 @@ GitHub tag-only push, but two attempts returned GitHub HTTP 400 from
 `git-receive-pack`; remote tag lookup returned no matching ref. No branch, Vercel
 deployment, database or production data was changed. Do not start TASK-150 until
 the remote tag exists and is verified.
+
+### Tag and backup re-check — 2026-08-22
+
+Remote GitHub verification now confirms annotated tag `clothing-pilot-rc.1` and its
+peeled RC commit `a95ee4bc3968e272227d148f2c3e1db246859b48`. The tag blocker is
+resolved. However, the current encrypted backup workflow, artifact and restore
+evidence cover **staging only**. No fresh production backup/checkpoint exists, and
+the production backup configuration/secrets are intentionally absent from Git and
+were not accessed. This remains a hard `NO-GO` before any production migration or
+deployment.
