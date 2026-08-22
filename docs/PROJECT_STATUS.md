@@ -18,6 +18,9 @@
   deletion после сохранения проверяемо и в local demo.
 - Текущая задача: [TASK-165](tasks/TASK-165.md) — post-intake staging/device
   acceptance.
+- Новые staging findings: [TASK-199](tasks/TASK-199.md) light-theme contrast,
+  [TASK-200](tasks/TASK-200.md) live workspace load, [TASK-201](tasks/TASK-201.md)
+  Cash export/print. Не исправлять их внутри TASK-165.
 - Блокер: для Preview нужна явная Owner-авторизация отправки current repository в
   staging Vercel account `coolox`; production не затрагивается.
 - Команда для продолжения после авторизации: продолжить TASK-165, создать только
@@ -100,9 +103,9 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 
 ## Task accounting
 
-- Всего task-файлов: 198.
+- Всего task-файлов: 201.
 - `COMPLETED` / legacy `completed`: 168.
-- `pending`: 28, post-launch backlog.
+- `pending`: 31, включая TASK-199—TASK-201 и post-launch backlog.
 - `WAITING`: 2 — TASK-084 и TASK-165.
 - `BLOCKED`: 1 — TASK-149.
 - `IN PROGRESS`: 1 — TASK-165.

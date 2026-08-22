@@ -820,3 +820,6 @@
 - Completed TASK-198: Owner can remove a mistakenly saved product photo in the
   persisted local demo as well as the protected live flow; 18 targeted tests and
   demo build passed.
+- Recorded TASK-199—TASK-201 from the physical staging Redmi walkthrough:
+  light-theme error/active contrast, live workspace load failure, and Cash
+  export/print regressions. TASK-165 made no in-place repair.

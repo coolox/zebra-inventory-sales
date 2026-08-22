@@ -142,6 +142,19 @@ review.
   walkthrough was attempted. Production, Supabase and Auth configuration remain
   untouched. Re-inspect this exact deployment; do not create a second Preview.
 
+## Physical findings — Redmi staging walkthrough, 2026-08-22
+
+- Light-theme readability remains a P1: pink workspace error/retry and lavender
+  active Audit `Tümü` text are too pale on physical device. Isolated as TASK-199.
+- Authenticated live workspace shows `Store data could not be loaded. No demo
+  values were substituted.` The no-mock boundary is correct but blocks the
+  walkthrough; isolated as TASK-200.
+- Cash report export opened raw `{"error":"Export unavailable"}` and Print opened
+  a multi-page whole-workspace print preview rather than Cash report output.
+  Isolated as TASK-201.
+- No repair, Magic Link retry, sale, inventory write, or production/configuration
+  mutation was made inside TASK-165 after these findings.
+
 ## Safe web precheck — 2026-08-20
 
 - Ready Preview public login loaded at
