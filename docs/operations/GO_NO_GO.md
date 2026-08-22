@@ -2,7 +2,7 @@
 
 Статус: **NO-GO / BLOCKED**
 
-Обновлено: 2026-08-20 (TASK-149).
+Обновлено: 2026-08-22 (TASK-149 release-record intake).
 
 Этот review не даёт права на production write. Только Owner может явно записать
 решение `GO` после закрытия всех строк ниже.
@@ -68,6 +68,42 @@ or service secrets:
 | No-Go triggers | Exact functional/security/reconciliation/alert thresholds |
 | Backup freshness and rollback owner | Timestamp/checksum evidence reference and Owner confirming rollback authority |
 | Explicit decision | `GO` signed by Owner after all gates are green |
+
+## Owner inputs recorded — 2026-08-22
+
+These inputs narrow the release decision, but do not change the current `NO-GO`.
+Personal email addresses and credentials are intentionally not stored in Git.
+
+| Field | Recorded value | Status |
+|---|---|---|
+| Monitoring | Vercel Logs with Vercel built-in notifications | Chosen; retention must be stated as the Vercel-plan default or an explicit period |
+| Alert recipient / incident channel | Owner-controlled Vercel account email notification channel | Chosen; address held outside Git |
+| Launch owner | Owner-designated launch owner | Chosen; identity held outside Git |
+| Business owner | Additional Owner-designated business approver | Recorded; not a substitute for deploy operator |
+| Seller participant | Owner-designated Seller for pilot validation | Recorded; not a launch-operations role |
+| Incident contact | Launch owner through the Owner-controlled email channel | Chosen; address held outside Git |
+| Proposed launch window | 2026-08-22, 15:20 Europe/Istanbul | Recorded; requires final confirmation that the window is still future/approved immediately before `GO` |
+| Database/deploy operator | Not assigned | **BLOCKER** |
+| Backup freshness | Recovery rehearsal and RPO 24h are documented; fresh production backup evidence is not available before production bootstrap | **BLOCKER for GO** |
+| RC commit / immutable tag | Current candidate `41c821a729177e24026d250c8b4c5d5d2cc18ecf`; immutable tag intentionally deferred until every gate is green | Pending |
+| Approved migration set | 37 ordered files currently exist; production dry-run must confirm the exact set before mutation | Pending |
+
+### Immediate NO-GO triggers proposed for Owner approval
+
+Do not proceed to TASK-150 if any of the following is true:
+
+- production Magic Link delivery, unknown/non-member denial, or expired/reused-link
+  behaviour has not passed the TASK-084 acceptance matrix;
+- the production migration dry-run differs from the approved ordered list, or any
+  required verification gate fails;
+- the RC commit, immutable tag and reviewed staging artifact do not match;
+- no fresh backup/recovery evidence and rollback authority are confirmed;
+- Vercel monitoring/notifications are unavailable, retention is unknown, or the
+  designated recipient cannot receive an alert;
+- an open P0/P1, security boundary failure, or unexplained reconciliation
+  discrepancy exists;
+- the launch owner, database/deploy operator, incident channel, or approved
+  launch window is absent.
 
 ## Safe dry-run review for TASK-150
 

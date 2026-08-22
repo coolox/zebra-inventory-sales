@@ -88,10 +88,13 @@ receipt RPC снова сохраняет canonical colour boundary TASK-118, н
 
 - [TASK-084](tasks/TASK-084.md) — `WAITING`: production Auth/SMTP configuration
   подготовлена, delivery/unknown/expired/reused matrix ждёт production callback.
-- [TASK-165](tasks/TASK-165.md) — `pending`, единственная следующая задача.
-- [TASK-149](tasks/TASK-149.md) — `BLOCKED`: после TASK-165 нужны immutable release
-  tag, monitoring/recipients, launch roles/window, rollback confirmation и явный
-  Owner `GO`.
+- [TASK-165](tasks/TASK-165.md) — `COMPLETED`: Owner подтвердил shared
+  staging/device checklist without new P0/P1 finding.
+- [TASK-149](tasks/TASK-149.md) — `BLOCKED`: Owner selected Vercel Logs and its
+  notification channel, launch/incident ownership and a 2026-08-22 15:20 Istanbul
+  window. Database/deploy operator, monitoring retention, TASK-084 acceptance,
+  fresh backup/rollback confirmation, immutable tag and explicit Owner `GO` remain
+  required.
 - TASK-150 production deploy, TASK-087 initial inventory, TASK-088 pilot и TASK-151
   pilot exit остаются последовательными следующими launch steps.
 
