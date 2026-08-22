@@ -814,3 +814,6 @@
 - Completed TASK-196: photographed demo sale lines now retain their sale-time
   photo reference, so Sale Details visibly renders its thumbnail/fullscreen flow;
   12 targeted tests and demo build passed.
+- Completed TASK-197: Product Details puts Sell first and combines Owner entry to
+  product details/code editing without merging their audited server saves; 15
+  targeted tests and demo build passed.

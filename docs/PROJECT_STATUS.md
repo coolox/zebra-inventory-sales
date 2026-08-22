@@ -12,8 +12,10 @@
   category chip снова читаем в light theme.
 - Последняя завершённая задача: [TASK-196](tasks/TASK-196.md) — Sale Details
   photo-first demo fixture восстановлен.
-- Текущая задача: [TASK-197](tasks/TASK-197.md) — unified Owner Product edit и
-  Sell-first hierarchy.
+- Последняя завершённая задача: [TASK-197](tasks/TASK-197.md) — Sell-first
+  Product Details и единая Owner-точка Product Edit готовы.
+- Текущая задача: [TASK-198](tasks/TASK-198.md) — доступное Owner photo deletion
+  после сохранения товара, включая local demo acceptance.
 - После текущего согласованного пакета TASK-192—TASK-198: [TASK-165](tasks/TASK-165.md)
   — post-intake staging/device acceptance.
 - Команда Owner: выполнить все зафиксированные visual fixes последовательно до TASK-165.
@@ -96,8 +98,8 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 ## Task accounting
 
 - Всего task-файлов: 198.
-- `COMPLETED` / legacy `completed`: 166.
-- `pending`: 30, включая TASK-197—TASK-198 и post-launch backlog.
+- `COMPLETED` / legacy `completed`: 167.
+- `pending`: 29, включая TASK-198 и post-launch backlog.
 - `WAITING`: 2 — TASK-084 и TASK-165.
 - `BLOCKED`: 1 — TASK-149.
 - `IN PROGRESS`: 0.

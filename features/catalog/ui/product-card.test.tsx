@@ -208,7 +208,7 @@ describe("ProductCard", () => {
     const onUpdateCode = vi.fn().mockResolvedValue(undefined);
     render(<ProductCard locale="en" variants={[product]} canEdit onUpdateCode={onUpdateCode} />);
 
-    await user.click(screen.getByRole("button", { name: "Edit product code" }));
+    await user.click(screen.getByRole("button", { name: "Edit product" }));
     const codeInput = screen.getByRole("textbox", { name: "Product code" });
     expect(codeInput).toHaveValue("TR07");
     expect(screen.getByText("Barcode is not changed here.")).toBeInTheDocument();
@@ -227,7 +227,7 @@ describe("ProductCard", () => {
     expect(screen.queryByRole("button", { name: "Edit product" })).not.toBeInTheDocument();
 
     rerender(<ProductCard locale="tr" variants={[product]} canEdit onUpdateCode={onUpdateCode} />);
-    await user.click(screen.getByRole("button", { name: "Ürün kodunu düzenle" }));
+    await user.click(screen.getByRole("button", { name: "Ürünü düzenle" }));
     await user.click(screen.getByRole("button", { name: "Kodu kaydet" }));
     await waitFor(() => expect(screen.getByText("Bu ürün kodu bu mağazada zaten kullanılıyor.")).toBeInTheDocument());
   });

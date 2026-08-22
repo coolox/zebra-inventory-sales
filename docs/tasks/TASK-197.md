@@ -1,6 +1,6 @@
 # TASK-197 — Объединить Product edit actions и поставить Sell первым
 
-Статус: pending
+Статус: COMPLETED
 
 Приоритет: P2 — Product Details mobile action hierarchy перегружена и скрывает
 главный сценарий продажи.
@@ -59,3 +59,13 @@ draft и объясняет, что произошло.
 Не начинать implementation до прямой команды Owner после закрытия renewed visual
 intake.
 
+## Реализация и evidence
+
+- Product Details now renders its sellable primary action first. Owner receives one
+  `Edit product` / `Ürünü düzenle` entry point below it; it exposes the approved
+  details and product-code save sections without duplicating the old two actions.
+- Detail and code saves retain their separate existing callbacks, validation,
+  server-confirmed code result and error states; Seller still receives no edit
+  control. Movement history, stock adjustment and archive remain below.
+- `npm test -- --run features/catalog/ui/product-card.test.tsx` — 15/15 passed.
+- `npm run build` — demo build passed (only existing warnings).
