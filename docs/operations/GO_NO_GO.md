@@ -104,10 +104,11 @@ applied by TASK-150, followed by a final `upToDate` dry-run:
 
 ### Environment presence check — 2026-08-22
 
-The separate `zebra-retail-production` Vercel project exists, but its Production
-environment had no configured variables when checked. Their values were not read.
-This is an immediate `NO-GO` until the required live-mode, production Supabase and
-observability variable names are present and scope-checked.
+The separate `zebra-retail-production` Vercel project has exactly the required five
+variable names in Production scope: live app mode, production Supabase URL,
+publishable key, server-only service-role key and observability enabled. Their values
+were not opened or recorded. A fresh deployment is still required for them to take
+effect.
 
 ### Immediate NO-GO triggers — Owner approved 2026-08-22
 

@@ -1,6 +1,6 @@
 # TASK-149 — Провести production Go/No-Go review
 
-Статус: BLOCKED
+Статус: IN PROGRESS
 
 ## Цель
 
@@ -60,3 +60,16 @@ management, outside Git, before a closed RC deployment can be safe: application
 mode `live`, production Supabase URL, publishable key, server-only service-role key,
 and observability enabled. Values were neither requested nor inspected. Until their
 presence is verified, deployment and the TASK-084 Auth matrix remain `NO-GO`.
+
+### Final preparation evidence — 2026-08-22
+
+- Vercel Production environment presence was verified in the dashboard. Exactly the
+  required five variable names are present with Production scope; their values were
+  not opened or recorded.
+- `npm run build:live` passed. The established 11 ESLint warnings remain warnings;
+  there are no lint or TypeScript errors.
+- `npm test` passed: 90 files / 243 tests.
+
+The former missing-environment blocker is resolved. The remaining pre-release
+technical boundary is the closed RC deployment required to execute the TASK-084
+production callback/auth matrix and confirm a fresh deployment rollback point.
