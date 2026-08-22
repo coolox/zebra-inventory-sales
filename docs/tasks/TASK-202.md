@@ -57,3 +57,11 @@ TASK-081, TASK-082, TASK-149.
   staging остаётся default и сохраняет прежний path/name.
 - Создание actual checkpoint ожидает Owner secret setup и ручной run: их значения
   не доступны агенту и не могут быть безопасно сгенерированы.
+
+## Run attempt — 2026-08-23
+
+Manual GitHub Actions run `32605857718` verified that all 14 secret names resolve,
+but stopped before any dump, Storage, VPS or migration operation: the production
+wrapper executed a non-executable tracked script and received exit code 126. The
+wrapper now invokes it explicitly through `bash`; rerun is required after publishing
+that isolated fix.

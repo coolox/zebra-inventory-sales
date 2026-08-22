@@ -2,4 +2,4 @@
 
 set -euo pipefail
 
-BACKUP_SCOPE=production exec "$(dirname "$0")/run-staging-backup.sh"
+BACKUP_SCOPE=production exec bash "$(dirname "$0")/run-staging-backup.sh"
