@@ -1,6 +1,6 @@
 # TASK-165 — Собрать shared staging Preview и провести Owner/Seller mobile walkthrough
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 Источник: Owner-approved remediation path, 2026-08-20.
 
@@ -249,6 +249,14 @@ not complete. No Production, Supabase or Auth configuration change is requested.
   изменять только допустимые variant/receipt details, а не существующую модель.
 - По указанию Owner finding пока только записан; диагностику и исправление не
   начинать до окончания сбора багов.
+
+## Final Owner acceptance — 2026-08-22
+
+- Owner confirmed the resumed shared physical checklist is complete and the
+  application works. No new P0/P1 defect was reported from this check.
+- This closes staging/device acceptance only. It is not a production `GO`, does
+  not publish production, and does not replace TASK-084 or TASK-149 readiness
+  evidence.
 
 ## Physical findings: Edit Product and photographs — 2026-08-21
 

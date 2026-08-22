@@ -829,3 +829,6 @@
 - Owner accepted TASK-200 and TASK-201 on the current staging Preview: app loads
   and links/downloads work. No code, configuration or production changes were
   made; TASK-165 physical acceptance resumed.
+- Completed TASK-165: Owner confirmed the resumed shared staging/device checklist
+  works without new P0/P1 findings. This is staging acceptance only; production
+  remains untouched pending TASK-084/TASK-149.

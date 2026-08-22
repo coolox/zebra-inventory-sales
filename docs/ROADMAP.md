@@ -132,7 +132,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19L | DONE | TASK-163 | Receive Flow Product code сохраняется при blur/Done/IME; control/invisible suffix blocked with explicit EN/TR validation |
 | 19M | DONE | TASK-164 | Adjust Stock modal overlay fixed; Audit/Seller stale selectors scoped to header; Playwright 75/75 зелёный |
 | 19N | DONE | TASK-166 | Фирменный знак Zebra Boutique заменил `ZB` в navigation и Android/iOS PWA assets; build и manifest checks зелёные |
-| 19O | IN PROGRESS | TASK-165 | Owner accepted TASK-200/TASK-201; resume shared Owner/Seller physical acceptance; Production untouched |
+| 19O | DONE | TASK-165 | Owner completed shared physical acceptance without new P0/P1; Production untouched |
 | 19P | DONE | TASK-167 | Preview block caused only by invalid temporary Git author; no-Git snapshot built live and Ready without settings mutation |
 | 19Q | DONE | TASK-168 | Login использует Zebra Boutique mark; targeted test, demo/live build и Ready Preview safe smoke зелёные |
 | 19R | DONE | TASK-169 | Staging Auth Site URL and exact callback point to consolidated Preview; Owner/Seller Magic Link reaches workspace and logout returns to login |

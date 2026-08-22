@@ -16,14 +16,12 @@
   Product Details и единая Owner-точка Product Edit готовы.
 - Последняя завершённая задача: [TASK-198](tasks/TASK-198.md) — Owner photo
   deletion после сохранения проверяемо и в local demo.
-- Текущая задача: [TASK-165](tasks/TASK-165.md) — resumed post-intake staging/
-  device acceptance.
-- TASK-199 fixed local light-theme contrast; Owner accepted TASK-200 workspace
-  loading and TASK-201 Cash/download path on the current staging Preview.
-- Блокер: для Preview нужна явная Owner-авторизация отправки current repository в
-  staging Vercel account `coolox`; production не затрагивается.
-- Команда для продолжения после авторизации: продолжить TASK-165, создать только
-  Vercel Preview без `--prod`, затем пройти physical checklist.
+- Последняя завершённая задача: [TASK-165](tasks/TASK-165.md) — Owner подтвердил
+  shared staging/device checklist without new P0/P1 finding.
+- Следующий release decision: [TASK-149](tasks/TASK-149.md) — production Go/No-Go
+  review, сейчас `BLOCKED` до TASK-084 Auth acceptance and launch decisions.
+- Команда для продолжения: ожидать Owner решения по TASK-084/TASK-149; не начинать
+  production deploy без explicit `GO` и отдельной команды TASK-150.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
@@ -103,11 +101,11 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 ## Task accounting
 
 - Всего task-файлов: 201.
-- `COMPLETED` / legacy `completed`: 171.
+- `COMPLETED` / legacy `completed`: 172.
 - `pending`: 29, post-launch backlog.
-- `WAITING`: 2 — TASK-084 и TASK-165.
+- `WAITING`: 1 — TASK-084.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 1 — TASK-165.
+- `IN PROGRESS`: 0.
 
 Завершённые диапазоны:
 
