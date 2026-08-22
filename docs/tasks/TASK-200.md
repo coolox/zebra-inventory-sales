@@ -1,6 +1,6 @@
 # TASK-200 — Диагностировать staging live workspace load failure
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 Приоритет: P1 — authenticated staging workspace не загружает store data.
 
@@ -37,3 +37,11 @@ Owner/Seller walkthrough и Cash report data.
   reproduced on this exact deployment, so no data/RLS/configuration change was
   made blindly. A controlled repeat login on the current Preview is required to
   identify the failing loader boundary.
+
+## Owner acceptance — 2026-08-22
+
+- Owner confirmed the current staging Preview loads successfully after controlled
+  access; links work and the application is usable. No code, Supabase,
+  environment-variable or production change was made for this closure.
+- The no-mock boundary remains in place. Any recurrence must be recorded as a new
+  reproducible staging finding with its exact Preview and safe runtime evidence.

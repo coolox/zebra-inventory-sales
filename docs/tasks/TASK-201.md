@@ -1,6 +1,6 @@
 # TASK-201 — Починить staging Cash export и ограничить Print отчётом
 
-Статус: pending
+Статус: COMPLETED
 
 Приоритет: P1 — Cash report нельзя получить: export unavailable, Print печатает
 весь dashboard.
@@ -30,3 +30,11 @@
 - Owner-only boundary and non-physical-cash wording TASK-188 remain intact.
 - Targeted tests/build and staging mobile recheck pass.
 
+## Owner acceptance — 2026-08-22
+
+- Owner confirmed that current staging downloads/links work and accepted the Cash
+  report path as operational. No code, export-route, ledger, RLS or production
+  configuration change was made for this closure.
+- If raw JSON export or whole-workspace Print recurs, record it as a new task with
+  the exact report action, browser and Preview URL rather than altering TASK-188
+  semantics inside a release walkthrough.

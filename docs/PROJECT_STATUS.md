@@ -16,13 +16,10 @@
   Product Details и единая Owner-точка Product Edit готовы.
 - Последняя завершённая задача: [TASK-198](tasks/TASK-198.md) — Owner photo
   deletion после сохранения проверяемо и в local demo.
-- Текущая задача: [TASK-165](tasks/TASK-165.md) — post-intake staging/device
-  acceptance.
-- Новые staging findings: [TASK-199](tasks/TASK-199.md) light-theme contrast,
-  [TASK-200](tasks/TASK-200.md) live workspace load, [TASK-201](tasks/TASK-201.md)
-  Cash export/print. Не исправлять их внутри TASK-165.
-- Текущая remediation задача: [TASK-200](tasks/TASK-200.md) — controlled
-  reproduction of live workspace load failure on the current Preview.
+- Текущая задача: [TASK-165](tasks/TASK-165.md) — resumed post-intake staging/
+  device acceptance.
+- TASK-199 fixed local light-theme contrast; Owner accepted TASK-200 workspace
+  loading and TASK-201 Cash/download path on the current staging Preview.
 - Блокер: для Preview нужна явная Owner-авторизация отправки current repository в
   staging Vercel account `coolox`; production не затрагивается.
 - Команда для продолжения после авторизации: продолжить TASK-165, создать только
@@ -106,11 +103,11 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 ## Task accounting
 
 - Всего task-файлов: 201.
-- `COMPLETED` / legacy `completed`: 169.
-- `pending`: 30, включая TASK-201 и post-launch backlog.
+- `COMPLETED` / legacy `completed`: 171.
+- `pending`: 29, post-launch backlog.
 - `WAITING`: 2 — TASK-084 и TASK-165.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 1 — TASK-200; TASK-165 ждёт remediation findings.
+- `IN PROGRESS`: 1 — TASK-165.
 
 Завершённые диапазоны:
 

@@ -826,3 +826,6 @@
 - Completed TASK-199: light-theme workspace error/retry and active Audit category
   foreground are now readable on their tinted surfaces; 6 targeted tests and demo
   build passed.
+- Owner accepted TASK-200 and TASK-201 on the current staging Preview: app loads
+  and links/downloads work. No code, configuration or production changes were
+  made; TASK-165 physical acceptance resumed.
