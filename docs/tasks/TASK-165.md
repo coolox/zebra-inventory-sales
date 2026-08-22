@@ -1,6 +1,6 @@
 # TASK-165 — Собрать shared staging Preview и провести Owner/Seller mobile walkthrough
 
-Статус: IN PROGRESS
+Статус: WAITING
 
 Источник: Owner-approved remediation path, 2026-08-20.
 

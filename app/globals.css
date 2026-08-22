@@ -278,8 +278,25 @@ html[data-theme="light"] .secondary-action:disabled {
 html[data-theme="light"] .audit-category-chip.is-selected {
   border-color: #6d28d9 !important;
   background-color: rgba(124, 58, 237, 0.16) !important;
-  color: #3b0764 !important;
+  color: #24102f !important;
   box-shadow: inset 0 0 0 1px rgba(109, 40, 217, 0.14);
+}
+
+html[data-theme="light"] .live-workspace-error {
+  border-color: #c7394d !important;
+  background-color: #fde5e8 !important;
+  color: #661423 !important;
+}
+
+html[data-theme="light"] .live-workspace-error button {
+  border-color: #b42336 !important;
+  background-color: #fff7f8 !important;
+  color: #661423 !important;
+}
+
+html[data-theme="light"] .live-workspace-error button:hover {
+  background-color: #f9d1d7 !important;
+  color: #470c17 !important;
 }
 
 html[data-theme="light"] .audit-category-chip.is-selected:hover {

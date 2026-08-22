@@ -132,7 +132,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19L | DONE | TASK-163 | Receive Flow Product code сохраняется при blur/Done/IME; control/invisible suffix blocked with explicit EN/TR validation |
 | 19M | DONE | TASK-164 | Adjust Stock modal overlay fixed; Audit/Seller stale selectors scoped to header; Playwright 75/75 зелёный |
 | 19N | DONE | TASK-166 | Фирменный знак Zebra Boutique заменил `ZB` в navigation и Android/iOS PWA assets; build и manifest checks зелёные |
-| 19O | IN PROGRESS | TASK-165 | Publish the post-intake reviewed commit to staging and run shared Owner/Seller physical iPhone/Redmi acceptance; Production untouched |
+| 19O | WAITING | TASK-165 | Await TASK-199—TASK-201 remediation before repeating shared Owner/Seller physical acceptance; Production untouched |
 | 19P | DONE | TASK-167 | Preview block caused only by invalid temporary Git author; no-Git snapshot built live and Ready without settings mutation |
 | 19Q | DONE | TASK-168 | Login использует Zebra Boutique mark; targeted test, demo/live build и Ready Preview safe smoke зелёные |
 | 19R | DONE | TASK-169 | Staging Auth Site URL and exact callback point to consolidated Preview; Owner/Seller Magic Link reaches workspace and logout returns to login |
@@ -165,8 +165,8 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19AS | DONE | TASK-196 | Photo-first local demo fixture restores thumbnail/fullscreen; 12 targeted tests and demo build passed |
 | 19AT | DONE | TASK-197 | Sell-first hierarchy and one Owner Product Edit entry keep separate audited detail/code saves; 15 targeted tests and demo build passed |
 | 19AU | DONE | TASK-198 | Owner can remove a saved mistaken photo in persisted demo and protected live flow; 18 targeted tests and demo build passed |
-| 19AV | WAITING | TASK-199 | Physical Redmi light-theme error/active-control contrast regression from TASK-165 |
-| 19AW | WAITING | TASK-200 | Authenticated staging live workspace load failure from TASK-165 |
+| 19AV | DONE | TASK-199 | Strong light-theme workspace-error and Audit active foreground; 6 targeted tests and demo build passed |
+| 19AW | IN PROGRESS | TASK-200 | Authenticated staging live workspace load failure from TASK-165 |
 | 19AX | WAITING | TASK-201 | Cash export raw error and whole-workspace Print regression from TASK-165 |
 | 20 | BLOCKED | TASK-149 | NO-GO: нужны TASK-084 Auth acceptance, immutable release tag, shared staging/device evidence, monitoring/roles/window и explicit Owner GO |
 | 21 | WAITING | TASK-150 | Тот же Release Candidate развёрнут в production; auth/data/transaction smoke зелёный |

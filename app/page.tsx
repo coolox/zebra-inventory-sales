@@ -642,7 +642,7 @@ export default function Home() {
 
         <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:py-8 xl:px-8">
           {isLiveMode && workspaceStatus === "loading" && <div className="mb-4 rounded-xl border border-violet-500/20 bg-violet-500/[0.06] px-4 py-3 text-xs text-violet-200">{text.loadingData}</div>}
-          {isLiveMode && workspaceStatus === "error" && <div className="mb-4 flex flex-col gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-200 sm:flex-row sm:items-center sm:justify-between"><span>{text.dataError}</span><button type="button" onClick={() => { setWorkspaceStatus("loading"); void refreshLiveWorkspace().catch(() => setWorkspaceStatus("error")); }} className="rounded-lg border border-red-400/25 px-3 py-2 font-semibold text-red-100">{text.retry}</button></div>}
+          {isLiveMode && workspaceStatus === "error" && <div className="live-workspace-error mb-4 flex flex-col gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-xs text-red-200 sm:flex-row sm:items-center sm:justify-between"><span>{text.dataError}</span><button type="button" onClick={() => { setWorkspaceStatus("loading"); void refreshLiveWorkspace().catch(() => setWorkspaceStatus("error")); }} className="rounded-lg border border-red-400/25 px-3 py-2 font-semibold text-red-100">{text.retry}</button></div>}
           <section id="overview" className="scroll-mt-24">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
               <div>

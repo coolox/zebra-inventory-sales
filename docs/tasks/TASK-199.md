@@ -1,6 +1,6 @@
 # TASK-199 — Восстановить контраст light-theme error и active controls на staging
 
-Статус: pending
+Статус: COMPLETED
 
 Приоритет: P1 — важный live error и выбранный Audit filter нельзя прочитать на
 физическом Android в light theme.
@@ -30,3 +30,12 @@ TASK-193—TASK-195: на физическом устройстве пользо
 - Text/error/accessibility semantics и filtering не меняются; targeted tests/build
   проходят.
 
+## Реализация и evidence
+
+- `live-workspace-error` gives the light-theme data-error surface dark burgundy
+  copy and retry control with explicit hover treatment; inactive/dark behavior is
+  unchanged.
+- Active Audit category foreground is strengthened to `#24102f` above its violet
+  surface, retaining category semantics and keyboard focus.
+- `npm test -- --run features/audit/ui/audit-log.test.tsx` — 6/6 passed.
+- `npm run build` — demo build passed (only existing warnings).

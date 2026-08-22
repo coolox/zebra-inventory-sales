@@ -823,3 +823,6 @@
 - Recorded TASK-199—TASK-201 from the physical staging Redmi walkthrough:
   light-theme error/active contrast, live workspace load failure, and Cash
   export/print regressions. TASK-165 made no in-place repair.
+- Completed TASK-199: light-theme workspace error/retry and active Audit category
+  foreground are now readable on their tinted surfaces; 6 targeted tests and demo
+  build passed.

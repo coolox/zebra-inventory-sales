@@ -21,6 +21,8 @@
 - Новые staging findings: [TASK-199](tasks/TASK-199.md) light-theme contrast,
   [TASK-200](tasks/TASK-200.md) live workspace load, [TASK-201](tasks/TASK-201.md)
   Cash export/print. Не исправлять их внутри TASK-165.
+- Текущая remediation задача: [TASK-200](tasks/TASK-200.md) — controlled
+  reproduction of live workspace load failure on the current Preview.
 - Блокер: для Preview нужна явная Owner-авторизация отправки current repository в
   staging Vercel account `coolox`; production не затрагивается.
 - Команда для продолжения после авторизации: продолжить TASK-165, создать только
@@ -104,11 +106,11 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 ## Task accounting
 
 - Всего task-файлов: 201.
-- `COMPLETED` / legacy `completed`: 168.
-- `pending`: 31, включая TASK-199—TASK-201 и post-launch backlog.
+- `COMPLETED` / legacy `completed`: 169.
+- `pending`: 30, включая TASK-201 и post-launch backlog.
 - `WAITING`: 2 — TASK-084 и TASK-165.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 1 — TASK-165.
+- `IN PROGRESS`: 1 — TASK-200; TASK-165 ждёт remediation findings.
 
 Завершённые диапазоны:
 
