@@ -1,6 +1,6 @@
 # TASK-149 — Провести production Go/No-Go review
 
-Статус: IN PROGRESS
+Статус: BLOCKED
 
 ## Цель
 
@@ -73,3 +73,12 @@ presence is verified, deployment and the TASK-084 Auth matrix remain `NO-GO`.
 The former missing-environment blocker is resolved. The remaining pre-release
 technical boundary is the closed RC deployment required to execute the TASK-084
 production callback/auth matrix and confirm a fresh deployment rollback point.
+
+### Immutable tag publication blocker — 2026-08-22
+
+Local annotated tag `clothing-pilot-rc.1` points to
+`a95ee4bc3968e272227d148f2c3e1db246859b48`. Owner explicitly authorized a
+GitHub tag-only push, but two attempts returned GitHub HTTP 400 from
+`git-receive-pack`; remote tag lookup returned no matching ref. No branch, Vercel
+deployment, database or production data was changed. Do not start TASK-150 until
+the remote tag exists and is verified.

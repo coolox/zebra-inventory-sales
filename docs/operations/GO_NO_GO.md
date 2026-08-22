@@ -85,7 +85,7 @@ Personal email addresses and credentials are intentionally not stored in Git.
 | Proposed launch window | 2026-08-22, 15:20 Europe/Istanbul | Recorded; requires final confirmation that the window is still future/approved immediately before `GO` |
 | Database/deploy operator | Owner-designated database/deploy operator | Arslan; identity/contact held outside Git |
 | Backup freshness | Recovery rehearsal and RPO 24h are documented; fresh production backup evidence is not available before production bootstrap | **BLOCKER for GO** |
-| RC commit / immutable tag | Current candidate `41c821a729177e24026d250c8b4c5d5d2cc18ecf`; immutable tag intentionally deferred until every gate is green | Pending |
+| RC commit / immutable tag | Local annotated `clothing-pilot-rc.1` points to `a95ee4bc3968e272227d148f2c3e1db246859b48`; GitHub tag-only push is blocked by HTTP 400 and remote verification is empty | **BLOCKER** |
 | Approved migration set | Repository chain has 37 files; safe production dry-run confirmed that the remote already has 29 and would apply exactly the 8 files below, with no seed or roles | Ready for final Owner approval |
 
 ### Production migration dry-run — 2026-08-22

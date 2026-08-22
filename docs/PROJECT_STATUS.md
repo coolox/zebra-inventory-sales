@@ -19,12 +19,12 @@
 - Последняя завершённая задача: [TASK-165](tasks/TASK-165.md) — Owner подтвердил
   shared staging/device checklist without new P0/P1 finding.
 - Следующий release decision: [TASK-149](tasks/TASK-149.md) — production Go/No-Go
-  review, `IN PROGRESS`: Production variable presence, migration dry-run and local
-  RC gates are green. A closed tagged RC deployment is required to run TASK-084
-  callback/Auth acceptance before any pilot access.
-- Команда для продолжения: prepare exact RC/tag, deploy only that artifact to the
-  separate Vercel production project, then complete the TASK-084 matrix and final
-  production smoke.
+  review, `BLOCKED`: local RC/tag and all local gates are green, but GitHub rejected
+  the tag-only push with HTTP 400 and no remote tag exists. No production deploy is
+  authorized until immutable remote-tag verification succeeds.
+- Команда для продолжения: resolve GitHub `git-receive-pack` HTTP 400, verify remote
+  `clothing-pilot-rc.1`, then say `Продолжай TASK-149`; do not deploy while this
+  `NO-GO` remains.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
