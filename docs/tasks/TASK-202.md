@@ -65,3 +65,10 @@ but stopped before any dump, Storage, VPS or migration operation: the production
 wrapper executed a non-executable tracked script and received exit code 126. The
 wrapper now invokes it explicitly through `bash`; rerun is required after publishing
 that isolated fix.
+
+Manual rerun `32606042793` on commit `8138fd5` passed setup, checkout and client
+installation, then stopped before any dump, Storage or VPS write because
+`PRODUCTION_SUPABASE_DB_URL` is not a direct Supabase Postgres URL. The runner
+rejects a Project URL or pooler URL by design; Owner must replace that one Secret
+with the direct `postgresql://postgres:...@db.<project-ref>.supabase.co:5432/postgres`
+value from the production Supabase connection dialog before a new run.
