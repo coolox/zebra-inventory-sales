@@ -47,6 +47,12 @@ if [[ ! "$BACKUP_AGE_RECIPIENT" =~ ^age1[0-9a-z]+$ ]]; then
   exit 1
 fi
 
+backup_scope="${BACKUP_SCOPE:-staging}"
+if [[ ! "$backup_scope" =~ ^(staging|production)$ ]]; then
+  echo "BACKUP_SCOPE must be staging or production." >&2
+  exit 1
+fi
+
 backup_id="${BACKUP_ID:-$(date -u +%F)}"
 if [[ ! "$backup_id" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
   echo "Invalid backup identifier." >&2
@@ -104,13 +110,13 @@ for dump_file in "$payload_dir/database/roles.sql" "$payload_dir/database/schema
   fi
 done
 
-archive_path="$work_dir/staging-${backup_id}.tar.gz"
+archive_path="$work_dir/${backup_scope}-${backup_id}.tar.gz"
 encrypted_archive_path="$archive_path.age"
 tar --sort=name --mtime="UTC 1970-01-01" --owner=0 --group=0 --numeric-owner -C "$payload_dir" -czf "$archive_path" .
 age -r "$BACKUP_AGE_RECIPIENT" -o "$encrypted_archive_path" "$archive_path"
 (cd "$work_dir" && sha256sum "${encrypted_archive_path##*/}" > SHA256SUMS)
 
-remote_root="${BACKUP_VPS_PATH%/}/zebra-retail/staging"
+remote_root="${BACKUP_VPS_PATH%/}/zebra-retail/${backup_scope}"
 ssh_target="${BACKUP_VPS_USER}@${BACKUP_VPS_HOST}"
 ssh_options=(-i "$ssh_key_path" -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$known_hosts_path" -p "$BACKUP_VPS_PORT")
 rsync_ssh_command="ssh"
@@ -121,6 +127,6 @@ done
 ssh "${ssh_options[@]}" "$ssh_target" "umask 077; mkdir -p '$remote_root/incoming' '$remote_root/daily'; test ! -e '$remote_root/daily/$backup_id'"
 ssh "${ssh_options[@]}" "$ssh_target" "umask 077; mkdir -p '$remote_root/incoming/$backup_id'; chmod 700 '$remote_root/incoming/$backup_id'"
 rsync -a -e "$rsync_ssh_command" --chmod=Du=rwx,Dgo=,Fu=rw,Fgo= -- "$encrypted_archive_path" "$work_dir/SHA256SUMS" "$ssh_target:$remote_root/incoming/$backup_id/"
-ssh "${ssh_options[@]}" "$ssh_target" "set -eu; cd '$remote_root/incoming/$backup_id'; sha256sum -c SHA256SUMS; mv '$remote_root/incoming/$backup_id' '$remote_root/daily/$backup_id'; find '$remote_root/daily' -mindepth 1 -maxdepth 1 -type d -mtime +13 -exec rm -rf -- {} +; test -f '$remote_root/daily/$backup_id/staging-$backup_id.tar.gz.age'"
+ssh "${ssh_options[@]}" "$ssh_target" "set -eu; cd '$remote_root/incoming/$backup_id'; sha256sum -c SHA256SUMS; mv '$remote_root/incoming/$backup_id' '$remote_root/daily/$backup_id'; find '$remote_root/daily' -mindepth 1 -maxdepth 1 -type d -mtime +13 -exec rm -rf -- {} +; test -f '$remote_root/daily/$backup_id/${backup_scope}-$backup_id.tar.gz.age'"
 
-echo "Encrypted staging backup completed: ${backup_id}; retention: 14 daily copies."
+echo "Encrypted ${backup_scope} backup completed: ${backup_id}; retention: 14 daily copies."

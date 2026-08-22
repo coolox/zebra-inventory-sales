@@ -18,14 +18,12 @@
   deletion после сохранения проверяемо и в local demo.
 - Последняя завершённая задача: [TASK-165](tasks/TASK-165.md) — Owner подтвердил
   shared staging/device checklist without new P0/P1 finding.
-- Следующий release decision: [TASK-149](tasks/TASK-149.md) — production Go/No-Go
-  review, `BLOCKED`: GitHub tag `clothing-pilot-rc.1` is verified and local RC gates
-  are green, but fresh backup/recovery evidence exists for staging only. No
-  production migration or deploy is authorized until a production checkpoint is
-  configured and verified.
-- Команда для продолжения: Owner decides/sets up the production backup checkpoint
-  outside Git, then says `Продолжай TASK-149`; do not deploy while this `NO-GO`
-  remains.
+- Текущая задача: [TASK-202](tasks/TASK-202.md) — production backup checkpoint,
+  `IN PROGRESS` по прямой команде Owner. TASK-149 остаётся `BLOCKED` до evidence
+  успешного encrypted production checkpoint.
+- Команда для продолжения: Owner adds the documented `PRODUCTION_*` GitHub Actions
+  secrets outside Git and manually runs `Production backup checkpoint`; затем
+  передаёт только run ID, UTC timestamp, artifact filename and checksum result.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
@@ -96,9 +94,11 @@ receipt RPC снова сохраняет canonical colour boundary TASK-118, н
   staging/device checklist without new P0/P1 finding.
 - [TASK-149](tasks/TASK-149.md) — `BLOCKED`: Owner selected Vercel Logs and its
   notification channel (current-plan retention accepted), launch/incident ownership,
-  database/deploy operator and a 2026-08-22 15:20 Istanbul window. TASK-084
-  acceptance, fresh backup/rollback confirmation, immutable tag and explicit Owner
-  `GO` remain required.
+  database/deploy operator and a 2026-08-22 15:20 Istanbul window. RC GitHub tag
+  is verified. TASK-084 acceptance, TASK-202 fresh backup/rollback confirmation and
+  explicit Owner `GO` remain required.
+- [TASK-202](tasks/TASK-202.md) — `IN PROGRESS`: manual-only production encrypted
+  backup checkpoint is prepared; Owner secret setup and first run remain.
 - TASK-150 production deploy, TASK-087 initial inventory, TASK-088 pilot и TASK-151
   pilot exit остаются последовательными следующими launch steps.
 
@@ -107,12 +107,12 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 
 ## Task accounting
 
-- Всего task-файлов: 201.
+- Всего task-файлов: 202.
 - `COMPLETED` / legacy `completed`: 172.
 - `pending`: 29, post-launch backlog.
 - `WAITING`: 1 — TASK-084.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 0.
+- `IN PROGRESS`: 1 — TASK-202.
 
 Завершённые диапазоны:
 

@@ -84,7 +84,7 @@ Personal email addresses and credentials are intentionally not stored in Git.
 | Incident contact | Launch owner through the Owner-controlled email channel | Chosen; address held outside Git |
 | Proposed launch window | 2026-08-22, 15:20 Europe/Istanbul | Recorded; requires final confirmation that the window is still future/approved immediately before `GO` |
 | Database/deploy operator | Owner-designated database/deploy operator | Arslan; identity/contact held outside Git |
-| Backup freshness | Recovery rehearsal and encrypted artifact cover staging only; no fresh production checkpoint/configuration evidence exists | **BLOCKER for GO** |
+| Backup freshness | TASK-202 provides a manual-only production encrypted checkpoint workflow; Owner secret setup, successful run and checksum evidence remain | **BLOCKER for GO** |
 | RC commit / immutable tag | Annotated GitHub tag `clothing-pilot-rc.1` points to `a95ee4bc3968e272227d148f2c3e1db246859b48`; remote ref and peeled commit verified | Ready |
 | Approved migration set | Repository chain has 37 files; safe production dry-run confirmed that the remote already has 29 and would apply exactly the 8 files below, with no seed or roles | Ready for final Owner approval |
 

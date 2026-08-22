@@ -2,6 +2,12 @@
 
 ## 2026-08-22
 
+- TASK-202 started: a manual-only production backup checkpoint workflow uses a
+  separate `PRODUCTION_*` secret namespace, encrypted `production` VPS path and
+  checksum-before-promotion boundary. No production credential, backup artifact,
+  migration, deploy or pilot data was created; Owner secret setup and the first
+  successful run are required before TASK-149 can resume.
+
 - Recorded TASK-192 from Owner local-demo visual intake: Turkish greeting must be
   `Merhaba {name},` while `Zebra Boutique · bol satışlar!` remains the only sales
   wish. No code, staging or production change is authorized until Owner closes
