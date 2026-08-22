@@ -76,19 +76,19 @@ Personal email addresses and credentials are intentionally not stored in Git.
 
 | Field | Recorded value | Status |
 |---|---|---|
-| Monitoring | Vercel Logs with Vercel built-in notifications | Chosen; retention must be stated as the Vercel-plan default or an explicit period |
+| Monitoring | Vercel Logs with Vercel built-in notifications | Chosen; retention is the current Vercel-plan default, accepted by Owner |
 | Alert recipient / incident channel | Owner-controlled Vercel account email notification channel | Chosen; address held outside Git |
 | Launch owner | Owner-designated launch owner | Chosen; identity held outside Git |
 | Business owner | Additional Owner-designated business approver | Recorded; not a substitute for deploy operator |
 | Seller participant | Owner-designated Seller for pilot validation | Recorded; not a launch-operations role |
 | Incident contact | Launch owner through the Owner-controlled email channel | Chosen; address held outside Git |
 | Proposed launch window | 2026-08-22, 15:20 Europe/Istanbul | Recorded; requires final confirmation that the window is still future/approved immediately before `GO` |
-| Database/deploy operator | Not assigned | **BLOCKER** |
+| Database/deploy operator | Owner-designated database/deploy operator | Arslan; identity/contact held outside Git |
 | Backup freshness | Recovery rehearsal and RPO 24h are documented; fresh production backup evidence is not available before production bootstrap | **BLOCKER for GO** |
 | RC commit / immutable tag | Current candidate `41c821a729177e24026d250c8b4c5d5d2cc18ecf`; immutable tag intentionally deferred until every gate is green | Pending |
 | Approved migration set | 37 ordered files currently exist; production dry-run must confirm the exact set before mutation | Pending |
 
-### Immediate NO-GO triggers proposed for Owner approval
+### Immediate NO-GO triggers — Owner approved 2026-08-22
 
 Do not proceed to TASK-150 if any of the following is true:
 

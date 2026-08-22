@@ -91,10 +91,10 @@ receipt RPC снова сохраняет canonical colour boundary TASK-118, н
 - [TASK-165](tasks/TASK-165.md) — `COMPLETED`: Owner подтвердил shared
   staging/device checklist without new P0/P1 finding.
 - [TASK-149](tasks/TASK-149.md) — `BLOCKED`: Owner selected Vercel Logs and its
-  notification channel, launch/incident ownership and a 2026-08-22 15:20 Istanbul
-  window. Database/deploy operator, monitoring retention, TASK-084 acceptance,
-  fresh backup/rollback confirmation, immutable tag and explicit Owner `GO` remain
-  required.
+  notification channel (current-plan retention accepted), launch/incident ownership,
+  database/deploy operator and a 2026-08-22 15:20 Istanbul window. TASK-084
+  acceptance, fresh backup/rollback confirmation, immutable tag and explicit Owner
+  `GO` remain required.
 - TASK-150 production deploy, TASK-087 initial inventory, TASK-088 pilot и TASK-151
   pilot exit остаются последовательными следующими launch steps.
 
