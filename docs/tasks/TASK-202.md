@@ -72,3 +72,12 @@ installation, then stopped before any dump, Storage or VPS write because
 rejects a Project URL or pooler URL by design; Owner must replace that one Secret
 with the direct `postgresql://postgres:...@db.<project-ref>.supabase.co:5432/postgres`
 value from the production Supabase connection dialog before a new run.
+
+Manual rerun `32606378840` confirmed the corrected direct database URL: the runner
+completed the production roles, schema and data dumps. It then stopped before any
+VPS transfer, checksum verification or archive promotion because the temporary SSH
+key could not be parsed (`error in libcrypto`) and VPS authentication consequently
+failed. No production migration, deploy or checkpoint artifact was created. Owner
+must replace `PRODUCTION_BACKUP_VPS_SSH_PRIVATE_KEY` with the complete, newline-
+preserved private half matching the public key in `zebra-backup`'s
+`authorized_keys`, then rerun the manual workflow.
