@@ -128,6 +128,20 @@ review.
   was changed. After that confirmation, deploy only without `--prod`, inspect the
   resulting URL, and continue the physical checklist below.
 
+## Post-intake Preview deployment — 2026-08-22
+
+- Owner explicitly authorized upload to staging account `coolox`; a clean Git
+  archive snapshot was used after the first local-cache attempt was rejected by the
+  modern Vercel upload endpoint. The final upload contained 19.6 KB and excluded
+  `.git`, `.next`, `node_modules`, `.env*` and local build/test artifacts.
+- Preview only (no `--prod`) was created as deployment
+  `dpl_8Fxc56VZS8nNd9VSimtJ77Eivm7p`:
+  `https://zebra-inventory-sales-kz1he5zb8-cooloxs-projects.vercel.app`.
+- Vercel reported `Building` at 1 minute with no build error/log outcome yet;
+  therefore no public route smoke, Magic Link, staging data write or physical
+  walkthrough was attempted. Production, Supabase and Auth configuration remain
+  untouched. Re-inspect this exact deployment; do not create a second Preview.
+
 ## Safe web precheck — 2026-08-20
 
 - Ready Preview public login loaded at
