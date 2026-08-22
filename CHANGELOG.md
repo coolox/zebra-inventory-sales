@@ -817,3 +817,6 @@
 - Completed TASK-197: Product Details puts Sell first and combines Owner entry to
   product details/code editing without merging their audited server saves; 15
   targeted tests and demo build passed.
+- Completed TASK-198: Owner can remove a mistakenly saved product photo in the
+  persisted local demo as well as the protected live flow; 18 targeted tests and
+  demo build passed.

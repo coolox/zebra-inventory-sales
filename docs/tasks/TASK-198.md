@@ -1,6 +1,6 @@
 # TASK-198 — Сохранить доступное Owner удаление фотографии после сохранения товара
 
-Статус: pending
+Статус: COMPLETED
 
 Приоритет: P1 — ошибочно загруженная фотография не должна оставаться в товаре
 без понятного способа её удалить.
@@ -56,3 +56,16 @@ demo и будущего unified Product Edit (TASK-197), где Owner долж�
 
 Не начинать implementation до прямой команды Owner после закрытия renewed visual
 intake.
+
+## Реализация и evidence
+
+- Owner now receives the existing clear confirm/cancel/remove control for saved
+  demo photos too. It removes the selected URL from every variant of the same
+  demo model; normal persistence writes the changed workspace, so reload retains
+  the carousel/empty-photo result.
+- Live still passes a private storage path to TASK-178's `remove_product_image`;
+  no mock fallback, Storage/RLS/audit or historical snapshot behaviour changed.
+- Seller does not receive `onRemovePhoto`; the ProductCard continues to provide
+  retry/error and last-photo empty states.
+- `npm test -- --run features/catalog/ui/product-card.test.tsx features/workspace/data/demo-persistence.test.ts` — 18/18 passed.
+- `npm run build` — demo build passed (only existing warnings).

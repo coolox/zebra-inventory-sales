@@ -463,7 +463,7 @@ export default function Home() {
     await refreshLiveWorkspace().catch(() => setWorkspaceStatus("error"));
     notify(locale === "tr" ? "Fotoğraflar eklendi" : "Photos added to the product card");
   };
-  const deleteProductPhoto = async (path: string) => { const model=selectedProductVariants[0]; if(!activeStoreId||!model?.modelId) throw new Error("Product image is unavailable."); await removeProductImage(activeStoreId,model.modelId,path); await refreshLiveWorkspace(); };
+  const deleteProductPhoto = async (path: string) => { const model=selectedProductVariants[0]; if (!model) throw new Error("Product image is unavailable."); if (isLiveMode) { if(!activeStoreId||!model.modelId) throw new Error("Product image is unavailable."); await removeProductImage(activeStoreId,model.modelId,path); await refreshLiveWorkspace(); } else setProducts((current) => current.map((product) => product.store === model.store && product.code === model.code ? { ...product, photos: product.photos?.filter((photo) => photo !== path), photoPaths: product.photoPaths?.filter((photo) => photo !== path) } : product)); };
 
   const setProductArchived = async (model: Product, archived: boolean) => {
     if (!model) throw new Error("Product model is unavailable.");
@@ -808,7 +808,7 @@ export default function Home() {
 
       {selectedProductVariants.length > 0 && (
         <Modal title={selectedProductVariants[0].name} eyebrow={catalogCopy[locale].productDetails} onClose={() => setSelectedProductCode(null)} wide>
-        <ProductCard locale={locale} variants={selectedProductVariants} onUploadPhotos={isLiveMode ? addProductPhotos : undefined} onRemovePhoto={role === "owner" && isLiveMode ? deleteProductPhoto : undefined} onSell={sellProductFromCard} canManageArchive={role === "owner"} isArchived={selectedProductVariants[0].isActive === false} onSetArchived={setSelectedProductArchived} canEdit={role === "owner"} onUpdateCode={role === "owner" ? updateSelectedProductCode : undefined} onUpdateDetails={role === "owner" ? updateSelectedProductDetails : undefined} onViewHistory={(variant) => { setHistoryVariant(variant); setSelectedProductCode(null); }} onAdjust={role === "owner" ? (variant) => { setSelectedProductCode(null); setAdjustmentVariant(variant); } : undefined} />
+        <ProductCard locale={locale} variants={selectedProductVariants} onUploadPhotos={isLiveMode ? addProductPhotos : undefined} onRemovePhoto={role === "owner" ? deleteProductPhoto : undefined} onSell={sellProductFromCard} canManageArchive={role === "owner"} isArchived={selectedProductVariants[0].isActive === false} onSetArchived={setSelectedProductArchived} canEdit={role === "owner"} onUpdateCode={role === "owner" ? updateSelectedProductCode : undefined} onUpdateDetails={role === "owner" ? updateSelectedProductDetails : undefined} onViewHistory={(variant) => { setHistoryVariant(variant); setSelectedProductCode(null); }} onAdjust={role === "owner" ? (variant) => { setSelectedProductCode(null); setAdjustmentVariant(variant); } : undefined} />
         </Modal>
       )}
 
