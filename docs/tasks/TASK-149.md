@@ -35,3 +35,28 @@ The task is blocked by the incomplete TASK-084 production Auth acceptance, missi
 immutable release tag/final migration approval, untriaged current browser-regression
 failures, missing shared staging/device evidence, unselected monitoring/alert policy,
 unassigned launch roles/window/rollback confirmation, and absent explicit Owner `GO`.
+
+## Resumed release review — 2026-08-22
+
+Owner authorized the complete preparation sequence and conditional production `GO`:
+continue only if every remaining release gate is green. Launch roles, Vercel Logs
+policy, notification channel, launch window and immediate No-Go triggers are recorded
+in `docs/operations/GO_NO_GO.md`. This review now verifies the remaining technical
+gates before an immutable RC tag or any production mutation.
+
+### Safe check evidence — 2026-08-22
+
+- `npm run build` passed (the established 11 ESLint warnings remain warnings; no
+  lint or TypeScript errors).
+- Production `supabase db push --dry-run` was non-mutating and listed exactly the
+  eight migrations recorded in `GO_NO_GO.md`; no seeds or roles would be applied.
+- Vercel project listing confirms that `zebra-retail-production` exists separately
+  from staging. Its Production environment has **zero configured variables**.
+
+### Current blocker
+
+Owner must enter the five required values into Vercel **Production** environment
+management, outside Git, before a closed RC deployment can be safe: application
+mode `live`, production Supabase URL, publishable key, server-only service-role key,
+and observability enabled. Values were neither requested nor inspected. Until their
+presence is verified, deployment and the TASK-084 Auth matrix remain `NO-GO`.

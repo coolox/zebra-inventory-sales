@@ -19,9 +19,12 @@
 - Последняя завершённая задача: [TASK-165](tasks/TASK-165.md) — Owner подтвердил
   shared staging/device checklist without new P0/P1 finding.
 - Следующий release decision: [TASK-149](tasks/TASK-149.md) — production Go/No-Go
-  review, сейчас `BLOCKED` до TASK-084 Auth acceptance and launch decisions.
-- Команда для продолжения: ожидать Owner решения по TASK-084/TASK-149; не начинать
-  production deploy без explicit `GO` и отдельной команды TASK-150.
+  review, сейчас `BLOCKED`: the separate Vercel production project has no required
+  Production environment variable names. Owner must configure them outside Git;
+  then rerun only the presence check and remaining release gates.
+- Команда для продолжения: Owner configures the required Vercel Production
+  environment values outside Git, then says `Продолжай TASK-149`; do not deploy or
+  tag while this `NO-GO` remains.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.

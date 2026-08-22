@@ -86,7 +86,28 @@ Personal email addresses and credentials are intentionally not stored in Git.
 | Database/deploy operator | Owner-designated database/deploy operator | Arslan; identity/contact held outside Git |
 | Backup freshness | Recovery rehearsal and RPO 24h are documented; fresh production backup evidence is not available before production bootstrap | **BLOCKER for GO** |
 | RC commit / immutable tag | Current candidate `41c821a729177e24026d250c8b4c5d5d2cc18ecf`; immutable tag intentionally deferred until every gate is green | Pending |
-| Approved migration set | 37 ordered files currently exist; production dry-run must confirm the exact set before mutation | Pending |
+| Approved migration set | Repository chain has 37 files; safe production dry-run confirmed that the remote already has 29 and would apply exactly the 8 files below, with no seed or roles | Ready for final Owner approval |
+
+### Production migration dry-run — 2026-08-22
+
+The non-mutating dry-run listed this exact ordered set. It must be the only set
+applied by TASK-150, followed by a final `upToDate` dry-run:
+
+1. `20260820120000_update_product_model_code.sql`
+2. `20260821130000_lock_existing_receipt_model_identity.sql`
+3. `20260821140000_reporting_seller_email_fallback.sql`
+4. `20260821150000_model_current_purchase_cost.sql`
+5. `20260821160000_sale_line_image_snapshot.sql`
+6. `20260821170000_safe_product_image_removal.sql`
+7. `20260821180000_owner_cash_report.sql`
+8. `20260822120000_preserve_receipt_color_canonicalization.sql`
+
+### Environment presence check — 2026-08-22
+
+The separate `zebra-retail-production` Vercel project exists, but its Production
+environment had no configured variables when checked. Their values were not read.
+This is an immediate `NO-GO` until the required live-mode, production Supabase and
+observability variable names are present and scope-checked.
 
 ### Immediate NO-GO triggers — Owner approved 2026-08-22
 
