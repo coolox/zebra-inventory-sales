@@ -48,6 +48,12 @@ TASK-149.
   redirect; `/login` and `/access-denied` return `200`; `/auth/callback` returns
   its expected `307`; and a deployed `/_next/static` JavaScript bundle returns
   `200`. The error-level deployment log query returned no errors.
+- The first Owner Magic Link request was safely rejected by Supabase with `Signups
+  not allowed for otp`. This proves the application has not silently created an
+  unauthorised production identity: the initial Owner Auth user must be created by
+  the Owner in the production Supabase dashboard before passwordless login can be
+  requested. This is an identity-bootstrap prerequisite, not an SMTP or Vercel
+  delivery failure.
 - No test identities, Magic Links, inventory or business transactions were created.
 
 ### Remaining controlled checks
