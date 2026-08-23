@@ -2,6 +2,7 @@
   "name": "zebra-inventory-demo",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "npm run dev:demo",
     "dev:demo": "NEXT_PUBLIC_APP_MODE=demo next dev",
