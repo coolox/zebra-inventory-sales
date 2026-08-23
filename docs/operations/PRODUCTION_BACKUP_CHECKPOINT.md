@@ -1,6 +1,6 @@
 # Production backup checkpoint — Clothing Pilot
 
-Статус: **готов к Owner secret setup и manual run (TASK-202)**.
+Статус: **checkpoint подтверждён 2026-08-23 (TASK-202)**.
 
 Этот документ не содержит значений secrets, URLs, ключей, VPS endpoints или
 персональных контактов.
@@ -63,3 +63,14 @@ Any missing secret, empty dump, failed encryption, checksum mismatch, wrong path
 or artifact-name collision is immediate `NO-GO`. Do not retry a partially created
 checkpoint by overwriting it; inspect it through the Owner-controlled channel and
 start a new dated checkpoint only after the cause is resolved.
+
+## Последнее accepted evidence
+
+- GitHub Actions run: `32607243580`.
+- Завершён: `2026-08-23T00:13:46Z`.
+- Artifact: `production-2026-08-23.tar.gz.age`.
+- SHA-256: VPS-side verification прошла (`OK`) до promotion в `daily`.
+- Retention: 14 daily copies.
+
+Значение checksum, credential values, VPS endpoint и private identity не
+записываются в Git.

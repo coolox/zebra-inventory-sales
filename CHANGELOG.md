@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-08-23
+
+- TASK-202 completed: manual production backup run `32607243580` created
+  `production-2026-08-23.tar.gz.age`; the encrypted archive passed VPS-side
+  SHA-256 verification before promotion to the isolated 14-day daily retention
+  path. No migration, Vercel deploy, Auth-user creation or pilot-data write ran.
+
 ## 2026-08-22
 
 - TASK-202 started: a manual-only production backup checkpoint workflow uses a

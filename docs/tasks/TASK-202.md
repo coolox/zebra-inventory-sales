@@ -1,6 +1,6 @@
 # TASK-202 — Создать production backup checkpoint
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 ## Цель
 
@@ -81,3 +81,13 @@ failed. No production migration, deploy or checkpoint artifact was created. Owne
 must replace `PRODUCTION_BACKUP_VPS_SSH_PRIVATE_KEY` with the complete, newline-
 preserved private half matching the public key in `zebra-backup`'s
 `authorized_keys`, then rerun the manual workflow.
+
+## Accepted production checkpoint — 2026-08-23
+
+Manual GitHub Actions run `32607243580` completed successfully at
+`2026-08-23T00:13:46Z`. It created the isolated encrypted artifact
+`production-2026-08-23.tar.gz.age`; the VPS-side `sha256sum -c SHA256SUMS` result
+was `OK`, after which the archive was promoted to the 14-day `daily` retention
+path. The workflow performed no migration, Vercel deploy, Auth user creation or
+pilot-data write. Secret values, endpoints, keys and checksum value are deliberately
+absent from this record.

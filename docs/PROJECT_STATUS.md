@@ -1,6 +1,6 @@
 # Статус проекта
 
-Обновлено: 2026-08-22
+Обновлено: 2026-08-23
 
 Текущая фаза: consolidated staging and physical acceptance before production Go/No-Go.
 
@@ -18,12 +18,13 @@
   deletion после сохранения проверяемо и в local demo.
 - Последняя завершённая задача: [TASK-165](tasks/TASK-165.md) — Owner подтвердил
   shared staging/device checklist without new P0/P1 finding.
-- Текущая задача: [TASK-202](tasks/TASK-202.md) — production backup checkpoint,
-  `IN PROGRESS` по прямой команде Owner. TASK-149 остаётся `BLOCKED` до evidence
-  успешного encrypted production checkpoint.
-- Команда для продолжения: Owner adds the documented `PRODUCTION_*` GitHub Actions
-  secrets outside Git and manually runs `Production backup checkpoint`; затем
-  передаёт только run ID, UTC timestamp, artifact filename and checksum result.
+- Последняя завершённая задача: [TASK-202](tasks/TASK-202.md) — production
+  encrypted checkpoint `production-2026-08-23.tar.gz.age` checksum-verified on the
+  Owner VPS.
+- Текущая задача: [TASK-149](tasks/TASK-149.md) — `BLOCKED`: TASK-084 production
+  Auth acceptance and explicit Owner `GO` remain required before TASK-150.
+- Команда для продолжения: `Выполни TASK-084` после готовности Owner провести
+  production Auth callback/delivery matrix; production deploy не выполнять.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
@@ -95,10 +96,10 @@ receipt RPC снова сохраняет canonical colour boundary TASK-118, н
 - [TASK-149](tasks/TASK-149.md) — `BLOCKED`: Owner selected Vercel Logs and its
   notification channel (current-plan retention accepted), launch/incident ownership,
   database/deploy operator and a 2026-08-22 15:20 Istanbul window. RC GitHub tag
-  is verified. TASK-084 acceptance, TASK-202 fresh backup/rollback confirmation and
-  explicit Owner `GO` remain required.
-- [TASK-202](tasks/TASK-202.md) — `IN PROGRESS`: manual-only production encrypted
-  backup checkpoint is prepared; Owner secret setup and first run remain.
+  is verified. TASK-084 acceptance and explicit Owner `GO` remain required;
+  TASK-202 checkpoint evidence is accepted.
+- [TASK-202](tasks/TASK-202.md) — `COMPLETED`: run `32607243580` created the
+  isolated encrypted checkpoint and passed VPS-side checksum verification.
 - TASK-150 production deploy, TASK-087 initial inventory, TASK-088 pilot и TASK-151
   pilot exit остаются последовательными следующими launch steps.
 
@@ -108,11 +109,11 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 ## Task accounting
 
 - Всего task-файлов: 202.
-- `COMPLETED` / legacy `completed`: 172.
+- `COMPLETED` / legacy `completed`: 173.
 - `pending`: 29, post-launch backlog.
 - `WAITING`: 1 — TASK-084.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 1 — TASK-202.
+- `IN PROGRESS`: 0.
 
 Завершённые диапазоны:
 
@@ -123,6 +124,7 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 - TASK-131—TASK-148;
 - TASK-152—TASK-164;
 - TASK-166—TASK-191.
+- TASK-202.
 
 Post-launch pending scope: TASK-089—TASK-100, TASK-119—TASK-122 и TASK-124—TASK-130.
 
