@@ -20,13 +20,17 @@ function redirect(request: Request, pathname: string) {
   return new Response(null, { headers: { Location: url.toString() }, status: 307 });
 }
 
+function next() {
+  return new Response(null, { headers: { "x-middleware-next": "1" } });
+}
+
 export async function middleware(request: Request) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   const requestUrl = new URL(request.url);
   const requestIsPublic = publicPaths.has(requestUrl.pathname);
 
-  if (process.env.NEXT_PUBLIC_APP_MODE !== "live" || !url || !key) return;
+  if (process.env.NEXT_PUBLIC_APP_MODE !== "live" || !url || !key) return next();
 
   const supabase = createServerClient(url, key, {
     cookies: {
@@ -40,7 +44,7 @@ export async function middleware(request: Request) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) return requestIsPublic ? undefined : redirect(request, "/login");
+  if (!user) return requestIsPublic ? next() : redirect(request, "/login");
 
   if (!requestIsPublic) {
     const { data: membership, error } = await supabase
@@ -55,6 +59,8 @@ export async function middleware(request: Request) {
   }
 
   if (requestUrl.pathname === "/login") return redirect(request, "/");
+
+  return next();
 }
 
 export const config = {
