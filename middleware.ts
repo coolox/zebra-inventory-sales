@@ -1,5 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server.js";
 
 // Node.js middleware is emitted as a standalone Vercel function. Keep its
 // authentication boundary self-contained: local TypeScript imports are not
