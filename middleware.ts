@@ -6,6 +6,26 @@ import { NextResponse, type NextRequest } from "next/server.js";
 // traced as runtime ESM modules by that adapter.
 const publicPaths = new Set(["/login", "/auth/callback", "/access-denied", "/api/observability"]);
 
+function getRequestCookies(request: NextRequest) {
+  const header = request.headers.get("cookie");
+
+  if (!header) {
+    return [];
+  }
+
+  return header.split(";").flatMap((part) => {
+    const separator = part.indexOf("=");
+    if (separator <= 0) {
+      return [];
+    }
+
+    return [{
+      name: part.slice(0, separator).trim(),
+      value: part.slice(separator + 1).trim(),
+    }];
+  });
+}
+
 export async function middleware(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -18,10 +38,12 @@ export async function middleware(request: NextRequest) {
   const supabase = createServerClient(url, key, {
     cookies: {
       getAll() {
-        return request.cookies.getAll();
+        // Vercel's Node middleware adapter passes a standard Request rather
+        // than a NextRequest with the `cookies` helper. The raw Cookie header
+        // remains available in both runtimes.
+        return getRequestCookies(request);
       },
       setAll(items) {
-        items.forEach(({ name, value }) => request.cookies.set(name, value));
         response = NextResponse.next({ request });
         items.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
       },
