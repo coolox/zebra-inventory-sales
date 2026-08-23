@@ -26,3 +26,26 @@ TASK-149.
 - Minimal authorized Owner/Seller boundary smoke.
 - Controlled transaction + audit/movement/payment/reconciliation verification.
 - Rollback readiness re-check.
+
+## Production attempt — 2026-08-23
+
+- The pre-mutation production dry-run listed exactly the approved eight migrations
+  with no seeds or roles; the approved set was applied and the final dry-run returned
+  `upToDate`.
+- The original deployment was removed with explicit Owner permission after its build
+  command forced demo mode. Replacement RC tags `clothing-pilot-rc.2` and
+  `clothing-pilot-rc.3` exposed the build and Edge-bundling fixes; only
+  `clothing-pilot-rc.4` / commit `dbab2c6` is the Ready production candidate.
+- The Vercel deployment of `clothing-pilot-rc.4` / `dbab2c6` is Ready; values,
+  project endpoints and credentials remain outside this record.
+- Unauthenticated smoke of root, `/login` and `/auth/callback` receives Vercel SSO
+  `302` protection before the application. This blocks Magic Link callback and
+  application authentication for Owner/Seller. No test identities, Magic Links,
+  inventory or transactions were created.
+
+### Current blocker
+
+Owner must decide whether to disable Vercel Deployment Protection / Vercel
+Authentication for the production deployment so the application login and allowed
+Supabase callback can be reached by pilot users. Do not continue TASK-084 Auth
+acceptance or TASK-150 transaction smoke while the Vercel SSO redirect remains.
