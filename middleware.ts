@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import { NextResponse } from "next/dist/server/web/spec-extension/response";
 
 const publicPaths = new Set(["/login", "/auth/callback", "/access-denied", "/api/observability"]);
 
@@ -17,11 +18,11 @@ function redirect(request: Request, pathname: string) {
   const url = new URL(request.url);
   url.pathname = pathname;
   url.search = "";
-  return new Response(null, { headers: { Location: url.toString() }, status: 307 });
+  return NextResponse.redirect(url);
 }
 
 function next() {
-  return new Response(null, { headers: { "x-middleware-next": "1" } });
+  return NextResponse.next();
 }
 
 export async function middleware(request: Request) {
