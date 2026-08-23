@@ -1,5 +1,7 @@
 import type { NextRequest } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+// Keep this import relative: Vercel's Edge bundler must resolve middleware
+// dependencies directly rather than leave the TypeScript `@/` alias external.
+import { updateSession } from "./lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
   return updateSession(request);
