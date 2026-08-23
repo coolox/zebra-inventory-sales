@@ -23,8 +23,9 @@
   Owner VPS.
 - Текущая задача: [TASK-150](tasks/TASK-150.md) — `IN PROGRESS`: Owner issued
   explicit `GO` for the production Release Candidate publication.
-- Команда для продолжения: дождаться evidence TASK-150; не начинать TASK-084,
-  TASK-087 или pilot до результата production deploy/smoke.
+- Команда для продолжения: TASK-150 остаётся `IN PROGRESS`; production RC.18
+  публикуется и public smoke зелёный. Не начинать TASK-084, TASK-087 или pilot до
+  отдельной команды Owner на controlled Auth/transaction checks.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
@@ -50,9 +51,8 @@ Sell-first hierarchy; [TASK-198](tasks/TASK-198.md) фиксирует дост�
   reconciliation защищены server-side Supabase RLS/RPC boundaries.
 - Денежные и складские writes атомарны и аудируемы; concurrency, idempotency и
   signed-JWT authorization имеют local integration evidence.
-- Отдельные production Supabase/Vercel resources и empty schema подготовлены, но
-  production application не опубликован, реальные товары/остатки не загружены и
-  Clothing Pilot не начат.
+- Production Supabase schema и Vercel production RC.18 опубликованы; реальные
+  товары/остатки не загружены, pilot users не открыты и Clothing Pilot не начат.
 - Telegram, AI receipt/labels и multi-store не входят в первый Clothing Pilot.
 
 ## TASK-191 release-gate evidence
@@ -100,8 +100,8 @@ receipt RPC снова сохраняет canonical colour boundary TASK-118, н
   TASK-202 checkpoint evidence is accepted.
 - [TASK-202](tasks/TASK-202.md) — `COMPLETED`: run `32607243580` created the
   isolated encrypted checkpoint and passed VPS-side checksum verification.
-- TASK-150 production deploy, TASK-087 initial inventory, TASK-088 pilot и TASK-151
-  pilot exit остаются последовательными следующими launch steps.
+- TASK-150 controlled Auth/transaction smoke, TASK-087 initial inventory, TASK-088
+  pilot и TASK-151 pilot exit остаются последовательными следующими launch steps.
 
 Production publication запрещена до explicit Owner `GO` в TASK-149 и отдельной
 команды `Выполни TASK-150`.
@@ -113,7 +113,7 @@ Production publication запрещена до explicit Owner `GO` в TASK-149 �
 - `pending`: 29, post-launch backlog.
 - `WAITING`: 1 — TASK-084.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 0.
+- `IN PROGRESS`: 1 — TASK-150.
 
 Завершённые диапазоны:
 

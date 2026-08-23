@@ -27,25 +27,34 @@ TASK-149.
 - Controlled transaction + audit/movement/payment/reconciliation verification.
 - Rollback readiness re-check.
 
-## Production attempt — 2026-08-23
+## Production publication evidence — 2026-08-23
 
 - The pre-mutation production dry-run listed exactly the approved eight migrations
   with no seeds or roles; the approved set was applied and the final dry-run returned
   `upToDate`.
-- The original deployment was removed with explicit Owner permission after its build
-  command forced demo mode. Replacement RC tags `clothing-pilot-rc.2` and
-  `clothing-pilot-rc.3` exposed the build and Edge-bundling fixes; only
-  `clothing-pilot-rc.4` / commit `dbab2c6` is the Ready production candidate.
-- The Vercel deployment of `clothing-pilot-rc.4` / `dbab2c6` is Ready; values,
-  project endpoints and credentials remain outside this record.
-- Unauthenticated smoke of root, `/login` and `/auth/callback` receives Vercel SSO
-  `302` protection before the application. This blocks Magic Link callback and
-  application authentication for Owner/Seller. No test identities, Magic Links,
-  inventory or transactions were created.
+- The earlier deployment was removed with explicit Owner permission after its build
+  command forced demo mode. Follow-up RCs isolated two delivery causes: the Vercel
+  project had no framework preset, and the custom Next `distDir` prevented the
+  Vercel Next adapter from finding `.next`.
+- The source-controlled remediation is `vercel.json` with `framework: "nextjs"` and
+  a Vercel-only standard `.next` output directory. Local demo/live builds retain
+  their separate output directories. The standard Supabase middleware is restored;
+  no experimental middleware variant remains.
+- Exact candidate `clothing-pilot-rc.18` / commit `9d0704b` is deployed to the
+  production target and is `Ready`. Vercel reports the `nextjs` framework and
+  publishes application functions rather than only middleware. Values, endpoints
+  and credentials remain outside this record.
+- Public unauthenticated smoke passed: `/` returns the expected `307` login
+  redirect; `/login` and `/access-denied` return `200`; `/auth/callback` returns
+  its expected `307`; and a deployed `/_next/static` JavaScript bundle returns
+  `200`. The error-level deployment log query returned no errors.
+- No test identities, Magic Links, inventory or business transactions were created.
 
-### Current blocker
+### Remaining controlled checks
 
-Owner must decide whether to disable Vercel Deployment Protection / Vercel
-Authentication for the production deployment so the application login and allowed
-Supabase callback can be reached by pilot users. Do not continue TASK-084 Auth
-acceptance or TASK-150 transaction smoke while the Vercel SSO redirect remains.
+Vercel Deployment Protection has been disabled by the Owner, so application routes
+are now reachable. Completion of TASK-150 still requires the separately controlled
+TASK-084 Magic Link delivery/session matrix, minimal authorized Owner/Seller
+boundary smoke, and an explicitly authorized reconciled transaction check. Do not
+create identities, send login emails, load inventory or write business transactions
+without the Owner's next instruction.

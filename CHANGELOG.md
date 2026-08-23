@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- TASK-150: production RC.18 (`9d0704b`) now uses Vercel's Next.js framework
+  preset and standard Vercel `.next` output, restoring deployable application
+  routes and static assets. Public route smoke is green; controlled Auth and
+  transaction checks remain intentionally pending.
+
 ## 2026-08-23
 
 - TASK-202 completed: manual production backup run `32607243580` created
