@@ -6,7 +6,7 @@
     "dev": "npm run dev:demo",
     "dev:demo": "NEXT_PUBLIC_APP_MODE=demo next dev",
     "dev:live": "NEXT_PUBLIC_APP_MODE=live next dev --port 3001",
-    "build": "npm run build:demo",
+    "build": "next build",
     "build:demo": "NEXT_PUBLIC_APP_MODE=demo next build",
     "build:live": "NEXT_PUBLIC_APP_MODE=live next build",
     "start": "npm run start:demo",

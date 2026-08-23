@@ -1,6 +1,6 @@
 # TASK-150 — Развернуть Release Candidate в production
 
-Статус: pending
+Статус: IN PROGRESS
 
 ## Цель
 

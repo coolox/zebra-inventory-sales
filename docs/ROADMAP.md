@@ -170,7 +170,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19AX | DONE | TASK-201 | Owner accepted current staging Cash/download path; no code/config mutation made |
 | 20 | BLOCKED | TASK-149 | NO-GO: RC tag, staging evidence, launch assignments and TASK-202 checkpoint are ready; TASK-084 Auth acceptance and explicit Owner GO remain |
 | 20A | DONE | TASK-202 | Manual encrypted production checkpoint run `32607243580` completed; isolated artifact passed VPS-side checksum verification before 14-day promotion |
-| 21 | WAITING | TASK-150 | Тот же Release Candidate развёрнут в production; auth/data/transaction smoke зелёный |
+| 21 | IN PROGRESS | TASK-150 | Owner issued explicit GO; exact Release Candidate production deploy and smoke are in progress |
 | 22 | WAITING | TASK-087 | Реальный clothing catalog/stock загружен и физически reconciled |
 | 23 | WAITING | TASK-088 | Zebra Boutique работает в контролируемом pilot с ежедневной сверкой |
 | 24 | WAITING | TASK-151 | Pilot exit подписан; production передан в обычную эксплуатацию |

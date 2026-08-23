@@ -21,10 +21,10 @@
 - Последняя завершённая задача: [TASK-202](tasks/TASK-202.md) — production
   encrypted checkpoint `production-2026-08-23.tar.gz.age` checksum-verified on the
   Owner VPS.
-- Текущая задача: [TASK-149](tasks/TASK-149.md) — `BLOCKED`: TASK-084 production
-  Auth acceptance and explicit Owner `GO` remain required before TASK-150.
-- Команда для продолжения: `Выполни TASK-084` после готовности Owner провести
-  production Auth callback/delivery matrix; production deploy не выполнять.
+- Текущая задача: [TASK-150](tasks/TASK-150.md) — `IN PROGRESS`: Owner issued
+  explicit `GO` for the production Release Candidate publication.
+- Команда для продолжения: дождаться evidence TASK-150; не начинать TASK-084,
+  TASK-087 или pilot до результата production deploy/smoke.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
