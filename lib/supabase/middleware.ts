@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { isLiveMode } from "../../features/workspace/model/app-mode";
+import { isLiveMode } from "../../features/workspace/model/app-mode.js";
 
 // Observability accepts only bounded, redacted telemetry and is rate-limited at
 // the route. It must remain available before authentication so client failures
