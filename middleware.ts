@@ -1,12 +1,12 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server.js";
+import { NextResponse } from "next/server.js";
 
 // Node.js middleware is emitted as a standalone Vercel function. Keep its
 // authentication boundary self-contained: local TypeScript imports are not
 // traced as runtime ESM modules by that adapter.
 const publicPaths = new Set(["/login", "/auth/callback", "/access-denied", "/api/observability"]);
 
-function getRequestCookies(request: NextRequest) {
+function getRequestCookies(request: Request) {
   const header = request.headers.get("cookie");
 
   if (!header) {
@@ -26,15 +26,15 @@ function getRequestCookies(request: NextRequest) {
   });
 }
 
-export async function middleware(request: NextRequest) {
+export async function middleware(request: Request) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
   if (process.env.NEXT_PUBLIC_APP_MODE !== "live" || !url || !key) {
-    return NextResponse.next({ request });
+    return NextResponse.next();
   }
 
-  let response = NextResponse.next({ request });
+  let response = NextResponse.next();
   const supabase = createServerClient(url, key, {
     cookies: {
       getAll() {
@@ -44,7 +44,7 @@ export async function middleware(request: NextRequest) {
         return getRequestCookies(request);
       },
       setAll(items) {
-        response = NextResponse.next({ request });
+        response = NextResponse.next();
         items.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
       },
     },
@@ -52,10 +52,11 @@ export async function middleware(request: NextRequest) {
 
   // getUser validates the token with Supabase Auth. Do not trust getSession here.
   const { data: { user } } = await supabase.auth.getUser();
-  const requestIsPublic = publicPaths.has(request.nextUrl.pathname);
+  const requestUrl = new URL(request.url);
+  const requestIsPublic = publicPaths.has(requestUrl.pathname);
 
   if (!user && !requestIsPublic) {
-    const redirectUrl = request.nextUrl.clone();
+    const redirectUrl = new URL(request.url);
     redirectUrl.pathname = "/login";
     redirectUrl.search = "";
     return NextResponse.redirect(redirectUrl);
@@ -71,15 +72,15 @@ export async function middleware(request: NextRequest) {
       .maybeSingle();
 
     if (error || !membership) {
-      const redirectUrl = request.nextUrl.clone();
+      const redirectUrl = new URL(request.url);
       redirectUrl.pathname = "/access-denied";
       redirectUrl.search = "";
       return NextResponse.redirect(redirectUrl);
     }
   }
 
-  if (user && request.nextUrl.pathname === "/login") {
-    const redirectUrl = request.nextUrl.clone();
+  if (user && requestUrl.pathname === "/login") {
+    const redirectUrl = new URL(request.url);
     redirectUrl.pathname = "/";
     redirectUrl.search = "";
     return NextResponse.redirect(redirectUrl);
