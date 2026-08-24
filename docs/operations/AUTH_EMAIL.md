@@ -36,6 +36,24 @@ application callback. No real pilot data is introduced by this document.
 | Expired or reused link | Supabase rejects the link and the application shows its safe sign-in failure state without creating a session. |
 | Redirect boundary | Only the single exact production origin succeeds; staging, localhost and arbitrary origins are rejected. |
 
+## Clean-session negative checks
+
+Run these only from a separate private browser window or a different device with no
+existing Zebra session. Never forward a Magic Link or paste it into chat.
+
+1. Enter a valid-looking email that is not invited to the store. The app must show
+   its generic sign-in failure, create no usable workspace and send no invitation.
+2. Request one fresh Owner link, open it once successfully, sign out in that test
+   browser, then open the same email link again. The second visit must show the safe
+   sign-in failure and must not restore a workspace.
+3. Request a separate link and leave it unused until the configured Email OTP
+   expiration. Supabase defaults this to one hour; confirm any project-specific value
+   in Auth Providers before waiting. Its first later use must show the same safe
+   failure without a session.
+
+Record only pass/fail and observed UI state; do not save email addresses, URLs,
+tokens, codes or message headers in the repository.
+
 ## Domain and sender change
 
 When Owner later adopts a custom domain or transactional sender:
