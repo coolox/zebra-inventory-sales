@@ -69,6 +69,14 @@ TASK-149.
   now has the stable Vercel alias as Auth Site URL and the exact `/auth/callback`
   URL in its redirect allow-list. Existing link templates are Supabase defaults;
   a new single-use Owner link is required to evidence the callback/session result.
+- Subsequent live-workspace diagnosis proved that the Vercel public Supabase
+  variables had been changed to the separate staging project. That database ends at
+  migration `20260815120000`, so RC.18 correctly refuses to substitute demo data
+  when its live queries fail. The CLI-linked `zebra-retail-production` database was
+  independently verified `upToDate` through `20260822120000`; do **not** apply
+  migrations to staging. Its Auth Site URL and exact production callback allow-list
+  are now configured. Vercel must be restored to that production project's URL and
+  publishable key, then redeployed; values remain unrecorded and unread.
 - No test identities, Magic Links, inventory or business transactions were created.
 
 ### Remaining controlled checks
