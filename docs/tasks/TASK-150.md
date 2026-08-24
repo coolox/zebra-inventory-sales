@@ -59,6 +59,12 @@ TASK-149.
   values are intentionally unread. The Owner must compare the production Supabase
   Project URL with `NEXT_PUBLIC_SUPABASE_URL` in Vercel and verify the Auth user in
   that exact project before any environment edit or redeploy.
+- After the production public variables were corrected and redeployed, Magic Link
+  delivery succeeded. The clicked link then returned to `/login` without any
+  observed `/auth/callback` request in Vercel. This indicates Supabase ignored the
+  requested callback redirect and used its configured Site URL; production Auth URL
+  Configuration must contain the exact stable `/auth/callback` URL before a fresh,
+  single-use link can be tested.
 - No test identities, Magic Links, inventory or business transactions were created.
 
 ### Remaining controlled checks
