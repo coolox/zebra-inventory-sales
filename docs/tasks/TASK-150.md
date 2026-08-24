@@ -78,9 +78,13 @@ TASK-149.
   are now configured. Vercel must be restored to that production project's URL and
   publishable key, then redeployed; values remain unrecorded and unread.
 - After the restored deployment, the next Magic Link request reached production Auth
-  but returned `Error sending magic link email`, not an unknown-user error. Treat
-  this as a delivery/rate-limit condition: do not retry in a burst; wait for the
-  configured mail window before one fresh request.
+  but returned `Error sending magic link email`, not an unknown-user error. A fresh
+  retry more than an hour later returned the same `500` delivery failure. Production
+  has custom SMTP enabled and Supabase warns that the configured personal-mail
+  provider is not delivery-grade. This is a persistent SMTP delivery/configuration
+  blocker, not a rate limit: the Owner must replace the SMTP credential with a valid
+  app password or move production mail to a transactional provider before one fresh
+  single-use link is tested. Do not retry in a burst.
 - No test identities, Magic Links, inventory or business transactions were created.
 
 ### Remaining controlled checks
