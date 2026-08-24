@@ -100,6 +100,10 @@ TASK-149.
   membership. Personal contact details and invitation credentials are intentionally
   absent from this evidence. Seller login and least-privilege UI verification remain
   pending the Seller's single-use link completion.
+- Seller completed the single-use login and verified the live Zebra Boutique
+  workspace, session persistence after refresh, Seller product/sale access, and the
+  absence of Owner-only Team, Audit Log and reconciliation surfaces. No stock or
+  monetary action was performed during this role-boundary smoke.
 - No test identities, inventory or business transactions were created by this task;
   the only production identity change was the Owner-authorized Seller invitation.
 
