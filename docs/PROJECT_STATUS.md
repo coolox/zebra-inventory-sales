@@ -21,11 +21,11 @@
 - Последняя завершённая задача: [TASK-202](tasks/TASK-202.md) — production
   encrypted checkpoint `production-2026-08-23.tar.gz.age` checksum-verified on the
   Owner VPS.
-- Текущая задача: [TASK-150](tasks/TASK-150.md) — `IN PROGRESS`: Owner issued
-  explicit `GO` for the production Release Candidate publication.
-- Команда для продолжения: TASK-150 остаётся `IN PROGRESS`; production RC.18
-  публикуется и public smoke зелёный. Не начинать TASK-084, TASK-087 или pilot до
-  отдельной команды Owner на controlled Auth/transaction checks.
+- Текущая задача: [TASK-084](tasks/TASK-084.md) — `IN PROGRESS`: Owner explicitly
+  ordered the production Magic Link acceptance matrix after TASK-150 Owner/Seller
+  and transaction smoke evidence.
+- Команда для продолжения: выполнить только TASK-084. [TASK-150](tasks/TASK-150.md)
+  остаётся `WAITING` на её evidence; не начинать TASK-087 или pilot.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
@@ -89,8 +89,8 @@ receipt RPC снова сохраняет canonical colour boundary TASK-118, н
 
 ## Открытые launch gates
 
-- [TASK-084](tasks/TASK-084.md) — `WAITING`: production Auth/SMTP configuration
-  подготовлена, delivery/unknown/expired/reused matrix ждёт production callback.
+- [TASK-084](tasks/TASK-084.md) — `IN PROGRESS`: production Auth/SMTP configuration
+  готова; выполняется delivery/unknown/expired/reused matrix на deployed callback.
 - [TASK-165](tasks/TASK-165.md) — `COMPLETED`: Owner подтвердил shared
   staging/device checklist without new P0/P1 finding.
 - [TASK-149](tasks/TASK-149.md) — `BLOCKED`: Owner selected Vercel Logs and its

@@ -1,6 +1,6 @@
 # TASK-084 — Настроить production Auth SMTP и redirects
 
-Статус: WAITING
+Статус: IN PROGRESS
 
 ## Цель
 
@@ -47,3 +47,21 @@ production callback deployment. The exact matrix is in
 [`AUTH_EMAIL.md`](../operations/AUTH_EMAIL.md).
 
 No migration, Git deployment or pilot user was created by TASK-084.
+
+## Production acceptance evidence — 2026-08-24
+
+- The production Site URL remains the stable Vercel origin. The redirect allowlist
+  was reduced from two entries to one exact production `/auth/callback` URL; the
+  obsolete Vercel origin was removed. There are no wildcard, localhost or staging
+  redirects in the production allowlist.
+- The hosted Magic Link template was inspected without copying credentials: it has
+  the `Zebra Retail` bilingual EN-first/TR-second subject and body, declares
+  short-lived single-use behaviour, and uses `{{ .ConfirmationURL }}` for both
+  language links.
+- Owner Magic Link delivery, callback and persisted workspace session were confirmed
+  by the Owner. Seller invitation delivery, callback, persisted Seller session and
+  least-privilege workspace were confirmed by the Seller during TASK-150 smoke.
+- Remaining matrix evidence is deliberately not inferred: unknown/non-member denial
+  and expired/reused-link safe failure require a clean unauthenticated browser
+  session plus a human single-use-link action. The active Owner browser session was
+  not terminated to manufacture this evidence.

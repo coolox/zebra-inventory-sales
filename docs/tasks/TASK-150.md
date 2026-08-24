@@ -1,6 +1,6 @@
 # TASK-150 — Развернуть Release Candidate в production
 
-Статус: IN PROGRESS
+Статус: WAITING — TASK-084 Magic Link matrix
 
 ## Цель
 
