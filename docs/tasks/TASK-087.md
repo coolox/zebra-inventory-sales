@@ -1,6 +1,6 @@
 # TASK-087 — Загрузить начальный clothing inventory
 
-Статус: pending
+Статус: IN PROGRESS
 
 ## Цель
 
