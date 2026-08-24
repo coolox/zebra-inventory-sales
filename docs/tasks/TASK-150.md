@@ -77,6 +77,10 @@ TASK-149.
   migrations to staging. Its Auth Site URL and exact production callback allow-list
   are now configured. Vercel must be restored to that production project's URL and
   publishable key, then redeployed; values remain unrecorded and unread.
+- After the restored deployment, the next Magic Link request reached production Auth
+  but returned `Error sending magic link email`, not an unknown-user error. Treat
+  this as a delivery/rate-limit condition: do not retry in a burst; wait for the
+  configured mail window before one fresh request.
 - No test identities, Magic Links, inventory or business transactions were created.
 
 ### Remaining controlled checks
