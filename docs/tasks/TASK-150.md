@@ -90,6 +90,11 @@ TASK-149.
   callback completed, and the live application opened. This establishes production
   mail delivery plus the Owner callback/session path; the user-confirmed evidence
   does not authorize further mutation checks.
+- Owner live-boundary smoke was then confirmed in the authenticated workspace:
+  Zebra Boutique loaded as live data with an empty, zero-inventory state; protected
+  Dashboard, inventory, sales history, reports and the Owner-only Seller management
+  dialog were reachable. The dialog reports no Seller memberships yet. No fallback
+  demo data or load error appeared.
 - No test identities, inventory or business transactions were created by this task.
 
 ### Remaining controlled checks
