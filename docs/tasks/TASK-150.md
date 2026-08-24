@@ -95,7 +95,13 @@ TASK-149.
   Dashboard, inventory, sales history, reports and the Owner-only Seller management
   dialog were reachable. The dialog reports no Seller memberships yet. No fallback
   demo data or load error appeared.
-- No test identities, inventory or business transactions were created by this task.
+- Owner-authorized production Seller invitation was submitted through that protected
+  dialog. The application confirmed email dispatch and shows one active Seller
+  membership. Personal contact details and invitation credentials are intentionally
+  absent from this evidence. Seller login and least-privilege UI verification remain
+  pending the Seller's single-use link completion.
+- No test identities, inventory or business transactions were created by this task;
+  the only production identity change was the Owner-authorized Seller invitation.
 
 ### Remaining controlled checks
 
