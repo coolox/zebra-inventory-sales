@@ -85,7 +85,12 @@ TASK-149.
   blocker, not a rate limit: the Owner must replace the SMTP credential with a valid
   app password or move production mail to a transactional provider before one fresh
   single-use link is tested. Do not retry in a burst.
-- No test identities, Magic Links, inventory or business transactions were created.
+- The Owner subsequently updated the production custom SMTP sender configuration
+  without disclosing credentials. A fresh Owner Magic Link was delivered, its
+  callback completed, and the live application opened. This establishes production
+  mail delivery plus the Owner callback/session path; the user-confirmed evidence
+  does not authorize further mutation checks.
+- No test identities, inventory or business transactions were created by this task.
 
 ### Remaining controlled checks
 
