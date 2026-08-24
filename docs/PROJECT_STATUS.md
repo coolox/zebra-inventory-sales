@@ -24,9 +24,11 @@
 - Последняя завершённая задача: [TASK-084](tasks/TASK-084.md) — production
   Magic Link delivery, redirect, unknown/non-member, reused and expired-link matrix
   completed on the deployed callback.
-- Текущая задача: [TASK-150](tasks/TASK-150.md) — `IN PROGRESS`: production RC
-  deployment and controlled smoke evidence await final task handoff.
-- Команда для продолжения: `Выполни TASK-150`. Не начинать TASK-087 или pilot.
+- Последняя завершённая задача: [TASK-150](tasks/TASK-150.md) — production RC.18,
+  Auth/role matrix and reconciled controlled transaction smoke completed.
+- Текущая задача: [TASK-087](tasks/TASK-087.md) — `NEXT`: Owner-controlled initial
+  real clothing inventory import and physical reconciliation.
+- Команда для продолжения: `Выполни TASK-087`. Не начинать pilot TASK-088.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
@@ -53,7 +55,8 @@ Sell-first hierarchy; [TASK-198](tasks/TASK-198.md) фиксирует дост�
 - Денежные и складские writes атомарны и аудируемы; concurrency, idempotency и
   signed-JWT authorization имеют local integration evidence.
 - Production Supabase schema и Vercel production RC.18 опубликованы; реальные
-  товары/остатки не загружены, pilot users не открыты и Clothing Pilot не начат.
+  товары/остатки не загружены, controlled Seller access exists only for release
+  smoke, and Clothing Pilot не начат.
 - Telegram, AI receipt/labels и multi-store не входят в первый Clothing Pilot.
 
 ## TASK-191 release-gate evidence
@@ -99,20 +102,20 @@ receipt RPC снова сохраняет canonical colour boundary TASK-118, н
   this historical status as a blocker for the current TASK-150 handoff.
 - [TASK-202](tasks/TASK-202.md) — `COMPLETED`: run `32607243580` created the
   isolated encrypted checkpoint and passed VPS-side checksum verification.
-- TASK-150 controlled Auth/transaction smoke, TASK-087 initial inventory, TASK-088
-  pilot и TASK-151 pilot exit остаются последовательными следующими launch steps.
+- [TASK-150](tasks/TASK-150.md) — `COMPLETED`: deploy, Auth/role checks and
+  reconciled controlled transaction smoke are green; TASK-087 is the next step.
 
-Production publication was authorized by Owner; TASK-150 is the sole current
-handoff. TASK-087 and pilot remain prohibited until a new Owner command.
+TASK-087 requires a separate Owner command. Pilot TASK-088 remains prohibited until
+TASK-087 is completed.
 
 ## Task accounting
 
 - Всего task-файлов: 202.
-- `COMPLETED` / legacy `completed`: 174.
+- `COMPLETED` / legacy `completed`: 175.
 - `pending`: 29, post-launch backlog.
 - `WAITING`: 0.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 1 — TASK-150.
+- `IN PROGRESS`: 0.
 
 Завершённые диапазоны:
 
@@ -121,6 +124,7 @@ handoff. TASK-087 and pilot remain prohibited until a new Owner command.
 - TASK-101—TASK-118;
 - TASK-123;
 - TASK-131—TASK-148;
+- TASK-150;
 - TASK-152—TASK-164;
 - TASK-166—TASK-191.
 - TASK-202.

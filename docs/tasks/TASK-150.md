@@ -1,6 +1,6 @@
 # TASK-150 — Развернуть Release Candidate в production
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 ## Цель
 
@@ -126,11 +126,13 @@ TASK-149.
 - This smoke created no real customer sale, real inventory, or untracked monetary
   balance. Existing backup/rollback checkpoint evidence remains unchanged.
 
-### Remaining controlled checks
+### Completion — 2026-08-24
 
-Vercel Deployment Protection has been disabled by the Owner, so application routes
-are now reachable. Completion of TASK-150 still requires the separately controlled
-TASK-084 Magic Link delivery/session matrix, minimal authorized Owner/Seller
-boundary smoke, and an explicitly authorized reconciled transaction check. Do not
-create identities, send login emails, load inventory or write business transactions
-without the Owner's next instruction.
+- TASK-084 subsequently completed the full production Magic Link delivery, redirect,
+  unknown/non-member, reused-link and expired-link matrix.
+- Together with the Owner/Seller boundary smoke and the reconciled RC150 transaction
+  trace above, every TASK-150 acceptance check is complete. The production workspace
+  contains no active real inventory; the controlled Seller is provisioned, but the
+  Clothing Pilot is not open.
+- No further production action is authorized by this task. Initial real inventory is
+  the separate TASK-087 owner-controlled step.

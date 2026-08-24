@@ -6,10 +6,10 @@
   redirect are verified; Owner/Seller delivery, non-member denial, reused-link and
   expired-link checks all preserve the safe no-session boundary.
 
-- TASK-150: production RC.18 (`9d0704b`) now uses Vercel's Next.js framework
-  preset and standard Vercel `.next` output, restoring deployable application
-  routes and static assets. Public route smoke is green; controlled Auth and
-  transaction checks remain intentionally pending.
+- TASK-150 completed: production RC.18 (`9d0704b`) uses Vercel's Next.js framework
+  preset and standard Vercel `.next` output. Public routes, Owner/Seller Auth,
+  role boundaries and a reconciled receipt/sale/cancellation smoke are green; no
+  active test inventory remains.
 
 ## 2026-08-23
 
