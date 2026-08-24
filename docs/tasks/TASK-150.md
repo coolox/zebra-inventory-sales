@@ -54,6 +54,11 @@ TASK-149.
   the Owner in the production Supabase dashboard before passwordless login can be
   requested. This is an identity-bootstrap prerequisite, not an SMTP or Vercel
   delivery failure.
+- A later retry after the Owner ran the bootstrap returned the same Auth error.
+  Vercel confirms that all required variables are scoped to `Production`, but their
+  values are intentionally unread. The Owner must compare the production Supabase
+  Project URL with `NEXT_PUBLIC_SUPABASE_URL` in Vercel and verify the Auth user in
+  that exact project before any environment edit or redeploy.
 - No test identities, Magic Links, inventory or business transactions were created.
 
 ### Remaining controlled checks
