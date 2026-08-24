@@ -104,8 +104,27 @@ TASK-149.
   workspace, session persistence after refresh, Seller product/sale access, and the
   absence of Owner-only Team, Audit Log and reconciliation surfaces. No stock or
   monetary action was performed during this role-boundary smoke.
-- No test identities, inventory or business transactions were created by this task;
-  the only production identity change was the Owner-authorized Seller invitation.
+- No unapproved identities, real inventory or real business transactions were created
+  by this task; the only production identity change was the Owner-authorized Seller
+  invitation, and the later RC150 records are the explicitly authorized smoke trace.
+
+### Controlled transaction smoke — 2026-08-24
+
+- With explicit Owner authorization, one isolated product code prefixed `RC150` was
+  received as one EUR-denominated unit, sold once for EUR 2 through the web UI, and
+  then cancelled with a documented smoke-test reason. Sale history showed the
+  cancelled ticket, the interim stock restoration, and reports returned to zero
+  revenue, margin, receipts and units after cancellation.
+- The restored test unit was reduced by one through an Owner-audited stock adjustment
+  with an explicit cleanup reason, then the zero-stock RC150 model was archived.
+  Active inventory consequently returned to `0 units / 0 SKU`; the archived test
+  model preserves only the required historical trace and cannot be sold.
+- Owner Audit Log recorded receipt confirmation, sale confirmation, sale cancellation,
+  stock adjustment and product archive in order. Reconciliation displayed the
+  expected manual-adjustment review item (not a payment or stock mismatch), with the
+  recorded transition `1 → 0`; this is intentional cleanup evidence.
+- This smoke created no real customer sale, real inventory, or untracked monetary
+  balance. Existing backup/rollback checkpoint evidence remains unchanged.
 
 ### Remaining controlled checks
 
