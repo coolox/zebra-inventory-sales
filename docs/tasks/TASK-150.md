@@ -65,6 +65,10 @@ TASK-149.
   requested callback redirect and used its configured Site URL; production Auth URL
   Configuration must contain the exact stable `/auth/callback` URL before a fresh,
   single-use link can be tested.
+- Owner-authorized dashboard remediation completed: the selected production branch
+  now has the stable Vercel alias as Auth Site URL and the exact `/auth/callback`
+  URL in its redirect allow-list. Existing link templates are Supabase defaults;
+  a new single-use Owner link is required to evidence the callback/session result.
 - No test identities, Magic Links, inventory or business transactions were created.
 
 ### Remaining controlled checks
