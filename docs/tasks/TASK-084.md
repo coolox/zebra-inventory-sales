@@ -65,3 +65,8 @@ No migration, Git deployment or pilot user was created by TASK-084.
   and expired/reused-link safe failure require a clean unauthenticated browser
   session plus a human single-use-link action. The active Owner browser session was
   not terminated to manufacture this evidence.
+- Owner subsequently completed the clean-session checks: a previously consumed link
+  was rejected on reuse, and a valid-looking non-invited email received no link.
+  Both outcomes preserve the no-session/no-workspace boundary. The separate
+  expired-unused-link check remains pending; its result must not be inferred from
+  reuse rejection.
