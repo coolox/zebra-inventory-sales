@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- TASK-084 completed: production Magic Link SMTP/template and one exact callback
+  redirect are verified; Owner/Seller delivery, non-member denial, reused-link and
+  expired-link checks all preserve the safe no-session boundary.
+
 - TASK-150: production RC.18 (`9d0704b`) now uses Vercel's Next.js framework
   preset and standard Vercel `.next` output, restoring deployable application
   routes and static assets. Public route smoke is green; controlled Auth and

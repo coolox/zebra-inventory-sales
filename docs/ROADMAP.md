@@ -115,7 +115,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 14 | DONE | TASK-082 | Изолированный restore rehearsal: 43/43 tables и 16/16 images reconciled; Owner/Seller RPC smoke и rollback plan с принятым RPO 24 часа зафиксированы |
 | 15 | DONE | TASK-148 | Local HTTP RLS/authorization, rate-limit, five-user burst (323 ms slowest <5s), idempotency/reconciliation и staging Preview Owner smoke зелёные; smoke включён в CI |
 | 16 | DONE | TASK-083 | Empty production Supabase (`eu-central-1`, Data API on, auto-exposure off, automatic RLS on) и Vercel project без Git/deployment созданы отдельно от staging |
-| 17 | PARTIAL | TASK-084 | SMTP, exact redirect boundary и EN/TR template configured; delivery matrix выполняется после controlled identity/callback до TASK-150 |
+| 17 | DONE | TASK-084 | Production SMTP, one exact redirect callback, branded EN/TR template and Owner/Seller delivery plus unknown/reused/expired Magic Link matrix are green |
 | 18 | DONE | TASK-085 | Empty production schema applied through recorded 29-migration CLI chain; local RLS/RPC/recovery evidence зелёное |
 | 19 | DONE | TASK-086 | Bilingual runbooks prepared; Owner walkthrough завершён, feedback сохранён в TASK-152—TASK-163 |
 | 19A | DONE | TASK-156 | Multi-item sale отображается одним ticket с одним total; Owner подтвердил исправление на staging |
@@ -168,9 +168,9 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 19AV | DONE | TASK-199 | Strong light-theme workspace-error and Audit active foreground; 6 targeted tests and demo build passed |
 | 19AW | DONE | TASK-200 | Owner accepted current staging workspace load; no code/config mutation made |
 | 19AX | DONE | TASK-201 | Owner accepted current staging Cash/download path; no code/config mutation made |
-| 20 | BLOCKED | TASK-149 | NO-GO: RC tag, staging evidence, launch assignments and TASK-202 checkpoint are ready; TASK-084 Auth acceptance and explicit Owner GO remain |
+| 20 | BLOCKED | TASK-149 | Historical NO-GO snapshot retained for audit. Its TASK-084 condition is now green and Owner GO was issued; it does not block the current TASK-150 handoff |
 | 20A | DONE | TASK-202 | Manual encrypted production checkpoint run `32607243580` completed; isolated artifact passed VPS-side checksum verification before 14-day promotion |
-| 21 | IN PROGRESS | TASK-150 | Owner issued explicit GO; exact Release Candidate production deploy and smoke are in progress |
+| 21 | NEXT | TASK-150 | Owner issued explicit GO; exact Release Candidate production deploy and smoke evidence await final handoff |
 | 22 | WAITING | TASK-087 | Реальный clothing catalog/stock загружен и физически reconciled |
 | 23 | WAITING | TASK-088 | Zebra Boutique работает в контролируемом pilot с ежедневной сверкой |
 | 24 | WAITING | TASK-151 | Pilot exit подписан; production передан в обычную эксплуатацию |
@@ -194,8 +194,8 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 
 ### Текущая release sequence
 
-1. `BLOCKED` TASK-149 — renewed Go/No-Go after TASK-202 and TASK-084 acceptance.
-2. TASK-150 — отдельная authorized Production publication.
+1. `DONE` TASK-084 — production Auth acceptance matrix is green.
+2. `NEXT` TASK-150 — отдельный final handoff of the authorized Production publication.
 3. TASK-087 → TASK-088 → TASK-151 — real inventory, controlled pilot, pilot exit.
 
 Только pointer в начале `PROJECT_STATUS.md` разрешает работу; этот sequence не

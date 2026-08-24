@@ -1,6 +1,6 @@
 # TASK-084 — Настроить production Auth SMTP и redirects
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 ## Цель
 
@@ -70,3 +70,7 @@ No migration, Git deployment or pilot user was created by TASK-084.
   Both outcomes preserve the no-session/no-workspace boundary. The separate
   expired-unused-link check remains pending; its result must not be inferred from
   reuse rejection.
+- Owner then verified the final expired-unused-link case: an unused link left past
+  its configured lifetime was rejected and did not open a workspace. The full
+  Owner/Seller delivery, unknown/non-member, reused-link, expired-link and exact
+  redirect matrix is therefore complete.

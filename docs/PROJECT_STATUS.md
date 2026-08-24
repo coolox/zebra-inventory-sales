@@ -1,6 +1,6 @@
 # Статус проекта
 
-Обновлено: 2026-08-23
+Обновлено: 2026-08-24
 
 Текущая фаза: consolidated staging and physical acceptance before production Go/No-Go.
 
@@ -21,11 +21,12 @@
 - Последняя завершённая задача: [TASK-202](tasks/TASK-202.md) — production
   encrypted checkpoint `production-2026-08-23.tar.gz.age` checksum-verified on the
   Owner VPS.
-- Текущая задача: [TASK-084](tasks/TASK-084.md) — `IN PROGRESS`: Owner explicitly
-  ordered the production Magic Link acceptance matrix after TASK-150 Owner/Seller
-  and transaction smoke evidence.
-- Команда для продолжения: выполнить только TASK-084. [TASK-150](tasks/TASK-150.md)
-  остаётся `WAITING` на её evidence; не начинать TASK-087 или pilot.
+- Последняя завершённая задача: [TASK-084](tasks/TASK-084.md) — production
+  Magic Link delivery, redirect, unknown/non-member, reused and expired-link matrix
+  completed on the deployed callback.
+- Текущая задача: [TASK-150](tasks/TASK-150.md) — `IN PROGRESS`: production RC
+  deployment and controlled smoke evidence await final task handoff.
+- Команда для продолжения: `Выполни TASK-150`. Не начинать TASK-087 или pilot.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
@@ -89,35 +90,33 @@ receipt RPC снова сохраняет canonical colour boundary TASK-118, н
 
 ## Открытые launch gates
 
-- [TASK-084](tasks/TASK-084.md) — `IN PROGRESS`: production Auth/SMTP configuration
-  готова; выполняется delivery/unknown/expired/reused matrix на deployed callback.
+- [TASK-084](tasks/TASK-084.md) — `COMPLETED`: production Auth/SMTP, exact redirect
+  boundary and the full delivery/unknown/reused/expired acceptance matrix are green.
 - [TASK-165](tasks/TASK-165.md) — `COMPLETED`: Owner подтвердил shared
   staging/device checklist without new P0/P1 finding.
-- [TASK-149](tasks/TASK-149.md) — `BLOCKED`: Owner selected Vercel Logs and its
-  notification channel (current-plan retention accepted), launch/incident ownership,
-  database/deploy operator and a 2026-08-22 15:20 Istanbul window. RC GitHub tag
-  is verified. TASK-084 acceptance and explicit Owner `GO` remain required;
-  TASK-202 checkpoint evidence is accepted.
+- [TASK-149](tasks/TASK-149.md) — `BLOCKED` historical Go/No-Go record: its former
+  TASK-084 Auth condition is now complete and Owner `GO` was issued. Do not treat
+  this historical status as a blocker for the current TASK-150 handoff.
 - [TASK-202](tasks/TASK-202.md) — `COMPLETED`: run `32607243580` created the
   isolated encrypted checkpoint and passed VPS-side checksum verification.
 - TASK-150 controlled Auth/transaction smoke, TASK-087 initial inventory, TASK-088
   pilot и TASK-151 pilot exit остаются последовательными следующими launch steps.
 
-Production publication запрещена до explicit Owner `GO` в TASK-149 и отдельной
-команды `Выполни TASK-150`.
+Production publication was authorized by Owner; TASK-150 is the sole current
+handoff. TASK-087 and pilot remain prohibited until a new Owner command.
 
 ## Task accounting
 
 - Всего task-файлов: 202.
-- `COMPLETED` / legacy `completed`: 173.
+- `COMPLETED` / legacy `completed`: 174.
 - `pending`: 29, post-launch backlog.
-- `WAITING`: 1 — TASK-084.
+- `WAITING`: 0.
 - `BLOCKED`: 1 — TASK-149.
 - `IN PROGRESS`: 1 — TASK-150.
 
 Завершённые диапазоны:
 
-- TASK-001—TASK-083;
+- TASK-001—TASK-084;
 - TASK-085—TASK-086;
 - TASK-101—TASK-118;
 - TASK-123;
