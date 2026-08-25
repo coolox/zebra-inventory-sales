@@ -54,6 +54,7 @@ not private data.
 | Severity | Date/time | Safe summary | Owner | Containment | Resolution / task |
 | --- | --- | --- | --- | --- | --- |
 | — | — | No incidents recorded at pilot start. | — | — | — |
+| P2 | 2026-08-25 | Android Chrome opens the web app but full install flow is unavailable. | Owner | Use Chrome web app or Home Screen shortcut. | TASK-203 |
 
 ## Pilot exit decision
 

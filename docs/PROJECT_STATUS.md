@@ -37,6 +37,10 @@
   three additional Sellers through the audited flow, then completes the
   five-person device matrix and daily closing reconciliation; do not start TASK-151.
 
+Pilot follow-up recorded: [TASK-203](tasks/TASK-203.md) — Android Chrome PWA
+installation is not yet guaranteed; Chrome web use/Home Screen shortcut is the
+current safe workaround. Do not implement TASK-203 until Owner selects it.
+
 ### Зафиксированное следующее направление Owner
 
 После закрытия pilot Owner хочет отдельную marketing-задачу: презентацию и
@@ -126,9 +130,9 @@ TASK-087 is closed. TASK-088 may begin only on the Owner command recorded above.
 
 ## Task accounting
 
-- Всего task-файлов: 202.
+- Всего task-файлов: 203.
 - `COMPLETED` / legacy `completed`: 176.
-- `pending`: 25, including TASK-088 and post-launch backlog.
+- `pending`: 25, including TASK-203 and post-launch backlog.
 - `WAITING`: 0.
 - `BLOCKED`: 1 — TASK-149.
 - `IN PROGRESS`: 0.

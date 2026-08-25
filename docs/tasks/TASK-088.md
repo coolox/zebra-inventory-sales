@@ -12,6 +12,8 @@
   их identities, emails, Magic Links и credentials в repository не записываются.
 - Live role check: Owner and one Seller are active. Three additional personal
   Seller accounts remain required before the five-person pilot matrix can pass.
+- Pilot observation recorded separately: TASK-203 covers Android Chrome PWA
+  installability. Chrome web use remains a safe workaround.
 
 ## Handoff for the next agent
 
