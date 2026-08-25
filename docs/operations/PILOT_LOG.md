@@ -59,3 +59,11 @@ not private data.
 
 Pending until the required participant matrix and daily reconciliation evidence
 are complete.
+
+## Handoff state
+
+During the pilot, Owner will send operation observations to the agent. Each
+defect becomes a separate task; safe operating observations are recorded here.
+Do not start marketing or landing-page work from this log. After the pilot exit,
+Owner wants a separately scoped sales presentation and landing page for
+prospective store owners.

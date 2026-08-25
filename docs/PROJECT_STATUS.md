@@ -37,6 +37,13 @@
   three additional Sellers through the audited flow, then completes the
   five-person device matrix and daily closing reconciliation; do not start TASK-151.
 
+### Зафиксированное следующее направление Owner
+
+После закрытия pilot Owner хочет отдельную marketing-задачу: презентацию и
+landing page для продажи Zebra Retail потенциальным владельцам магазинов.
+Это не часть TASK-088 и не разрешает создавать landing или менять production,
+пока Owner не завершит pilot либо явно не сменит приоритет.
+
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
 
@@ -63,7 +70,8 @@ Sell-first hierarchy; [TASK-198](tasks/TASK-198.md) фиксирует дост�
   signed-JWT authorization имеют local integration evidence.
 - Production Supabase schema и Vercel production RC.18 опубликованы; initial
   Zebra Boutique catalog/stock is imported and physically reconciled. Controlled
-  Seller access exists; Clothing Pilot ещё не начат.
+  Seller access exists; Clothing Pilot is initialized, while daily real-operation
+  evidence is still pending.
 - Telegram, AI receipt/labels и multi-store не входят в первый Clothing Pilot.
 
 ## TASK-191 release-gate evidence

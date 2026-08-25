@@ -13,6 +13,24 @@
 - Live role check: Owner and one Seller are active. Three additional personal
   Seller accounts remain required before the five-person pilot matrix can pass.
 
+## Handoff for the next agent
+
+1. Read `docs/PROJECT_STATUS.md`, this task and `docs/operations/PILOT_LOG.md`.
+2. Treat every Owner observation during real use as either: a separate defect
+   task, a product decision, or a documented safe operating note. Do not mix an
+   unreviewed fix into TASK-088.
+3. Keep real customer, employee, account, payment and Magic Link data out of the
+   repository and task evidence.
+4. Do not complete TASK-088 until the five-person matrix, daily reconciliation,
+   backup freshness and pilot exit decision have evidence in `PILOT_LOG.md`.
+
+## Owner direction after pilot
+
+After the pilot exit decision, Owner wants a separate marketing presentation and
+landing page that clearly explain the product value to prospective store owners.
+This is deliberately outside TASK-088: create and scope a new task only after
+the current pilot is closed or the Owner explicitly changes priority.
+
 ## Цель
 
 Перевести Zebra Boutique на ежедневные реальные receipt/sale operations с контролируемой поддержкой.
