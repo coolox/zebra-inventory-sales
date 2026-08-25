@@ -2,6 +2,20 @@
 
 Статус: IN PROGRESS
 
+## Текущий прогресс
+
+- 2026-08-25: Owner предоставил фактический count по моделям, цветам и размерам.
+- Начальный stock внесён только через production live **Receive product** workflow:
+  18 models, 118 sellable variants, 122 units.
+- Выборочная трассировка: variant `8893` / Beige / `2XL` имеет подтверждённое
+  ручное receipt movement; повторно введённые M/L/XL Beige корректно агрегированы
+  в quantity `2`, а не создали duplicate variant.
+- В repository не сохранены invoice scans, supplier payment details или другие
+  private source-document details.
+- Остаётся Owner physical reconciliation: сравнить 122 units и варианты на
+  полке с live catalog, зафиксировать discrepancies (если будут) через auditable
+  stock adjustment и подтвердить итог.
+
 ## Цель
 
 Создать реальный каталог и начальный stock через утверждённый inventory workflow перед pilot.

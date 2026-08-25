@@ -27,9 +27,11 @@
 - Последняя завершённая задача: [TASK-150](tasks/TASK-150.md) — production RC.18,
   Auth/role matrix and reconciled controlled transaction smoke completed.
 - Текущая задача: [TASK-087](tasks/TASK-087.md) — `IN PROGRESS`: initial real
-  clothing inventory import waits for the Owner's physical-count source list.
-- Команда для продолжения: TASK-087 is in progress. Provide the physical inventory
-  source list; do not start pilot TASK-088.
+  clothing inventory (18 models, 118 variants, 122 units) is in production;
+  Owner physical reconciliation and sign-off are pending.
+- Команда для продолжения: TASK-087 is in progress. Owner compares the live
+  catalog with physical items, resolves every discrepancy through auditable stock
+  adjustment, then confirms the reconciliation result. Do not start pilot TASK-088.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
