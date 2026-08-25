@@ -29,9 +29,13 @@
 - Последняя завершённая задача: [TASK-087](tasks/TASK-087.md) — Owner-controlled
   live import completed: 18 models, 118 variants, 122 units; physical
   reconciliation is signed with no discrepancies.
-- Текущая задача: [TASK-088](tasks/TASK-088.md) — `NEXT`: controlled clothing
-  pilot and daily reconciliation.
-- Команда для продолжения: `Выполни TASK-088`.
+- Текущая задача: [TASK-088](tasks/TASK-088.md) — `IN PROGRESS`: controlled
+  clothing pilot log is initialized; Owner and one Seller are active, while
+  three additional personal Seller accounts and daily reconciliation evidence are
+  pending.
+- Команда для продолжения: TASK-088 is in progress. Owner supplies or invites
+  three additional Sellers through the audited flow, then completes the
+  five-person device matrix and daily closing reconciliation; do not start TASK-151.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
