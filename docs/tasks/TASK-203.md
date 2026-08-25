@@ -7,6 +7,11 @@
 2026-08-25 Owner сообщил: приложение открывается в Android Chrome, но не удаётся
 установить его как приложение.
 
+Owner evidence уточняет симптом: Chrome shows **"Install and create shortcut"**,
+but the shortcut dialog renders a generic `V` icon instead of Zebra branding; the
+Home Screen entry does not launch the app. No private screenshot, URL, account or
+device identifier is stored in the repository.
+
 ## Граница
 
 - Текущий manifest содержит standalone display и Android icons.
