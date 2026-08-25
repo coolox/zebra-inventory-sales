@@ -1,6 +1,6 @@
 # TASK-087 — Загрузить начальный clothing inventory
 
-Статус: IN PROGRESS
+Статус: COMPLETED
 
 ## Текущий прогресс
 
@@ -12,9 +12,7 @@
   в quantity `2`, а не создали duplicate variant.
 - В repository не сохранены invoice scans, supplier payment details или другие
   private source-document details.
-- Остаётся Owner physical reconciliation: сравнить 122 units и варианты на
-  полке с live catalog, зафиксировать discrepancies (если будут) через auditable
-  stock adjustment и подтвердить итог.
+- Owner подтвердил physical reconciliation: 122 units, discrepancies отсутствуют.
 
 ## Цель
 

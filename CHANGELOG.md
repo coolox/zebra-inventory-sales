@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- TASK-087 completed: initial Zebra Boutique inventory was entered exclusively
+  through production live receipts (18 models, 118 variants, 122 units). Owner
+  physical reconciliation reports no discrepancies; a sampled variant retains
+  its confirmed receipt movement.
+
 - TASK-084 completed: production Magic Link SMTP/template and one exact callback
   redirect are verified; Owner/Seller delivery, non-member denial, reused-link and
   expired-link checks all preserve the safe no-session boundary.

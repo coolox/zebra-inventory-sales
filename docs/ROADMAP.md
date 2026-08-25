@@ -171,8 +171,8 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 20 | BLOCKED | TASK-149 | Historical NO-GO snapshot retained for audit. Its TASK-084 condition is now green and Owner GO was issued; it does not block the current TASK-150 handoff |
 | 20A | DONE | TASK-202 | Manual encrypted production checkpoint run `32607243580` completed; isolated artifact passed VPS-side checksum verification before 14-day promotion |
 | 21 | DONE | TASK-150 | RC.18 deployed; full Auth/role matrix and reconciled receipt/sale/cancellation smoke completed, leaving no active test inventory |
-| 22 | NEXT | TASK-087 | Owner-controlled real clothing catalog/stock import and physical reconciliation |
-| 23 | WAITING | TASK-088 | Zebra Boutique работает в контролируемом pilot с ежедневной сверкой |
+| 22 | DONE | TASK-087 | Owner-controlled real clothing catalog/stock import and physical reconciliation: 122 units, no discrepancies |
+| 23 | NEXT | TASK-088 | Zebra Boutique работает в контролируемом pilot с ежедневной сверкой |
 | 24 | WAITING | TASK-151 | Pilot exit подписан; production передан в обычную эксплуатацию |
 
 ### Как работать с планом в любом новом чате

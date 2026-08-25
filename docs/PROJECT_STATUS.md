@@ -1,8 +1,8 @@
 # Статус проекта
 
-Обновлено: 2026-08-24
+Обновлено: 2026-08-25
 
-Текущая фаза: consolidated staging and physical acceptance before production Go/No-Go.
+Текущая фаза: controlled Clothing Pilot with daily reconciliation.
 
 ## Единственный указатель продолжения
 
@@ -26,12 +26,12 @@
   completed on the deployed callback.
 - Последняя завершённая задача: [TASK-150](tasks/TASK-150.md) — production RC.18,
   Auth/role matrix and reconciled controlled transaction smoke completed.
-- Текущая задача: [TASK-087](tasks/TASK-087.md) — `IN PROGRESS`: initial real
-  clothing inventory (18 models, 118 variants, 122 units) is in production;
-  Owner physical reconciliation and sign-off are pending.
-- Команда для продолжения: TASK-087 is in progress. Owner compares the live
-  catalog with physical items, resolves every discrepancy through auditable stock
-  adjustment, then confirms the reconciliation result. Do not start pilot TASK-088.
+- Последняя завершённая задача: [TASK-087](tasks/TASK-087.md) — Owner-controlled
+  live import completed: 18 models, 118 variants, 122 units; physical
+  reconciliation is signed with no discrepancies.
+- Текущая задача: [TASK-088](tasks/TASK-088.md) — `NEXT`: controlled clothing
+  pilot and daily reconciliation.
+- Команда для продолжения: `Выполни TASK-088`.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
@@ -57,9 +57,9 @@ Sell-first hierarchy; [TASK-198](tasks/TASK-198.md) фиксирует дост�
   reconciliation защищены server-side Supabase RLS/RPC boundaries.
 - Денежные и складские writes атомарны и аудируемы; concurrency, idempotency и
   signed-JWT authorization имеют local integration evidence.
-- Production Supabase schema и Vercel production RC.18 опубликованы; реальные
-  товары/остатки не загружены, controlled Seller access exists only for release
-  smoke, and Clothing Pilot не начат.
+- Production Supabase schema и Vercel production RC.18 опубликованы; initial
+  Zebra Boutique catalog/stock is imported and physically reconciled. Controlled
+  Seller access exists; Clothing Pilot ещё не начат.
 - Telegram, AI receipt/labels и multi-store не входят в первый Clothing Pilot.
 
 ## TASK-191 release-gate evidence
@@ -106,16 +106,17 @@ receipt RPC снова сохраняет canonical colour boundary TASK-118, н
 - [TASK-202](tasks/TASK-202.md) — `COMPLETED`: run `32607243580` created the
   isolated encrypted checkpoint and passed VPS-side checksum verification.
 - [TASK-150](tasks/TASK-150.md) — `COMPLETED`: deploy, Auth/role checks and
-  reconciled controlled transaction smoke are green; TASK-087 is the next step.
+  reconciled controlled transaction smoke are green.
+- [TASK-087](tasks/TASK-087.md) — `COMPLETED`: real initial inventory is
+  live-imported and Owner-signed as 122 units with no discrepancies.
 
-TASK-087 requires a separate Owner command. Pilot TASK-088 remains prohibited until
-TASK-087 is completed.
+TASK-087 is closed. TASK-088 may begin only on the Owner command recorded above.
 
 ## Task accounting
 
 - Всего task-файлов: 202.
-- `COMPLETED` / legacy `completed`: 175.
-- `pending`: 29, post-launch backlog.
+- `COMPLETED` / legacy `completed`: 176.
+- `pending`: 25, including TASK-088 and post-launch backlog.
 - `WAITING`: 0.
 - `BLOCKED`: 1 — TASK-149.
 - `IN PROGRESS`: 0.
@@ -123,7 +124,7 @@ TASK-087 is completed.
 Завершённые диапазоны:
 
 - TASK-001—TASK-084;
-- TASK-085—TASK-086;
+- TASK-085—TASK-087;
 - TASK-101—TASK-118;
 - TASK-123;
 - TASK-131—TASK-148;
