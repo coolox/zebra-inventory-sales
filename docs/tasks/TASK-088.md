@@ -14,6 +14,8 @@
   Seller accounts remain required before the five-person pilot matrix can pass.
 - Pilot observation recorded separately: TASK-203 covers Android Chrome PWA
   installability. Chrome web use remains a safe workaround.
+- Pilot observation recorded separately: TASK-205 adds direct mobile camera
+  capture to Product Details photo upload; gallery upload remains the workaround.
 
 ## Handoff for the next agent
 

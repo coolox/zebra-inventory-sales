@@ -41,6 +41,11 @@ Pilot follow-up recorded: [TASK-203](tasks/TASK-203.md) — Android Chrome PWA
 installation is not yet guaranteed; Chrome web use/Home Screen shortcut is the
 current safe workaround. Do not implement TASK-203 until Owner selects it.
 
+Pilot follow-up recorded: [TASK-205](tasks/TASK-205.md) — Product Details photo
+upload needs a direct mobile camera capture action; taking a photo first and
+selecting it from gallery is the current safe workaround. Do not implement
+TASK-205 until Owner selects it.
+
 ### Зафиксированное следующее направление Owner
 
 После закрытия pilot Owner хочет отдельную marketing-задачу: презентацию и
@@ -134,9 +139,9 @@ TASK-087 is closed. TASK-088 may begin only on the Owner command recorded above.
 
 ## Task accounting
 
-- Всего task-файлов: 204.
+- Всего task-файлов: 205.
 - `COMPLETED` / legacy `completed`: 176.
-- `pending`: 26, including TASK-203, TASK-204 and post-launch backlog.
+- `pending`: 27, including TASK-203, TASK-204, TASK-205 and post-launch backlog.
 - `WAITING`: 0.
 - `BLOCKED`: 1 — TASK-149.
 - `IN PROGRESS`: 0.

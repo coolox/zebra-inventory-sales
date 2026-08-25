@@ -55,6 +55,7 @@ not private data.
 | --- | --- | --- | --- | --- | --- |
 | — | — | No incidents recorded at pilot start. | — | — | — |
 | P2 | 2026-08-25 | Android Chrome opens the web app, but install/create-shortcut shows a generic icon and the created entry does not launch. | Owner | Use Chrome web app; do not rely on the shortcut. | TASK-203 |
+| P2 | 2026-08-25 | Product photo upload offers gallery selection only; direct camera capture is missing. | Owner | Take the photo first, then choose it from gallery. | TASK-205 |
 
 ## Pilot exit decision
 
