@@ -16,6 +16,13 @@ credentials, identifiers, screenshots or payment details.
 | Required participants | Owner + 4 Sellers, each on a personal active account |
 | Minimum duration | 7 working days recommended; Owner records actual exit decision below |
 
+## Access events
+
+- 2026-08-25: an additional Owner account was provisioned through the production
+  Auth invitation flow and assigned active Owner access to Zebra Boutique. The
+  invitation recipient must complete first sign-in; this does not replace any
+  of the four required Seller accounts in the pilot matrix.
+
 ## Participant and device matrix
 
 Record role and pass/fail only. Do not write identities or device identifiers.
