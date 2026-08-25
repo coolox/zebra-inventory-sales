@@ -48,6 +48,10 @@ landing page для продажи Zebra Retail потенциальным вл�
 Это не часть TASK-088 и не разрешает создавать landing или менять production,
 пока Owner не завершит pilot либо явно не сменит приоритет.
 
+[TASK-204](tasks/TASK-204.md) содержит утверждённый planning brief для этого
+направления. Она `pending`: другой чат может начать её только по прямой команде
+Owner `Выполни TASK-204`; TASK-088 остаётся единственным текущим указателем.
+
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
 
@@ -130,9 +134,9 @@ TASK-087 is closed. TASK-088 may begin only on the Owner command recorded above.
 
 ## Task accounting
 
-- Всего task-файлов: 203.
+- Всего task-файлов: 204.
 - `COMPLETED` / legacy `completed`: 176.
-- `pending`: 25, including TASK-203 and post-launch backlog.
+- `pending`: 26, including TASK-203, TASK-204 and post-launch backlog.
 - `WAITING`: 0.
 - `BLOCKED`: 1 — TASK-149.
 - `IN PROGRESS`: 0.
