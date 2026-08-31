@@ -1,0 +1,27 @@
+name: Sync daily FX rates
+
+on:
+  schedule:
+    # Turkey uses UTC+3 all year. TCMB normally publishes after 16:00 Istanbul.
+    - cron: "40 13 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Invoke the protected server-side sync (bounded retry)
+        env:
+          FX_SYNC_URL: ${{ secrets.FX_SYNC_URL }}
+          FX_SYNC_SECRET: ${{ secrets.FX_SYNC_SECRET }}
+        run: |
+          test -n "$FX_SYNC_URL"
+          test -n "$FX_SYNC_SECRET"
+          for attempt in 1 2 3; do
+            if curl --fail --silent --show-error --request POST "$FX_SYNC_URL" --header "x-fx-sync-secret: $FX_SYNC_SECRET"; then
+              exit 0
+            fi
+            if [ "$attempt" = 3 ]; then exit 1; fi
+            sleep $((attempt * 20))
+          done

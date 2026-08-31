@@ -1,13 +1,13 @@
 # План запуска Zebra Retail — Clothing Pilot
 
-Обновлено: 2026-08-22
+Обновлено: 2026-08-31
 
-Текущий этап: Owner visual intake pause before final staging acceptance
+Текущий этап: automatic FX staging activation — awaiting Owner decision on staging migration drift
 
-Текущий шаг: Owner visual intake (`PAUSED`) — implementation не начинать до
-явного закрытия intake
+Текущий шаг: TASK-212 (`IN PROGRESS`) — staging имеет 10 unapplied migrations;
+нужно Owner решение до FX publication
 
-Команда для продолжения: ожидать явную команду Owner после завершения intake
+Команда для продолжения: `Продолжи TASK-212: разреши staging migration set или создай отдельную migration-drift task`
 
 Исторический pre-remediation RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`;
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates. Текущий
@@ -49,10 +49,17 @@ TASK-165 staging/device acceptance и TASK-149 Go/No-Go.
 
 Не блокируют первый запуск и остаются post-launch backlog:
 
-- TASK-089—TASK-093 и TASK-119—TASK-122 — AI receipt;
+- TASK-089—TASK-093 и TASK-119—TASK-122 — добавление товара по накладной: вход из
+  `Receive product`, camera/photo/PDF upload, Turkish OCR draft, ручная проверка,
+  атомарная приёмка и Owner-архив private source documents; подробный Owner intake
+  хранится в `docs/POST_PILOT_FEATURES.md`;
 - TASK-094—TASK-096 — общий API и Telegram;
 - TASK-097—TASK-100 — дополнительные магазины и transfers;
-- TASK-124—TASK-130 — AI sale-label flow.
+- TASK-124—TASK-130 — post-checkout AI sale-label flow: быстрая последовательная
+  съёмка этикеток после ухода клиента, общая форма проверки, ручные price/payment
+  и обычное атомарное подтверждение sale;
+- TASK-206 — автоматическая server-side загрузка дневных FX rates с явным
+  provider/source date, safe weekend carry-forward и audited Owner fallback.
 
 `app/page.tsx` остаётся большим, но его дополнительный рефакторинг до пилота запрещён,
 если он не нужен для исправления конкретного дефекта. Это снижает риск регрессий.
@@ -172,8 +179,17 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 20A | DONE | TASK-202 | Manual encrypted production checkpoint run `32607243580` completed; isolated artifact passed VPS-side checksum verification before 14-day promotion |
 | 21 | DONE | TASK-150 | RC.18 deployed; full Auth/role matrix and reconciled receipt/sale/cancellation smoke completed, leaving no active test inventory |
 | 22 | DONE | TASK-087 | Owner-controlled real clothing catalog/stock import and physical reconciliation: 122 units, no discrepancies |
-| 23 | NEXT | TASK-088 | Zebra Boutique работает в контролируемом pilot с ежедневной сверкой |
+| 23 | PAUSED | TASK-088 | Four registered defects have code fixes; pilot evidence waits for return after Owner-selected FX work |
 | 24 | WAITING | TASK-151 | Pilot exit подписан; production передан в обычную эксплуатацию |
+| 25 | DONE | TASK-204 | Owner принял Turkish sales landing; mobile dashboard исправлен, Sites version 5 опубликована и отвечает HTTP 200 |
+| 26 | DONE | TASK-207 | Server/browser logout cleanup, bounded fallback и pending state; 6 tests и demo/live builds прошли |
+| 27 | DONE | TASK-208 | Private product photo error больше не прерывает live workspace; 7 tests и demo/live builds прошли |
+| 28 | PAUSED | TASK-203 | Network-only service worker и automated checks готовы; publication и Android acceptance ожидают Owner |
+| 29 | PAUSED | TASK-205 | Camera/gallery code и automated checks готовы; publication и physical acceptance войдут в consolidated build |
+| 30 | DONE | TASK-209 | Strict TCMB `Döviz Satış` parser rejects invalid XML and normalizes EUR/USD/TRY; 8 unit tests and builds passed |
+| 31 | DONE | TASK-210 | FX provenance schema, visible source/status and audited Owner manual override; clean pgTAP 10/10 and builds passed |
+| 32 | DONE | TASK-211 | Protected TCMB sync, idempotency/retry, safe carry and observable failure state are locally verified |
+| 33 | IN PROGRESS | TASK-212 | Staging migration drift found: Owner must approve the reviewed 10-migration set or split drift remediation before FX activation |
 
 ### Как работать с планом в любом новом чате
 
@@ -195,7 +211,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 ### Текущая release sequence
 
 1. `DONE` TASK-084 — production Auth acceptance matrix is green.
-2. `NEXT` TASK-150 — отдельный final handoff of the authorized Production publication.
+2. `DONE` TASK-150 — final handoff of the authorized Production publication completed.
 3. TASK-087 → TASK-088 → TASK-151 — real inventory, controlled pilot, pilot exit.
 
 Только pointer в начале `PROJECT_STATUS.md` разрешает работу; этот sequence не

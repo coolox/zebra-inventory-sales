@@ -70,6 +70,9 @@ enabled = false
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
 sql_paths = []
 
+[functions.sync-exchange-rates]
+verify_jwt = false
+
 [db.network_restrictions]
 # Enable management of network restrictions.
 enabled = false

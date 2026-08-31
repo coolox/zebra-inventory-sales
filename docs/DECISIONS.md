@@ -1,6 +1,6 @@
 # Журнал решений
 
-Обновлено: 2026-08-16
+Обновлено: 2026-08-31
 
 Этот документ хранит решения, которые нельзя оставлять только в истории чата.
 
@@ -76,6 +76,9 @@
 | D-065 | 2026-08-16 | Принято | До покупки собственного домена production Auth использует единственный managed Vercel HTTPS origin | Это временная бесплатная граница для Site URL и redirect allowlist. При переходе на собственный domain owner добавляет новый exact HTTPS origin, проверяет Magic Link и только затем удаляет старый; endpoint value не записывается в repository. |
 | D-066 | 2026-08-16 | Принято | Для малого Clothing Pilot custom SMTP временно отправляет через Owner-controlled Gmail account с Google App Password и sender name `Zebra Retail` | Credentials существуют только в Supabase dashboard. Provider предупреждает о personal, а не transactional, sending; это принято только для малой группы пилота. Перед расширением требуется verified transactional sender/domain и повторная delivery acceptance. |
 | D-067 | 2026-08-20 | Принято | Исправление Product code меняет только current catalog identity; уже записанные receipt/sale/ledger rows и их snapshots не переписываются | Model/variant UUID остаются общей связью истории, а audit `product_model.code_updated` хранит old/new code и actor. Старый code не становится скрытым alias. |
+| D-068 | 2026-08-26 | Принято | Для продажи, внесённой после ухода клиента через серию фотографий этикеток, временем продажи является server-confirmed момент успешного финального сохранения | Seller не вводит и не редактирует отдельное время фактического расчёта/обслуживания; reports, business date и audit используют обычный подтверждённый sale timestamp. |
+| D-069 | 2026-08-26 | Принято | После Clothing Pilot дневные FX rates должны автоматически загружаться server-side из утверждённого источника | TASK-206 выбирает provider/rate basis и добавляет source metadata, validation, stale/carry-forward policy и monitoring. Owner manual audited fallback сохраняется; Seller rates не меняет; historical FX snapshots не пересчитываются. D-026 действует до завершения TASK-206. |
+| D-070 | 2026-08-31 | Принято | Для автоматических FX используется TCMB daily XML, единый basis — `Döviz Satış` (`ForexSelling`), первая итерация покрывает EUR/USD/TRY | TCMB values нормализуются к EUR base; источник, source date и status обязательны в следующих slices. Не более трёх Istanbul business days carry-forward, без автоматического provider fallback. Owner manual audited override сохраняется; historical snapshots не пересчитываются. |
 
 ## Предварительные решения
 

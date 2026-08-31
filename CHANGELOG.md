@@ -2,6 +2,34 @@
 
 ## Unreleased
 
+- TASK-211 completed: added a protected server-only TCMB sync Edge Function,
+  idempotent service-only rate writer, three-business-day carry-forward policy,
+  Owner-visible sync health and a post-publication GitHub schedule with bounded
+  retry. Staging/production publication and secret setup remain explicitly gated.
+
+- TASK-210 completed: `exchange_rates` now has validated provider, basis, source
+  date, fetched time, status and carry provenance. Existing manual rates safely
+  remain audited Owner overrides, the rate manager makes provenance visible, and
+  Seller writes remain denied; clean local pgTAP (10/10) and demo/live builds pass.
+
+- TASK-209 completed: added a strict, pure TCMB daily-XML parser for the approved
+  `Döviz Satış` basis. It rejects malformed or incomplete provider payloads and
+  normalizes EUR/USD/TRY to the existing EUR-base rate contract before any future
+  database write; 8 unit tests and demo/default production builds pass.
+
+- TASK-208 completed: an unavailable private product-photo signed URL no longer
+  aborts the live catalog/workspace. Successful photos remain visible, while core
+  database/RLS errors stay explicit and never receive demo fallback.
+
+- TASK-207 completed: live Logout now clears both the server SSR session and the
+  browser Supabase session, has a four-second fallback, blocks duplicate clicks
+  and always replaces the page with a clean login route. Targeted auth tests and
+  demo/live builds pass; physical account-switch recheck remains in TASK-088.
+
+- TASK-204 completed: Owner accepted the Turkish Zebra Retail sales landing.
+  The mobile product dashboard now fits the viewport without clipping or
+  artificial empty space; Sites version 5 is published and returns HTTP 200.
+
 - TASK-087 completed: initial Zebra Boutique inventory was entered exclusively
   through production live receipts (18 models, 118 variants, 122 units). Owner
   physical reconciliation reports no discrepancies; a sampled variant retains
@@ -861,3 +889,62 @@
 - Completed TASK-165: Owner confirmed the resumed shared staging/device checklist
   works without new P0/P1 findings. This is staging acceptance only; production
   remains untouched pending TASK-084/TASK-149.
+- Recorded the first post-pilot feature in `docs/POST_PILOT_FEATURES.md`: add
+  products from a Turkish invoice through `Receive product`, mobile camera or
+  file upload, human-reviewed OCR draft, atomic save and an Owner invoice archive;
+  aligned the existing TASK-089—TASK-093/TASK-119—TASK-122 backlog without
+  starting implementation or changing the TASK-088 pilot pointer.
+- Recorded the second post-pilot feature and aligned TASK-124—TASK-130: after the
+  customer leaves, Seller can capture a rapid sequence of product labels, review
+  and correct one consolidated cart form, enter actual price/payment and only
+  then atomically save the sale; implementation and TASK-088 scope are unchanged.
+- Recorded the Owner decision for label-assisted sales: the authoritative sale
+  timestamp is the server-confirmed final save time; Seller does not enter a
+  separate checkout/service time.
+- Added pending TASK-206 and the third post-pilot feature: automatically fetch
+  daily FX rates server-side from an approved official source, retain source/stale
+  metadata, safe weekend carry-forward and audited Owner manual fallback, without
+  recalculating historical financial snapshots or changing TASK-088.
+- Expanded the pending TASK-204 sales brief with the Owner's 11 landing-page
+  advantages, 9 additional evidence-backed product benefits, safer marketing
+  wording and an explicit separation between current capabilities and post-pilot
+  AI/automation/multi-store roadmap claims; no landing implementation started.
+- Updated the future TASK-204 positioning per Owner direction: AI-assisted invoice
+  receiving is a primary commercial benefit, with public publication gated on
+  completion and acceptance evidence for TASK-089—TASK-093/TASK-119—TASK-122.
+- Started the Owner-authorized TASK-204 and added an isolated `/landing` sales
+  surface: Turkish-first/English bilingual premium responsive design, synthetic
+  desktop/mobile product proof, implemented-feature narrative, Owner/Seller
+  value, trust/recovery sections, demo CTA and corrected bespoke Open Graph card.
+  Demo production build passed; public publication waits for explicit Owner
+  visual/content and access approval. TASK-088 pilot handoff remains paused.
+- Completed TASK-204 after explicit Owner publication approval: the isolated
+  Zebra Retail landing passed demo and Sites/vinext production builds, was saved
+  from exact commit `399119dcb1779e5369b82dabdea6b1f354e3c507`, deployed publicly
+  at `https://zebra-retail-showcase.coolox98614.chatgpt.site` and returned
+  `200 OK`. Production application, Auth and business data were not changed;
+  the current pointer returned to the preserved TASK-088 pilot handoff.
+- Reopened and completed TASK-204 for the Owner-requested v2 visual redesign:
+  the landing is now a photo-first fashion-tech campaign with oversized Zebra
+  wordmark/headlines, short proof claims, three original editorial scenes,
+  scroll-triggered reveal motion, reduced-motion fallback and lazy-loaded
+  below-the-fold media. Demo and Sites/vinext builds passed; public version 2
+  replaced the prior design at the same URL and returned `HTTP 200`.
+- Reopened TASK-204 as `pending` after Owner declined v1/v2 as the final visual
+  result. Added a self-contained new-agent handoff with exact feedback, current
+  files/assets, rejected implementation history, immutable claim/security
+  constraints, existing Sites project/public URL, safe replacement workflow and
+  redesign Definition of Done. TASK-088 is paused with its pilot evidence intact;
+  the sole continuation command is now `Выполни TASK-204`.
+- Implemented and published TASK-204 v3 from the Owner-provided
+  `vexon-prompt.md`: Turkish-only sales copy, procedural black/violet particle
+  halo, particle preloader, per-character and scroll reveals, custom cursor,
+  visual proof cards, synthetic live product panel, concise trust/CTA blocks and
+  a matching generated social card. Demo and Sites builds passed, public version
+  3 returned `HTTP 200`; TASK remains in progress for Owner visual acceptance.
+- Updated TASK-204 copy from Owner-provided `zebra123.md` while preserving the
+  accepted v3 visual/motion system. Added concise personnel-vs-system, reporting,
+  Magic Link/cross-device, modular retail and stronger final CTA sections with
+  code-native proof visuals. Unfinished AI receipt, direct comparison and
+  shoes/bags claims are visibly marked `YAKINDA`; current sale/Owner flows are
+  `CANLI`. Demo/Sites builds passed and public version 4 returned `HTTP 200`.

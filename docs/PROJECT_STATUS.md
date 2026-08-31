@@ -1,8 +1,8 @@
 # Статус проекта
 
-Обновлено: 2026-08-25
+Обновлено: 2026-09-01
 
-Текущая фаза: controlled Clothing Pilot with daily reconciliation.
+Текущая фаза: automatic FX staging activation — awaiting Owner decision on staging migration drift.
 
 ## Единственный указатель продолжения
 
@@ -29,13 +29,37 @@
 - Последняя завершённая задача: [TASK-087](tasks/TASK-087.md) — Owner-controlled
   live import completed: 18 models, 118 variants, 122 units; physical
   reconciliation is signed with no discrepancies.
-- Текущая задача: [TASK-088](tasks/TASK-088.md) — `IN PROGRESS`: controlled
-  clothing pilot log is initialized; Owner and one Seller are active, while
-  three additional personal Seller accounts and daily reconciliation evidence are
-  pending.
-- Команда для продолжения: TASK-088 is in progress. Owner supplies or invites
-  three additional Sellers through the audited flow, then completes the
-  five-person device matrix and daily closing reconciliation; do not start TASK-151.
+- Последняя завершённая задача: [TASK-204](tasks/TASK-204.md) — финальный Turkish
+  sales landing принят Owner, mobile dashboard исправлен и Sites version 5
+  опубликована с успешной HTTP-проверкой.
+- Последняя завершённая задача: [TASK-207](tasks/TASK-207.md) — Logout теперь
+  очищает server/browser session с bounded fallback и всегда ведёт на чистый
+  login; targeted tests и demo/live builds зелёные.
+- Последняя завершённая задача: [TASK-208](tasks/TASK-208.md) — private product
+  photo signed-URL error больше не прерывает catalog/workspace; 7 targeted tests
+  и demo/live builds зелёные.
+- Последняя завершённая задача: [TASK-209](tasks/TASK-209.md) — строгий TCMB
+  `ForexSelling` parser нормализует EUR/USD/TRY без database write; 8 unit tests
+  и demo/default production builds зелёные.
+- Последняя завершённая задача: [TASK-210](tasks/TASK-210.md) — FX provenance
+  schema, visible manual source/status и audited Owner override подтверждены
+  clean local pgTAP (10/10) и demo/live builds.
+- Последняя завершённая задача: [TASK-211](tasks/TASK-211.md) — protected TCMB
+  sync implementation, idempotency/carry/failure state и schedule готовы локально;
+  staging activation требует отдельной Owner authority.
+- Приостановленная задача: [TASK-088](tasks/TASK-088.md) — pilot evidence сохранено
+  до возвращения Owner после FX work.
+- Приостановленная задача: [TASK-203](tasks/TASK-203.md) — PWA code и automated
+  checks готовы; publication и physical Android acceptance ожидают Owner.
+- Приостановленная задача: [TASK-205](tasks/TASK-205.md) — mobile camera capture
+  code и component/build checks готовы; publication и physical acceptance войдут
+  в один remediation build.
+- Приостановленная задача: [TASK-206](tasks/TASK-206.md) — FX parent разделён на
+  безопасные vertical slices после решения Owner о provider и rate basis.
+- Текущая задача: [TASK-212](tasks/TASK-212.md) — `IN PROGRESS`; staging отстаёт
+  на 10 migrations, и Owner должен разрешить полный reviewed set либо отдельный
+  migration-drift task до FX publication.
+- Команда для продолжения: `Продолжи TASK-212: разреши staging migration set или создай отдельную migration-drift task`.
 
 Pilot follow-up recorded: [TASK-203](tasks/TASK-203.md) — Android Chrome PWA
 installation is not yet guaranteed; Chrome web use/Home Screen shortcut is the
@@ -46,6 +70,17 @@ upload needs a direct mobile camera capture action; taking a photo first and
 selecting it from gallery is the current safe workaround. Do not implement
 TASK-205 until Owner selects it.
 
+Post-pilot product intake: [список следующих фич](POST_PILOT_FEATURES.md). Первый
+пункт уточняет существующий AI receipt backlog TASK-089—TASK-093/TASK-119—TASK-122:
+`Receive product` → camera/upload накладной → проверяемая предзаполненная форма →
+атомарное сохранение, private source storage и Owner-архив всех накладных. Это не
+меняет текущий указатель TASK-088 и не разрешает начинать backlog без новой команды.
+Второй пункт уточняет TASK-124—TASK-130: camera-first серия этикеток после ухода
+клиента, единая исправляемая sale form, price/payment и явное атомарное сохранение.
+Третий пункт записан как [TASK-206](tasks/TASK-206.md): автоматическая server-side
+загрузка дневных FX rates с source metadata, weekend/holiday carry-forward,
+audited Owner fallback и без пересчёта historical snapshots.
+
 ### Зафиксированное следующее направление Owner
 
 После закрытия pilot Owner хочет отдельную marketing-задачу: презентацию и
@@ -53,9 +88,15 @@ landing page для продажи Zebra Retail потенциальным вл�
 Это не часть TASK-088 и не разрешает создавать landing или менять production,
 пока Owner не завершит pilot либо явно не сменит приоритет.
 
-[TASK-204](tasks/TASK-204.md) содержит утверждённый planning brief для этого
-направления. Она `pending`: другой чат может начать её только по прямой команде
-Owner `Выполни TASK-204`; TASK-088 остаётся единственным текущим указателем.
+[TASK-204](tasks/TASK-204.md) содержит утверждённый planning brief и стала текущей
+по прямой команде Owner от 2026-08-28. TASK-088 временно `PAUSED`; её незавершённый
+pilot handoff остаётся сохранённым.
+Owner marketing intake от 2026-08-28 добавил 11 исходных преимуществ и
+подтверждённые возможности продукта; brief теперь явно отделяет current proof от
+AI/automation/multi-store `Coming next` claims.
+Owner уточнил, что будущий commercial landing должен продавать AI invoice receiving
+как доступную функцию; TASK-204 разрешает этот основной claim только после
+implementation/acceptance evidence TASK-089—TASK-093/TASK-119—TASK-122.
 
 Никакая команда внутри completed task-файла не является текущей. Источник текущей
 команды — только этот раздел.
@@ -139,12 +180,13 @@ TASK-087 is closed. TASK-088 may begin only on the Owner command recorded above.
 
 ## Task accounting
 
-- Всего task-файлов: 205.
-- `COMPLETED` / legacy `completed`: 176.
-- `pending`: 27, including TASK-203, TASK-204, TASK-205 and post-launch backlog.
+- Всего task-файлов: 212.
+- `COMPLETED` / legacy `completed`: 182.
+- `pending`: 24, включая post-launch backlog.
 - `WAITING`: 0.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 0.
+- `IN PROGRESS`: 1 — TASK-212.
+- `PAUSED`: 4 — TASK-088, TASK-203, TASK-205, TASK-206.
 
 Завершённые диапазоны:
 
@@ -158,7 +200,8 @@ TASK-087 is closed. TASK-088 may begin only on the Owner command recorded above.
 - TASK-166—TASK-191.
 - TASK-202.
 
-Post-launch pending scope: TASK-089—TASK-100, TASK-119—TASK-122 и TASK-124—TASK-130.
+Post-launch pending scope: TASK-089—TASK-100, TASK-119—TASK-122,
+TASK-124—TASK-130 и TASK-206.
 
 ## Безопасные границы продолжения
 
