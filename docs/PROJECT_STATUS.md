@@ -2,7 +2,7 @@
 
 Обновлено: 2026-09-01
 
-Текущая фаза: automatic FX staging activation — awaiting Owner decision on staging migration drift.
+Текущая фаза: automatic FX staging activation complete technically; awaiting Owner visual acceptance.
 
 ## Единственный указатель продолжения
 
@@ -56,10 +56,10 @@
   в один remediation build.
 - Приостановленная задача: [TASK-206](tasks/TASK-206.md) — FX parent разделён на
   безопасные vertical slices после решения Owner о provider и rate basis.
-- Текущая задача: [TASK-212](tasks/TASK-212.md) — `IN PROGRESS`; staging отстаёт
-  на 10 migrations, и Owner должен разрешить полный reviewed set либо отдельный
-  migration-drift task до FX publication.
-- Команда для продолжения: `Продолжи TASK-212: разреши staging migration set или создай отдельную migration-drift task`.
+- Текущая задача: [TASK-212](tasks/TASK-212.md) — `IN PROGRESS`; staging schema,
+  protected function, secrets и daily workflow technical evidence готовы. Нужен
+  Owner visual acceptance TCMB/carry warning и Seller boundary.
+- Команда для продолжения: `Продолжи TASK-212: Owner подтверждает staging FX UI`.
 
 Pilot follow-up recorded: [TASK-203](tasks/TASK-203.md) — Android Chrome PWA
 installation is not yet guaranteed; Chrome web use/Home Screen shortcut is the
