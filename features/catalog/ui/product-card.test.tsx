@@ -39,7 +39,8 @@ describe("ProductCard", () => {
     expect(screen.getByText("Toplam stok")).toBeInTheDocument();
     expect(screen.getAllByText("2 adet")).toHaveLength(2);
     expect(screen.getByText("Satış fiyatı")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Fotoğraf ekle" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Fotoğraf çek" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Galeriden seç" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Fotoğrafı tam ekran aç" })).toBeInTheDocument();
     expect(screen.queryByText("Total stock")).not.toBeInTheDocument();
   });
@@ -157,7 +158,7 @@ describe("ProductCard", () => {
     const user = userEvent.setup();
     const onUploadPhotos = vi.fn().mockResolvedValue(undefined);
     const { container } = render(<ProductCard locale="en" variants={[product]} onUploadPhotos={onUploadPhotos} />);
-    const input = container.querySelector<HTMLInputElement>('input[type="file"]')!;
+    const input = [...container.querySelectorAll<HTMLInputElement>('input[type="file"]')].find((candidate) => candidate.hasAttribute("multiple"))!;
     const files = [
       new File(["jpeg"], "front.jpg", { type: "image/jpeg" }),
       new File(["webp"], "detail.webp", { type: "image/webp" }),
@@ -166,6 +167,31 @@ describe("ProductCard", () => {
     await user.upload(input, files);
 
     await waitFor(() => expect(onUploadPhotos).toHaveBeenCalledWith(files));
+  });
+
+  it("offers a camera input with the rear-camera hint and a separate multi-file gallery input", async () => {
+    render(<ProductCard locale="tr" variants={[product]} onUploadPhotos={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: "Fotoğraf çek" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Galeriden seç" })).toBeInTheDocument();
+    const inputs = [...document.querySelectorAll<HTMLInputElement>('input[type="file"]')];
+    const camera = inputs.find((input) => input.getAttribute("capture") === "environment");
+    const gallery = inputs.find((input) => input !== camera);
+    expect(camera).toHaveAttribute("accept", "image/jpeg,image/png,image/webp");
+    expect(camera).not.toHaveAttribute("multiple");
+    expect(gallery).toHaveAttribute("multiple");
+  });
+
+  it("forwards a camera photo through the same private upload callback", async () => {
+    const user = userEvent.setup();
+    const onUploadPhotos = vi.fn().mockResolvedValue(undefined);
+    const { container } = render(<ProductCard locale="en" variants={[product]} onUploadPhotos={onUploadPhotos} />);
+    const camera = [...container.querySelectorAll<HTMLInputElement>('input[type="file"]')].find((input) => input.getAttribute("capture") === "environment")!;
+    const photo = new File(["jpeg"], "camera.jpg", { type: "image/jpeg" });
+
+    await user.upload(camera, photo);
+
+    await waitFor(() => expect(onUploadPhotos).toHaveBeenCalledWith([photo]));
   });
 
   it("localizes upload errors", async () => {

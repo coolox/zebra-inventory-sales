@@ -2,7 +2,7 @@
 
 Обновлено: 2026-09-01
 
-Текущая фаза: automatic FX staging activation complete technically; awaiting Owner visual acceptance.
+Текущая фаза: release-readiness audit before one consolidated remediation build.
 
 ## Единственный указатель продолжения
 
@@ -56,10 +56,14 @@
   в один remediation build.
 - Приостановленная задача: [TASK-206](tasks/TASK-206.md) — FX parent разделён на
   безопасные vertical slices после решения Owner о provider и rate basis.
-- Текущая задача: [TASK-212](tasks/TASK-212.md) — `IN PROGRESS`; staging schema,
-  protected function, secrets и daily workflow technical evidence готовы. Нужен
-  Owner visual acceptance TCMB/carry warning и Seller boundary.
-- Команда для продолжения: `Продолжи TASK-212: Owner подтверждает staging FX UI`.
+- Приостановленная задача: [TASK-212](tasks/TASK-212.md) — staging FX backend
+  technical evidence готово; visual acceptance ждёт общего readiness audit и
+  frontend remediation build.
+- Последняя завершённая задача: [TASK-213](tasks/TASK-213.md) — audit подтвердил
+  scope общего remediation build и отделил его от не реализованных AI backlog.
+- Текущая задача: [TASK-214](tasks/TASK-214.md) — `pending`; собрать reviewed
+  staging remediation build и пройти physical Owner/Seller acceptance.
+- Команда для продолжения: `Выполни TASK-214`.
 
 Pilot follow-up recorded: [TASK-203](tasks/TASK-203.md) — Android Chrome PWA
 installation is not yet guaranteed; Chrome web use/Home Screen shortcut is the
@@ -180,13 +184,13 @@ TASK-087 is closed. TASK-088 may begin only on the Owner command recorded above.
 
 ## Task accounting
 
-- Всего task-файлов: 212.
-- `COMPLETED` / legacy `completed`: 182.
-- `pending`: 24, включая post-launch backlog.
+- Всего task-файлов: 214.
+- `COMPLETED` / legacy `completed`: 183.
+- `pending`: 25, включая post-launch backlog.
 - `WAITING`: 0.
 - `BLOCKED`: 1 — TASK-149.
-- `IN PROGRESS`: 1 — TASK-212.
-- `PAUSED`: 4 — TASK-088, TASK-203, TASK-205, TASK-206.
+- `IN PROGRESS`: 0.
+- `PAUSED`: 5 — TASK-088, TASK-203, TASK-205, TASK-206, TASK-212.
 
 Завершённые диапазоны:
 

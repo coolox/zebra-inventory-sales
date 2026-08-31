@@ -1,13 +1,13 @@
 # План запуска Zebra Retail — Clothing Pilot
 
-Обновлено: 2026-08-31
+Обновлено: 2026-09-01
 
-Текущий этап: automatic FX staging activation — technical evidence complete; awaiting Owner visual acceptance
+Текущий этап: release-readiness audit before one consolidated remediation build
 
-Текущий шаг: TASK-212 (`IN PROGRESS`) — staging migrations/function/secrets/workflow
-green; нужен Owner visual acceptance before closure
+Текущий шаг: TASK-214 (`pending`) — reviewed staging remediation build и physical
+Owner/Seller acceptance
 
-Команда для продолжения: `Продолжи TASK-212: Owner подтверждает staging FX UI`
+Команда для продолжения: `Выполни TASK-214`
 
 Исторический pre-remediation RC: `f838f78680b4fb5a18fd5600f194ec5defd335a6`;
 GitHub Actions run `31822493717` прошёл Frontend и Local Supabase gates. Текущий
@@ -189,7 +189,9 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 30 | DONE | TASK-209 | Strict TCMB `Döviz Satış` parser rejects invalid XML and normalizes EUR/USD/TRY; 8 unit tests and builds passed |
 | 31 | DONE | TASK-210 | FX provenance schema, visible source/status and audited Owner manual override; clean pgTAP 10/10 and builds passed |
 | 32 | DONE | TASK-211 | Protected TCMB sync, idempotency/retry, safe carry and observable failure state are locally verified |
-| 33 | IN PROGRESS | TASK-212 | Staging migrations, protected function, secrets and manually-run schedule are green; waiting Owner visual acceptance |
+| 33 | PAUSED | TASK-212 | Staging FX backend is green; visual acceptance waits for TASK-213 audit and frontend remediation build |
+| 34 | DONE | TASK-213 | Audit подтвердил: четыре fixes code-ready, FX backend staging-ready; invoice/label AI ещё не реализованы |
+| 35 | NEXT | TASK-214 | Собрать один reviewed staging remediation build и пройти Owner/Seller physical acceptance |
 
 ### Как работать с планом в любом новом чате
 

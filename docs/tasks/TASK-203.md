@@ -1,6 +1,10 @@
 # TASK-203 — Сделать Android PWA installation проверяемой
 
-Статус: pending
+Статус: PAUSED
+
+2026-08-31: Code и automated checks готовы; publication/physical Android
+acceptance ждут отдельного разрешения Owner. Owner переключил приоритет на
+следующий pilot defect TASK-205.
 
 ## Источник
 
@@ -40,3 +44,19 @@ device identifier is stored in the repository.
 - Production manifest/icons/service-worker response check.
 - Android Chrome install + Home Screen launch.
 - Live login and one read-only inventory smoke after installed launch.
+
+## Реализация и текущая проверка — 2026-08-31
+
+- Добавлен root-scoped `/sw.js`, регистрируемый только в production. Он выполняет
+  только `fetch(event.request)` и ничего не сохраняет: offline inventory/sale
+  semantics не заявляются, а stale data не могут быть показаны как актуальные.
+- Существующие explicit manifest, PNG и maskable icons сохранены; worker делает
+  Android Chrome installability явной, а не только Home Screen shortcut.
+- Unit checks manifest/registration: 2 files / 3 tests passed.
+- Production Playwright PWA smoke: 3/3 desktop/tablet/mobile passed; проверяет
+  manifest, PNG MIME, `/sw.js` response и active registration.
+- `npm run build:live` — passed; остаются только прежние unrelated warnings в
+  `app/page.tsx`.
+
+Кодовая часть готова, но TASK остаётся `IN PROGRESS` до publication и физического
+Android Chrome Home Screen → Magic Link → read-only inventory acceptance Owner.

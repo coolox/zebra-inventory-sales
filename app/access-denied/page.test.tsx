@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/lib/supabase/client", () => ({ createClient: () => ({ auth: { signOut: vi.fn() } }) }));
+vi.mock("@/lib/auth/logout", () => ({ logoutAndRedirect: vi.fn() }));
 import AccessDeniedPage from "./page";
 
 describe("AccessDeniedPage", () => {

@@ -17,4 +17,13 @@ test("serves install metadata and PNG assets from the production app", async ({ 
     expect(response.ok()).toBe(true);
     expect(response.headers()["content-type"]).toContain("image/png");
   }
+
+  const serviceWorkerResponse = await request.get("/sw.js");
+  expect(serviceWorkerResponse.ok()).toBe(true);
+  expect(await serviceWorkerResponse.text()).toContain("event.respondWith(fetch(event.request))");
+
+  await expect.poll(async () => page.evaluate(async () => {
+    const registration = await navigator.serviceWorker.getRegistration("/");
+    return registration?.active?.scriptURL.endsWith("/sw.js") ?? false;
+  })).toBe(true);
 });

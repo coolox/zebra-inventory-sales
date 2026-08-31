@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- TASK-213 completed: pre-publication audit separates code-ready remediation
+  fixes from delivered staging evidence. The next staging build is scoped to
+  PWA, camera, Logout, resilient product photos and FX UI; Turkish invoice AI
+  receiving and label-assisted sales remain unimplemented post-pilot task chains.
+
 - TASK-211 completed: added a protected server-only TCMB sync Edge Function,
   idempotent service-only rate writer, three-business-day carry-forward policy,
   Owner-visible sync health and a post-publication GitHub schedule with bounded

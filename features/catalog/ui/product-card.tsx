@@ -1,6 +1,6 @@
 "use client";
 
-import { ArchiveRestore, ChevronLeft, ChevronRight, History, ImageOff, Maximize2, Minus, Package, Pencil, Plus, Settings2, Shirt, ShoppingBag, Trash2, Upload, X } from "lucide-react";
+import { ArchiveRestore, Camera, ChevronLeft, ChevronRight, History, ImageOff, Maximize2, Minus, Package, Pencil, Plus, Settings2, Shirt, ShoppingBag, Trash2, Upload, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { useDialogFocus } from "@/components/ui/use-dialog-focus";
 import type { Product } from "@/lib/types";
@@ -35,7 +35,8 @@ export function ProductCard({ locale, variants, onUploadPhotos, onRemovePhoto, o
   const [codeSaved, setCodeSaved] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false); const [detailsSaving, setDetailsSaving] = useState(false); const [detailsError, setDetailsError] = useState("");
   const [detailName, setDetailName] = useState(model?.name ?? ""); const [detailGender, setDetailGender] = useState<Product["gender"]>(model?.gender ?? "unisex"); const [detailThreshold, setDetailThreshold] = useState(String(model?.lowStockThreshold ?? 2)); const [detailCost, setDetailCost] = useState(String(model?.cost ?? 0)); const [detailCurrency, setDetailCurrency] = useState<Product["currency"]>(model?.currency ?? "EUR");
-  const fileInput = useRef<HTMLInputElement>(null);
+  const cameraInput = useRef<HTMLInputElement>(null);
+  const galleryInput = useRef<HTMLInputElement>(null);
   const viewerRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ pointerId: number; startX: number; startY: number; originX: number; originY: number } | null>(null);
   const carouselSwipe = useRef<{ x: number; y: number } | null>(null);
@@ -156,7 +157,8 @@ export function ProductCard({ locale, variants, onUploadPhotos, onRemovePhoto, o
       setUploadError(error instanceof Error ? error.message : "");
     } finally {
       setUploading(false);
-      if (fileInput.current) fileInput.current.value = "";
+      if (cameraInput.current) cameraInput.current.value = "";
+      if (galleryInput.current) galleryInput.current.value = "";
     }
   };
 
@@ -230,7 +232,7 @@ export function ProductCard({ locale, variants, onUploadPhotos, onRemovePhoto, o
         </div>
         {photos.length > 1 && <div className="mt-3 grid grid-cols-3 gap-2">{photos.map((photo, index) => <button key={photo} type="button" onClick={() => setPhotoIndex(index)} className={`aspect-[4/3] overflow-hidden rounded-lg border ${index === photoIndex ? "border-violet-500 ring-1 ring-violet-500/30" : "border-zinc-800 opacity-55 hover:opacity-100"}`}><img src={photo} alt="" className="h-full w-full object-cover" /></button>)}</div>}
         {onRemovePhoto && photos[photoIndex] && (removeConfirmationOpen ? <div className="mt-3 rounded-xl border border-red-500/30 bg-red-500/[0.06] p-3"><p className="text-xs leading-relaxed text-red-100">{text.removePhotoConfirm}</p>{removeError && <p role="alert" className="mt-2 text-[11px] text-red-300">{removeError}</p>}<div className="mt-3 flex gap-2"><button type="button" disabled={removeSaving} onClick={() => void removePhoto()} className="flex h-10 flex-1 items-center justify-center rounded-lg bg-red-500 px-3 text-xs font-semibold text-white disabled:opacity-50">{removeSaving ? text.removingPhoto : text.removePhoto}</button><button type="button" disabled={removeSaving} onClick={() => { setRemoveConfirmationOpen(false); setRemoveError(""); }} className="h-10 rounded-lg border border-zinc-700 px-3 text-xs text-zinc-200">{text.cancelEdit}</button></div></div> : <button type="button" onClick={() => { setRemoveConfirmationOpen(true); setRemoveError(""); }} className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-red-500/30 text-xs font-semibold text-red-300"><Trash2 size={15} />{text.removePhoto}</button>)}
-        {onUploadPhotos && <div className="mt-3"><input ref={fileInput} type="file" accept="image/jpeg,image/png,image/webp" multiple className="sr-only" onChange={(event) => void uploadPhotos(event.target.files)} /><button type="button" disabled={uploading} onClick={() => fileInput.current?.click()} className="flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 text-xs font-semibold text-violet-300 transition hover:bg-violet-500/15 disabled:cursor-not-allowed disabled:opacity-50"><Upload size={15} />{uploading ? text.uploadingPhotos : text.addPhotos}</button>{uploadError && <p className="mt-2 text-[11px] text-red-300">{productCardErrorMessage(uploadError, locale)}</p>}<p className="mt-2 text-[10px] text-zinc-600">{text.uploadHint}</p></div>}
+        {onUploadPhotos && <div className="mt-3"><input ref={cameraInput} type="file" accept="image/jpeg,image/png,image/webp" capture="environment" className="sr-only" onChange={(event) => void uploadPhotos(event.target.files)} /><input ref={galleryInput} type="file" accept="image/jpeg,image/png,image/webp" multiple className="sr-only" onChange={(event) => void uploadPhotos(event.target.files)} /><div className="grid gap-2 sm:grid-cols-1"><button type="button" disabled={uploading} onClick={() => cameraInput.current?.click()} className="flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 text-xs font-semibold text-violet-300 transition hover:bg-violet-500/15 disabled:cursor-not-allowed disabled:opacity-50 sm:hidden"><Camera size={15} />{uploading ? text.uploadingPhotos : text.takePhoto}</button><button type="button" disabled={uploading} onClick={() => galleryInput.current?.click()} className="flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-violet-500/30 bg-violet-500/10 text-xs font-semibold text-violet-300 transition hover:bg-violet-500/15 disabled:cursor-not-allowed disabled:opacity-50"><Upload size={15} />{uploading ? text.uploadingPhotos : text.chooseFromGallery}</button></div>{uploadError && <p className="mt-2 text-[11px] text-red-300">{productCardErrorMessage(uploadError, locale)}</p>}<p className="mt-2 text-[10px] text-zinc-600">{text.cameraFallback} {text.uploadHint}</p></div>}
       </div>
 
       <div className="p-5 sm:p-7">

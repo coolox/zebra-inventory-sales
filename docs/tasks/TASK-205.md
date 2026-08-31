@@ -1,6 +1,10 @@
 # TASK-205 — Добавить camera capture к загрузке фото товара
 
-Статус: pending
+Статус: PAUSED
+
+2026-08-31: Owner решил сначала закончить все bug fixes, затем сделать один общий
+remediation build. Camera code и automated checks готовы; TASK ожидает общего
+publication/physical acceptance вместе с TASK-203, TASK-207 и TASK-208.
 
 ## Источник
 
@@ -36,3 +40,22 @@ boundaries.
 - Component tests: camera/gallery controls, file acceptance and error state.
 - Mobile browser evidence: take photo → preview/save → reopen Product Details.
 - Existing photo upload/delete regression plus production build.
+
+## Реализация и текущая проверка — 2026-08-31
+
+- `ProductCard` получил отдельные mobile controls: `Fotoğraf çek` / `Take photo`
+  открывает single-file input с `capture="environment"`; `Galeriden seç` /
+  `Choose from gallery` сохраняет existing multi-file flow.
+- Оба input принимают только JPEG/PNG/WebP и вызывают один существующий private
+  upload callback. Размер, MIME, Owner authorization, private Storage path,
+  error copy и protected historical-photo/delete boundaries не изменены.
+- При cancel, camera denial или unsupported capture hint gallery control всегда
+  остаётся доступен; браузер не запрашивает отдельный programmatic camera
+  permission вне системного file picker.
+- Component/data regression: 2 files / 19 tests passed, включая rear-camera
+  hint, multi-file gallery и single camera File upload.
+- `npm run build:demo` и `npm run build:live` — passed; только прежние unrelated
+  warnings в `app/page.tsx`.
+
+TASK остаётся `IN PROGRESS` до consolidated publication и физического mobile
+camera → preview/save → reopen Product Details acceptance Owner.

@@ -96,6 +96,7 @@ import { readDemoWorkspace, resetDemoWorkspace, writeDemoWorkspace } from "@/fea
 import { loadLiveWorkspace } from "@/features/workspace/data/load-live-workspace";
 import { createClient as createSupabaseClient } from "@/lib/supabase/client";
 import { uploadProductImages } from "@/lib/product-images";
+import { logoutAndRedirect } from "@/lib/auth/logout";
 import { copy, persistLocale, readStoredLocale, type Locale } from "@/lib/i18n";
 import { stores } from "@/lib/mock-data";
 import type { Activity as ActivityType, Period, Product, Role, Sale, SaleExchange, Seller, StoreId } from "@/lib/types";
@@ -185,6 +186,7 @@ export default function Home() {
   const [locale, setLocale] = useState<Locale>("en");
   const [activeStoreId, setActiveStoreId] = useState<string | null>(null);
   const [paymentRates, setPaymentRates] = useState<PaymentRateMap>(demoPaymentRates);
+  const [signingOut, setSigningOut] = useState(false);
   const [supplierDirectory, setSupplierDirectory] = useState<Supplier[]>(() => [...new Set(initialWorkspaceData.products.map((product) => product.supplier))].map((name, index) => ({ id: `demo-supplier-${index}`, name, phone: null, notes: null, isActive: true })));
 
   useEffect(() => {
@@ -375,9 +377,9 @@ export default function Home() {
   };
 
   const signOut = async () => {
-    if (!isLiveMode) return;
-    await createSupabaseClient().auth.signOut();
-    window.location.assign("/login");
+    if (!isLiveMode || signingOut) return;
+    setSigningOut(true);
+    await logoutAndRedirect();
   };
 
   const toggleTheme = () => {
@@ -637,7 +639,7 @@ export default function Home() {
               <Bell size={17} />
               <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-violet-400" />
             </button>
-            {isLiveMode ? <button type="button" onClick={signOut} className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 transition hover:text-zinc-200" aria-label="Sign out"><LogOut size={16} /></button> : <button type="button" onClick={() => switchRole(role === "owner" ? "seller" : "owner")} className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-200 sm:hidden" aria-label={role === "owner" ? "Switch to Seller preview" : "Switch to Owner preview"}>{role === "owner" ? "AZ" : "ED"}</button>}
+            {isLiveMode ? <button type="button" onClick={signOut} disabled={signingOut} aria-busy={signingOut} className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 transition hover:text-zinc-200 disabled:cursor-wait disabled:opacity-50" aria-label={signingOut ? text.signingOut : text.signOut}><LogOut size={16} className={signingOut ? "animate-pulse" : undefined} /></button> : <button type="button" onClick={() => switchRole(role === "owner" ? "seller" : "owner")} className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-800 text-[10px] font-bold text-zinc-200 sm:hidden" aria-label={role === "owner" ? "Switch to Seller preview" : "Switch to Owner preview"}>{role === "owner" ? "AZ" : "ED"}</button>}
         </>} />
 
         <main className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6 lg:py-8 xl:px-8">

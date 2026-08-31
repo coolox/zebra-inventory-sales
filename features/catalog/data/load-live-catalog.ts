@@ -22,6 +22,14 @@ type MovementRow = { variant_id: string; quantity: number };
 type ReceiptLineRow = { variant_id: string; unit_cost: number; currency: Product["currency"] };
 type ImageRow = { product_model_id: string; storage_path: string; position: number };
 
+export function collectSignedImageUrls(results: Array<{ path: string; signedUrl?: string | null }>) {
+  const signedUrls = new Map<string, string>();
+  results.forEach(({ path, signedUrl }) => {
+    if (signedUrl) signedUrls.set(path, signedUrl);
+  });
+  return signedUrls;
+}
+
 export async function loadLiveCatalog(storeId: string): Promise<Product[]> {
   const client = createClient();
   const { data: modelData, error: modelsError } = await client
@@ -80,16 +88,17 @@ export async function loadLiveCatalog(storeId: string): Promise<Product[]> {
     imagesByModel.set(modelId, [...knownPaths, ...storedPaths.filter((path) => !knownPaths.includes(path))]);
   });
   const imagePaths = [...new Set([...imagesByModel.values()].flat())];
-  const signedUrls = new Map<string, string>();
+  let signedUrls = new Map<string, string>();
   if (imagePaths.length) {
-    const results = await Promise.all(imagePaths.map(async (path) => ({
-      path,
-      result: await client.storage.from("product-images").createSignedUrl(path, 60 * 60),
-    })));
-    results.forEach(({ path, result }) => {
-      if (result.error) throw result.error;
-      if (result.data?.signedUrl) signedUrls.set(path, result.data.signedUrl);
-    });
+    const results = await Promise.all(imagePaths.map(async (path) => {
+      try {
+        const { data } = await client.storage.from("product-images").createSignedUrl(path, 60 * 60);
+        return { path, signedUrl: data?.signedUrl };
+      } catch {
+        return { path };
+      }
+    }));
+    signedUrls = collectSignedImageUrls(results);
   }
 
   return toCatalogVariants(variants.flatMap((variant) => {

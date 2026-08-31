@@ -1,6 +1,6 @@
 # TASK-212 — Staging activation и Owner acceptance автоматических FX
 
-Статус: IN PROGRESS
+Статус: PAUSED
 
 ## Цель
 
@@ -51,3 +51,7 @@ Supabase не менялся; local CLI link возвращён на production 
 TCMB/carry warning/source date и Seller no-write/no-sync-health state. После
 явного Owner acceptance задача закрывается; production activation потребует
 отдельной команды.
+
+2026-09-01: Owner поставил staging visual acceptance на паузу до общего
+release-readiness audit всех remediation fixes и next-version features. Не
+публиковать frontend build до результата TASK-213.
