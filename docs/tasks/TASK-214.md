@@ -101,3 +101,24 @@ production project, чтобы исключить случайный production 
 TASK-214 является release-carrier для оставшейся visual/role acceptance
 TASK-212. После зелёного Preview FX evidence возвращается в TASK-212 и закрывает
 её критерии; production FX activation остаётся отдельным Owner approval.
+
+## Staging publication evidence — 2026-09-01
+
+- Clean snapshot was deployed explicitly to Vercel staging project
+  `zebra-inventory-sales` as Preview (not `zebra-retail-production`).
+- First Preview `zebra-inventory-sales-8lh7j2ni6-cooloxs-projects.vercel.app`
+  compiled successfully but failed at Vercel output collection because the
+  project retained stale `.next-live` Output Directory. No application runtime
+  was published from that failed deployment.
+- `vercel.json` now pins `outputDirectory: ".next"` in staging branch
+  `staging/task-214-remediation` (commit `7588d24`). A second smoke exposed that
+  auth middleware also matched `/manifest.webmanifest` and `/sw.js`; commit
+  `7d31c11` excludes those public PWA assets from auth redirects.
+- Final Preview is
+  `https://zebra-inventory-sales-in0766ry8-cooloxs-projects.vercel.app`, inspect
+  deployment `3DuD3Z9vPWbAY41UJ2Pibdj1UU1P`, status `Ready`.
+- HTTP smoke: root `307 → /login`; `/login` `200`; `/access-denied` `200`;
+  `/manifest.webmanifest` `200 application/manifest+json`; `/sw.js` `200
+  application/javascript`.
+- No production Vercel/Supabase resource was changed. Owner/Seller account,
+  FX UI and physical Android camera/PWA acceptance remain open.
