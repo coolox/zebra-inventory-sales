@@ -65,3 +65,14 @@ acceptance matrix.
 подключён к Git repository, поэтому push в `main` не запускает deploy. Нужен
 доступ/разрешение на Vercel deployment (или подключение Git repository) перед
 следующей попыткой; production deployment не изменён.
+
+Дополнительная сверка показала, что прежний GitHub deploy не исчез: он относится
+к отдельному старому проекту `zebra-inventory-sales`. Локальный repository сейчас
+связан через `.vercel/project.json` с другим проектом `zebra-retail-production`,
+у которого в Settings → Git указано `not connected`. После push текущего commit
+старый проект действительно создал новые deployment attempts, но они завершились
+`Error` до READY; у `zebra-retail-production` CLI deploy отвечает `Not authorized`.
+Иными словами, GitHub integration и Preview variables находятся в разных Vercel
+project boundaries. Для этого build нужно либо подключить GitHub к
+`zebra-retail-production`, либо явно публиковать через deployment authority в
+старом `zebra-inventory-sales` с его Preview environment — не смешивая проекты.
