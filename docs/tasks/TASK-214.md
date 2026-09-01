@@ -76,3 +76,28 @@ acceptance matrix.
 project boundaries. Для этого build нужно либо подключить GitHub к
 `zebra-retail-production`, либо явно публиковать через deployment authority в
 старом `zebra-inventory-sales` с его Preview environment — не смешивая проекты.
+
+## Исправленная environment boundary — 2026-09-01
+
+После повторной сверки архитектуры, исторических Ready Preview и production
+handoff выбран единственный корректный маршрут:
+
+- source of code: GitHub `coolox/zebra-inventory-sales`, current reviewed commit;
+- staging frontend: Vercel project `zebra-inventory-sales`, только **Preview**;
+- staging backend: Supabase project `zebra-retail-staging`;
+- production frontend: отдельный Vercel project `zebra-retail-production`;
+- production backend: отдельный Supabase project `zebra-retail-production`.
+
+Предыдущая альтернатива «подключить GitHub к `zebra-retail-production` для этого
+build» отменена: она смешала бы staging release path с production hosting
+boundary. Добавленные Owner переменные сейчас находятся в Preview scope
+production Vercel project; их значения не читать и не копировать. Для staging
+Owner должен ввести три public staging values именно в Preview environment
+Vercel project `zebra-inventory-sales`. Затем агент создаёт isolated clean
+snapshot reviewed commit, явно связывает только snapshot со staging Vercel
+project и публикует Preview без `--prod`; root repository link остаётся на
+production project, чтобы исключить случайный production deploy.
+
+TASK-214 является release-carrier для оставшейся visual/role acceptance
+TASK-212. После зелёного Preview FX evidence возвращается в TASK-212 и закрывает
+её критерии; production FX activation остаётся отдельным Owner approval.

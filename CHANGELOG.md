@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- TASK-214 environment boundary clarified: the remediation/FX staging frontend
+  must be a Preview of Vercel `zebra-inventory-sales` connected only to Supabase
+  `zebra-retail-staging`. The separate `zebra-retail-production` Vercel/Supabase
+  projects remain the production boundary and are excluded from this build.
+
 - TASK-213 completed: pre-publication audit separates code-ready remediation
   fixes from delivered staging evidence. The next staging build is scoped to
   PWA, camera, Logout, resilient product photos and FX UI; Turkish invoice AI

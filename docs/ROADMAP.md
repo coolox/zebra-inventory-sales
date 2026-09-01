@@ -4,8 +4,8 @@
 
 Текущий этап: release-readiness audit before one consolidated remediation build
 
-Текущий шаг: TASK-214 (`pending`) — reviewed staging remediation build и physical
-Owner/Seller acceptance
+Текущий шаг: TASK-214 (`IN PROGRESS`) — isolated `zebra-inventory-sales` Preview
+против Supabase `zebra-retail-staging`, затем Owner/Seller/FX acceptance
 
 Команда для продолжения: `Выполни TASK-214`
 
@@ -191,7 +191,7 @@ task обновляются его файл, `PROJECT_STATUS.md` и `CHANGELOG.m
 | 32 | DONE | TASK-211 | Protected TCMB sync, idempotency/retry, safe carry and observable failure state are locally verified |
 | 33 | PAUSED | TASK-212 | Staging FX backend is green; visual acceptance waits for TASK-213 audit and frontend remediation build |
 | 34 | DONE | TASK-213 | Audit подтвердил: четыре fixes code-ready, FX backend staging-ready; invoice/label AI ещё не реализованы |
-| 35 | NEXT | TASK-214 | Собрать один reviewed staging remediation build и пройти Owner/Seller physical acceptance |
+| 35 | IN PROGRESS | TASK-214 | Собрать один isolated staging Preview и пройти Owner/Seller/FX physical acceptance; production projects не менять |
 
 ### Как работать с планом в любом новом чате
 

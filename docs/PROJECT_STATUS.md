@@ -2,7 +2,7 @@
 
 Обновлено: 2026-09-01
 
-Текущая фаза: release-readiness audit before one consolidated remediation build.
+Текущая фаза: isolated staging remediation build и FX acceptance.
 
 ## Единственный указатель продолжения
 
@@ -61,8 +61,9 @@
   frontend remediation build.
 - Последняя завершённая задача: [TASK-213](tasks/TASK-213.md) — audit подтвердил
   scope общего remediation build и отделил его от не реализованных AI backlog.
-- Текущая задача: [TASK-214](tasks/TASK-214.md) — `pending`; собрать reviewed
-  staging remediation build и пройти physical Owner/Seller acceptance.
+- Текущая задача: [TASK-214](tasks/TASK-214.md) — `IN PROGRESS`; собрать reviewed
+  Vercel `zebra-inventory-sales` Preview против Supabase `zebra-retail-staging` и
+  пройти physical Owner/Seller/FX acceptance. `zebra-retail-production` не менять.
 - Команда для продолжения: `Выполни TASK-214`.
 
 Pilot follow-up recorded: [TASK-203](tasks/TASK-203.md) — Android Chrome PWA
