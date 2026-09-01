@@ -57,3 +57,11 @@ Supabase** (не production): `NEXT_PUBLIC_APP_MODE=live`,
 необходимости `NEXT_PUBLIC_OBSERVABILITY_ENABLED`. Значения не передавать в
 chat/repository. После этого эта задача публикует Preview и выполняет Owner/Seller
 acceptance matrix.
+
+2026-09-01: Owner сохранил три обязательные переменные в Vercel `Preview`; их
+имена и окружение проверены через браузер, значения не раскрывались. Попытки
+`vercel --yes` и `vercel deploy --yes --scope cooloxs-projects` вернули
+`Not authorized`. В Vercel Project Settings → Git также указано, что проект не
+подключён к Git repository, поэтому push в `main` не запускает deploy. Нужен
+доступ/разрешение на Vercel deployment (или подключение Git repository) перед
+следующей попыткой; production deployment не изменён.
